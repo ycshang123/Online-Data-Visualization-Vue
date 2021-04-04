@@ -10,10 +10,10 @@
             <span class="mdi mdi-chevron-down mdi-18px margin-left"></span>
         </v-app-bar>
         <div class="flex-around">
-            <v-card height="100%" width="8%">
+            <v-card height="100%" width="10%">
                 <v-navigation-drawer permanent :color="color">
                     <v-list dense nav>
-                        <v-list-item v-for="item in items" :key="item.title" link :right="right">
+                        <v-list-item v-for="item in items" :key="item.title" link>
                             <v-list-item-icon>
                                 <v-icon color="#a1aabc">{{ item.icon }}</v-icon>
                             </v-list-item-icon>
@@ -26,7 +26,7 @@
                     </v-list>
                 </v-navigation-drawer>
             </v-card>
-            <div style="width: 92%; height: 100%">
+            <div style="width: 90%; height: 100%">
                 <router-view />
             </div>
         </div>
@@ -43,11 +43,7 @@ export default {
             ],
             color: '#25354d',
             clipped: false,
-            scrollHeight: window.screenWidth - 60,
         }
-    },
-    onLoad() {
-        console.log('高度是：' + this.scrollHeight)
     },
 }
 </script>
