@@ -1,19 +1,12 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
-// import Home from '../views/Home.vue'
 import Index from "../views/Index/Index.vue"
 import Data from "../views/Data/Data.vue"
 import Dashboard from "../views/Dashboard/Dashboard.vue"
-import DataLink from "../views/DataLink/DataLink.vue"
 
 Vue.use(VueRouter)
 
 const routes = [
-    {
-        path: "/index",
-        name: "about",
-        component: () => import('../views/Home.vue')
-    },
     {
         path: "/",
         name: "Index",
@@ -27,8 +20,8 @@ const routes = [
             },
             {
                 path: "/datalink",
-                name: "Home",
-                component: () => import('../views/Home.vue')
+                name: "DatabaseConn",
+                component: () => import('../views/DataLink/DatabaseConn.vue')
             },
             {
                 path: "/dashboard",

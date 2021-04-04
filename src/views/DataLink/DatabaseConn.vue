@@ -104,7 +104,7 @@
 
                 <v-card flat outlined class="d-flex justify-center py-4">
                     <v-col cols="9" class="d-flex justify-space-between">
-                        <v-col cols="4" v-show="connSQL.sqlType === 'PostgreSQL'">
+                        <v-col cols="4" v-show="connSQL.sqlType === 'PostgreSQL' || connSQL.sqlType === 'MySQL'">
                             <v-text-field :rules="rules" label="连接名" v-model="connSQL.connName"></v-text-field>
                             <v-text-field :rules="rules" label="主机" v-model="connSQL.host"></v-text-field>
                             <v-text-field :rules="rules" label="端口" v-model="connSQL.port"></v-text-field>
@@ -139,15 +139,18 @@
     </div>
 </template>
 <script>
-import { changeDatabase } from '../common/api/database'
+import { changeDatabase } from '../../common/api/database'
+import mysql_mini from '../../assets/pic/mini/MySQL.png'
+import postgresql_mini from '../../assets/pic/mini/Postgresql.png'
+import sqlserver_mini from '../../assets/pic/mini/SQLServer.png'
 export default {
     data: () => ({
         selectedItem: null,
         // 历史连接数组对象
         historyConnArr: [
-            { text: 'connection-1connectionxxxxxxx', avatar: require('../assets/pic/mini/MySQL.png') },
-            { text: 'connection-2apple', avatar: require('../assets/pic/mini/Postgresql.png') },
-            { text: 'connection-3visualization', avatar: require('../assets/pic/mini/SQLServer.png') },
+            { text: 'connection-1connection', avatar: require('../../assets/pic/mini/MySQL.png') },
+            { text: 'connection-2apple', avatar: require('../../assets/pic/mini/Postgresql.png') },
+            { text: 'connection-3visualization', avatar: require('../../assets/pic/mini/SQLServer.png') },
         ],
         options: [
             {
@@ -212,11 +215,14 @@ export default {
         //     password: '',
         // },
         connSQL: {
-            sqlType: 'postgreSQL',
-            cover: '2',
+            // 历史连接处的小图标
+            miniCover: '',
+            sqlType: 'PostgreSQL',
+            // 数据库封面图
+            cover: '',
             connName: 'myPostgreSQL',
             host: 'localhost',
-            port: '5432',
+            port: '',
             database: 'postgres',
             userName: 'postgres',
             password: 'root',
@@ -246,7 +252,8 @@ export default {
          */
         async testConn() {
             switch (this.connSQL.sqlType) {
-                case 'PostgreSQL': {
+                case 'MySQL':
+                case 'PostgreSQL':
                     // 第一步，判断参数非空
                     if (
                         this.connSQL.connName &&
@@ -258,7 +265,6 @@ export default {
                     ) {
                         // 第二步，调用 api 测试
                         await changeDatabase(this.connSQL).then((res) => {
-                            console.log(res)
                             if (res.code === 200) {
                                 this.testConnStatus = true
                                 // 第三步，追加一个成功提示
@@ -281,7 +287,6 @@ export default {
                             content: 'You must fill out the form data!',
                         })
                     }
-                }
             }
         },
         /**
@@ -300,13 +305,14 @@ export default {
             if (this.testConnStatus) {
                 this.historyConnArr.push({
                     text: this.connSQL.connName,
-                    avatar: require('../assets/pic/mini/Postgresql.png'),
+                    avatar: this.connSQL.miniCover,
                 })
                 // 添加一条提示信息
                 this.alertArr.push({
                     type: 'success',
                     content: 'Successful save!',
                 })
+                this.testConnStatus = false
             } else {
                 this.saveDialog = true
             }
@@ -317,7 +323,7 @@ export default {
         agreeSave() {
             this.historyConnArr.push({
                 text: this.connSQL.connName,
-                avatar: require('../assets/pic/mini/Postgresql.png'),
+                avatar: this.connSQL.miniCover,
             })
             // 添加一条提示信息
             this.alertArr.push({
@@ -336,6 +342,16 @@ export default {
                 // 显示出数据库连接界面
                 this.isConnectArea = true
                 this.connSQL.sqlType = this.options[index].name
+                switch (this.connSQL.sqlType) {
+                    case 'MySQL':
+                        this.connSQL.port = 3306
+                        this.connSQL.miniCover = mysql_mini
+                        break
+                    case 'PostgreSQL':
+                        this.connSQL.port = 5432
+                        this.connSQL.miniCover = postgresql_mini
+                        break
+                }
                 this.connSQL.cover = this.options[index].cover
             }, 200)
         },
