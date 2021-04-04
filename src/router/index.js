@@ -1,24 +1,47 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
-import About from '../views/About.vue'
+// import Home from '../views/Home.vue'
+import Index from "../views/Index/Index.vue"
+import Data from "../views/Data/Data.vue"
+import Dashboard from "../views/Dashboard/Dashboard.vue"
+import DataLink from "../views/DataLink/DataLink.vue"
 
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    path: "/index",
-    name: "about",
-    component: About
-  },
-  {
-    path: "/",
-    name: "home",
-    component: () => import('../views/Home.vue')
-  }
+    {
+        path: "/index",
+        name: "about",
+        component: () => import('../views/Home.vue')
+    },
+    {
+        path: "/",
+        name: "Index",
+        component: Index,
+        redirect: '/data',
+        children: [
+            {
+                path: "/data",
+                name: "Data",
+                component: Data
+            },
+            {
+                path: "/datalink",
+                name: "Home",
+                component: () => import('../views/Home.vue')
+            },
+            {
+                path: "/dashboard",
+                name: "Dashboard",
+                component: Dashboard
+            }
+
+        ]
+    }
 ]
 
 const router = new VueRouter({
-  routes,
+    routes,
 })
 
 export default router

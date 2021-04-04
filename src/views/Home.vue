@@ -1,38 +1,40 @@
 <template>
-    <v-app>
+    <div class="d-flex">
         <!-- 左侧部分 -->
-        <v-navigation-drawer permanent app>
-            <!-- 按钮 -->
-            <v-card class="d-flex justify-center align-center" outlined tile height="60">
-                <v-btn
-                    depressed
-                    color="blue lighten-3"
-                    width="200"
-                    :disabled="!(isSQLArea === false && isConnectArea === false)"
-                    @click="changeSQLArea()"
-                >
-                    <v-icon dark class="mr-4">mdi-plus</v-icon>
-                    <span>新 建 连 接</span>
-                </v-btn>
-            </v-card>
+        <v-col>
+            <v-navigation-drawer permanent>
+                <!-- 按钮 -->
+                <v-card class="d-flex justify-center align-center" outlined tile height="60">
+                    <v-btn
+                        depressed
+                        color="blue lighten-3"
+                        width="200"
+                        :disabled="!(isSQLArea === false && isConnectArea === false)"
+                        @click="changeSQLArea()"
+                    >
+                        <v-icon dark class="mr-4">mdi-plus</v-icon>
+                        <span>新 建 连 接</span>
+                    </v-btn>
+                </v-card>
 
-            <!-- 历史连接 -->
-            <v-card class="mx-auto" tile outlined>
-                <v-list dense>
-                    <v-subheader>History connection</v-subheader>
-                    <v-list-item-group v-model="selectedItem" color="primary">
-                        <v-list-item v-for="(item, i) in historyConnArr" :key="i">
-                            <v-list-item-avatar size="30" tile>
-                                <v-img :src="item.avatar" lazy-src=""></v-img>
-                            </v-list-item-avatar>
-                            <v-list-item-content>
-                                <v-list-item-title v-text="item.text"></v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list-item-group>
-                </v-list>
-            </v-card>
-        </v-navigation-drawer>
+                <!-- 历史连接 -->
+                <v-card class="mx-auto" tile outlined>
+                    <v-list dense>
+                        <v-subheader>History connection</v-subheader>
+                        <v-list-item-group v-model="selectedItem" color="primary">
+                            <v-list-item v-for="(item, i) in historyConnArr" :key="i">
+                                <v-list-item-avatar size="30" tile>
+                                    <v-img :src="item.avatar" lazy-src=""></v-img>
+                                </v-list-item-avatar>
+                                <v-list-item-content>
+                                    <v-list-item-title v-text="item.text"></v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </v-list-item-group>
+                    </v-list>
+                </v-card>
+            </v-navigation-drawer>
+        </v-col>
 
         <div class="alert-area">
             <v-alert
@@ -49,75 +51,79 @@
         </div>
 
         <!-- 右侧部分-----众多数据库选择界面 -->
-        <v-container fluid v-show="isSQLArea">
-            <span class="text-h6 indigo--text text--lighten-1">选择数据库类型</span>
-            <v-item-group>
-                <v-container class="item-area mt-16">
-                    <v-row justify="center">
-                        <v-col v-for="(item, index) in options" :key="index" cols="4" lg="4" md="4" class="">
-                            <v-item v-ripple class="ml-6 mt-12">
-                                <v-card @click="connectSQL(index)" class="d-flex align-center" height="110" width="220">
-                                    <v-img :src="item.cover" height="100px"> </v-img>
-                                </v-card>
-                            </v-item>
+        <v-col cols="9">
+            <v-container class="" v-show="isSQLArea" fluid>
+                <span class="text-h6 indigo--text text--lighten-1">选择数据库类型</span>
+                <v-item-group>
+                    <v-container class="item-area mt-16">
+                        <v-row>
+                            <v-col v-for="(item, index) in options" md="4" lg="4" cols="4" :key="index">
+                                <v-item v-ripple class="mt-12">
+                                    <v-row justify="center">
+                                        <v-card @click="connectSQL(index)" class="d-flex" height="110" width="220">
+                                            <v-img :src="item.cover" height="100px"> </v-img>
+                                        </v-card>
+                                    </v-row>
+                                </v-item>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-item-group>
+            </v-container>
+
+            <!-- 数据库连接界面 -->
+            <v-container v-show="isConnectArea" fluid>
+                <!-- 顶部按钮区 -->
+                <v-card flat class="d-flex align-center">
+                    <v-col class="" align-self="center">
+                        <span>数据连接({{ connSQL.sqlType }})</span>
+                    </v-col>
+                    <v-col align-self="center" class="" sm="1">
+                        <v-row justify="space-between">
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn title="" icon color="deep-purple lighten-3" v-bind="attrs" v-on="on" @click="cancel()"
+                                        ><v-icon>mdi-close-circle-outline</v-icon></v-btn
+                                    >
+                                </template>
+                                <span>Cancel</span>
+                            </v-tooltip>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn v-bind="attrs" v-on="on" icon color="deep-purple lighten-3" @click="save()"
+                                        ><v-icon>mdi-content-save</v-icon></v-btn
+                                    >
+                                </template>
+                                <span>Save</span>
+                            </v-tooltip>
+                        </v-row>
+                    </v-col>
+                </v-card>
+
+                <v-divider class="mb-4"></v-divider>
+
+                <v-card flat outlined class="d-flex justify-center py-4">
+                    <v-col cols="9" class="d-flex justify-space-between">
+                        <v-col cols="4" v-show="connSQL.sqlType === 'PostgreSQL'">
+                            <v-text-field :rules="rules" label="连接名" v-model="connSQL.connName"></v-text-field>
+                            <v-text-field :rules="rules" label="主机" v-model="connSQL.host"></v-text-field>
+                            <v-text-field :rules="rules" label="端口" v-model="connSQL.port"></v-text-field>
+                            <v-text-field :rules="rules" label="初始数据库" v-model="connSQL.database"></v-text-field>
+                            <v-text-field :rules="rules" label="用户名" v-model="connSQL.userName"></v-text-field>
+                            <v-text-field :rules="rules" label="密码" v-model="connSQL.password"></v-text-field>
+                            <v-btn depressed color="light-green lighten-3" @click="testConn()">测试连接</v-btn>
                         </v-col>
-                    </v-row>
-                </v-container>
-            </v-item-group>
-        </v-container>
 
-        <!-- 右侧部分------数据库连接界面 -->
-        <v-container v-show="isConnectArea" fluid>
-            <!-- 顶部按钮区 -->
-            <v-card flat class="d-flex align-center">
-                <v-col class="" align-self="center">
-                    <span>数据连接({{ connSQL.sqlType }})</span>
-                </v-col>
-                <v-col align-self="center" class="" sm="1">
-                    <v-row justify="space-between">
-                        <v-tooltip bottom>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn title="" icon color="deep-purple lighten-3" v-bind="attrs" v-on="on" @click="cancel()"
-                                    ><v-icon>mdi-close-circle-outline</v-icon></v-btn
-                                >
-                            </template>
-                            <span>Cancel</span>
-                        </v-tooltip>
-                        <v-tooltip bottom>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on" icon color="deep-purple lighten-3" @click="save()"
-                                    ><v-icon>mdi-content-save</v-icon></v-btn
-                                >
-                            </template>
-                            <span>Save</span>
-                        </v-tooltip>
-                    </v-row>
-                </v-col>
-            </v-card>
-
-            <v-divider class="mb-4"></v-divider>
-
-            <v-card flat outlined class="d-flex justify-center py-4">
-                <v-col cols="9" class="d-flex justify-space-between">
-                    <v-col cols="4" v-show="connSQL.sqlType === 'PostgreSQL'">
-                        <v-text-field :rules="rules" label="连接名" v-model="connSQL.connName"></v-text-field>
-                        <v-text-field :rules="rules" label="主机" v-model="connSQL.host"></v-text-field>
-                        <v-text-field :rules="rules" label="端口" v-model="connSQL.port"></v-text-field>
-                        <v-text-field :rules="rules" label="初始数据库" v-model="connSQL.database"></v-text-field>
-                        <v-text-field :rules="rules" label="用户名" v-model="connSQL.userName"></v-text-field>
-                        <v-text-field :rules="rules" label="密码" v-model="connSQL.password"></v-text-field>
-                        <v-btn depressed color="light-green lighten-3" @click="testConn()">测试连接</v-btn>
+                        <v-col align-self="center" cols="7">
+                            <v-card>
+                                <v-img :src="connSQL.cover" height="300" contain class="white"></v-img>
+                                <v-card-title class="title"> {{ connSQL.sqlType }} </v-card-title>
+                            </v-card>
+                        </v-col>
                     </v-col>
-
-                    <v-col align-self="center" cols="7">
-                        <v-card>
-                            <v-img :src="connSQL.cover" height="300" contain class="white"></v-img>
-                            <v-card-title class="title"> {{ connSQL.sqlType }} </v-card-title>
-                        </v-card>
-                    </v-col>
-                </v-col>
-            </v-card>
-        </v-container>
+                </v-card>
+            </v-container>
+        </v-col>
 
         <!-- Dialog -->
         <v-dialog v-model="saveDialog" persistent max-width="350">
@@ -125,12 +131,12 @@
                 <v-card-title class="headline"> Test connection failed, whether to continue to save </v-card-title>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="green darken-1" text @click="dialog = false"> Disagree </v-btn>
-                    <v-btn color="green darken-1" text @click="agreeSave()"> Agree </v-btn>
+                    <v-btn color="green darken-1" text @click="saveDialog = false"> Cancle </v-btn>
+                    <v-btn color="green darken-1" text @click="agreeSave()"> Save </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
-    </v-app>
+    </div>
 </template>
 <script>
 import { changeDatabase } from '../common/api/database'
@@ -139,7 +145,7 @@ export default {
         selectedItem: null,
         // 历史连接数组对象
         historyConnArr: [
-            { text: 'connection-1connection', avatar: require('../assets/pic/mini/MySQL.png') },
+            { text: 'connection-1connectionxxxxxxx', avatar: require('../assets/pic/mini/MySQL.png') },
             { text: 'connection-2apple', avatar: require('../assets/pic/mini/Postgresql.png') },
             { text: 'connection-3visualization', avatar: require('../assets/pic/mini/SQLServer.png') },
         ],
