@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-app-bar dense style="position: sticky; top: 0; z-index: 1" height="55">
+        <v-app-bar app dense style="position: sticky; top: 0; z-index: 1" height="55">
             <v-app-bar-nav-icon></v-app-bar-nav-icon>
             <v-toolbar-title style="font-size: 20px">数据可视化平台</v-toolbar-title>
             <v-spacer></v-spacer>
@@ -14,14 +14,14 @@
                 <v-navigation-drawer permanent :color="color">
                     <v-list dense nav>
                         <v-list-item v-for="item in items" :key="item.title" link>
-                            <v-list-item-icon>
-                                <v-icon color="#a1aabc">{{ item.icon }}</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <router-link :to="item.path" class="router-link-active">
+                            <router-link :to="item.path" class="d-flex router-link-active">
+                                <v-list-item-icon>
+                                    <v-icon color="#a1aabc">{{ item.icon }}</v-icon>
+                                </v-list-item-icon>
+                                <v-list-item-content>
                                     <v-list-item-title style="color: #a1aabc"> {{ item.title }}</v-list-item-title>
-                                </router-link>
-                            </v-list-item-content>
+                                </v-list-item-content>
+                            </router-link>
                         </v-list-item>
                     </v-list>
                 </v-navigation-drawer>
