@@ -22,6 +22,10 @@ const routes = [
                 path: "/datalink",
                 name: "DatabaseConn",
                 component: () => import('../views/DataLink/DatabaseConn.vue')
+            }, {
+                path: "/selfdata",
+                name: "SelfData",
+                component: () => import('../views/Data/SelfData.vue')
             },
             {
                 path: "/dashboard",
