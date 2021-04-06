@@ -10,7 +10,7 @@
             <span class="mdi mdi-chevron-down mdi-18px margin-left"></span>
         </v-app-bar>
         <div class="flex-around">
-            <v-card height="100%" width="10%">
+            <v-card tile height="100%" width="10%">
                 <v-navigation-drawer permanent :color="color">
                     <v-list dense nav>
                         <v-list-item v-for="item in items" :key="item.title" link>
@@ -34,6 +34,7 @@
 </template>
 <script>
 export default {
+
     data() {
         return {
             items: [
@@ -46,9 +47,8 @@ export default {
             scrollHeight: window.screenWidth - 60,
         }
     },
-    onLoad() {
-        console.log('高度是：' + this.scrollHeight)
-    },
+
+    
 }
 </script>
 <style scoped>

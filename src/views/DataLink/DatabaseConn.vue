@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex">
+    <div class="d-flex" style="height: 100%">
         <!-- 左侧部分 -->
         <v-col>
             <v-navigation-drawer permanent>
