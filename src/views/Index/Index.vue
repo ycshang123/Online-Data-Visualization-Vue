@@ -25,7 +25,7 @@
                         </v-list-item>
                     </v-list>
                 </div>
-                <v-container class="pa-0" app fluid>
+                <v-container class="pa-0" fluid>
                     <router-view style="height: 100%" />
                 </v-container>
             </div>
@@ -34,7 +34,6 @@
 </template>
 <script>
 export default {
-
     data() {
         return {
             items: [

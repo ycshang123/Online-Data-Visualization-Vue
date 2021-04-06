@@ -22,7 +22,8 @@ const routes = [
                 path: "/datalink",
                 name: "DatabaseConn",
                 component: () => import('../views/DataLink/DatabaseConn.vue')
-            }, {
+            },
+            {
                 path: "/selfdata",
                 name: "SelfData",
                 component: () => import('../views/Data/SelfData.vue')
@@ -41,7 +42,7 @@ const routes = [
                 path: "/uploadfiles",
                 name: "UpLoadFiles",
                 component: () => import('../views/Data/UploadFiles.vue')
-            }
+            },
 
         ]
     }
