@@ -61,7 +61,7 @@ export default {
                 {
                     id: 2,
                     name: '上传文件',
-                    path: '/datalink'
+                    path: '/uploadfiles'
                 },
                 {
                     id: 3,

@@ -44,11 +44,8 @@ export default {
             ],
             color: '#25354d',
             clipped: false,
-            scrollHeight: window.screenWidth - 60,
         }
     },
-
-    
 }
 </script>
 <style scoped>

@@ -101,9 +101,7 @@ export default {
         }
     },
     watch: {
-        folderName () {
-            this.disable = true
-        },
+
     },
     created () { },
     methods: {
@@ -112,7 +110,6 @@ export default {
             let folders = this.folders
             let folderName = this.folderName
             let folder = { id: folders.length + 1, name: folderName }
-
             if (folderName == null) {
                 this.disable = true
             } else {
@@ -125,7 +122,7 @@ export default {
         cleantext () {
             this.folderName = ''
         },
-        // 跳转页面
+        // 跳转页面 => 路由传参
         nextPage (index) {
             this.$router.push({ path: "/addtable", query: { folder: this.folders[index] } })
         }
