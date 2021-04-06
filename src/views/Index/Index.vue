@@ -1,18 +1,18 @@
 <template>
     <div>
-        <v-app-bar app dense style="position: sticky; top: 0; z-index: 1" height="55">
+        <v-app-bar app>
             <v-app-bar-nav-icon></v-app-bar-nav-icon>
             <v-toolbar-title style="font-size: 20px">数据可视化平台</v-toolbar-title>
             <v-spacer></v-spacer>
             <span class="mdi mdi-bell mdi-24px" style="color: #4873f5"></span>
-            <span class="mdi mdi-github mdi-24px margin-left"></span>
+            <span class="mdi mdi-github mdi-24px ml-4"></span>
             <span>admin</span>
-            <span class="mdi mdi-chevron-down mdi-18px margin-left"></span>
+            <span class="mdi mdi-chevron-down mdi-18px ml-4"></span>
         </v-app-bar>
-        <div class="flex-around">
-            <v-card height="100%" width="10%">
-                <v-navigation-drawer permanent :color="color">
-                    <v-list dense nav>
+        <v-main style="height: 100%">
+            <div class="d-flex" style="height: 100%; width: 100%">
+                <div width="10%" style="background-color: #25354d">
+                    <v-list dense nav style="background-color: #25354d">
                         <v-list-item v-for="item in items" :key="item.title" link>
                             <router-link :to="item.path" class="d-flex router-link-active">
                                 <v-list-item-icon>
@@ -24,12 +24,12 @@
                             </router-link>
                         </v-list-item>
                     </v-list>
-                </v-navigation-drawer>
-            </v-card>
-            <div style="width: 90%; height: 100%">
-                <router-view />
+                </div>
+                <v-container class="pa-0" fluid>
+                    <router-view style="height: 100%" />
+                </v-container>
             </div>
-        </div>
+        </v-main>
     </div>
 </template>
 <script>
@@ -41,24 +41,12 @@ export default {
                 { title: '数据连接', icon: 'mdi-database', path: '/datalink' },
                 { title: '仪表盘', icon: 'mdi-view-dashboard', path: '/dashboard' },
             ],
-            color: '#25354d',
             clipped: false,
         }
     },
 }
 </script>
 <style scoped>
-.margin-left {
-    margin-left: 15px;
-}
-
-.flex-around {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    display: flex;
-    justify-content: space-around;
-}
 .router-link-active {
     text-decoration: none;
 }

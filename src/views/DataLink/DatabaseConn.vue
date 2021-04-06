@@ -1,10 +1,16 @@
 <template>
-    <div class="d-flex">
+    <div class="d-flex pa-0">
         <!-- 左侧部分 -->
-        <v-col>
-            <v-navigation-drawer permanent>
+        <div class="left-div" style="height: 100%; width: 19%">
+            <v-col class="" style="padding: 0">
                 <!-- 按钮 -->
-                <v-card class="d-flex justify-center align-center" outlined tile height="60">
+                <v-card
+                    class="d-flex justify-center align-center"
+                    outlined
+                    style="border-style: none; border-bottom-style: solid"
+                    tile
+                    height="60"
+                >
                     <v-btn
                         depressed
                         color="blue lighten-3"
@@ -18,8 +24,8 @@
                 </v-card>
 
                 <!-- 历史连接 -->
-                <v-card class="mx-auto" tile outlined>
-                    <v-list dense>
+                <v-card class="mx-auto" tile outlined style="border-style: none">
+                    <v-list tile dense>
                         <v-subheader>History connection</v-subheader>
                         <v-list-item-group v-model="selectedItem" color="primary">
                             <v-list-item v-for="(item, i) in historyConnArr" :key="i">
@@ -33,8 +39,8 @@
                         </v-list-item-group>
                     </v-list>
                 </v-card>
-            </v-navigation-drawer>
-        </v-col>
+            </v-col>
+        </div>
 
         <div class="alert-area">
             <v-alert
@@ -50,15 +56,16 @@
             </v-alert>
         </div>
 
-        <!-- 右侧部分-----众多数据库选择界面 -->
-        <v-col cols="9">
-            <v-container class="" v-show="isSQLArea" fluid>
+        <!-- 右侧部分-- -->
+        <div style="width: 91%">
+            <!-- 众多数据库选择界面 -->
+            <v-container fluid v-show="isSQLArea">
                 <span class="text-h6 indigo--text text--lighten-1">选择数据库类型</span>
                 <v-item-group>
                     <v-container class="item-area mt-16">
                         <v-row>
                             <v-col v-for="(item, index) in options" md="4" lg="4" cols="4" :key="index">
-                                <v-item v-ripple class="mt-12">
+                                <v-item class="mt-12">
                                     <v-row justify="center">
                                         <v-card @click="connectSQL(index)" class="d-flex" height="110" width="220">
                                             <v-img :src="item.cover" height="100px"> </v-img>
@@ -72,17 +79,17 @@
             </v-container>
 
             <!-- 数据库连接界面 -->
-            <v-container v-show="isConnectArea" fluid>
+            <v-container fluid v-show="isConnectArea" class="pt-2">
                 <!-- 顶部按钮区 -->
-                <v-card flat class="d-flex align-center">
-                    <v-col class="" align-self="center">
+                <v-card flat outlined class="d-flex align-center">
+                    <v-col align-self="center">
                         <span>数据连接({{ connSQL.sqlType }})</span>
                     </v-col>
                     <v-col align-self="center" class="" sm="1">
                         <v-row justify="space-between">
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn title="" icon color="deep-purple lighten-3" v-bind="attrs" v-on="on" @click="cancel()"
+                                    <v-btn icon color="deep-purple lighten-3" v-bind="attrs" v-on="on" @click="cancel()"
                                         ><v-icon>mdi-close-circle-outline</v-icon></v-btn
                                     >
                                 </template>
@@ -100,11 +107,9 @@
                     </v-col>
                 </v-card>
 
-                <v-divider class="mb-4"></v-divider>
-
-                <v-card flat outlined class="d-flex justify-center py-4">
-                    <v-col cols="9" class="d-flex justify-space-between">
-                        <v-col cols="4" v-show="connSQL.sqlType === 'PostgreSQL' || connSQL.sqlType === 'MySQL'">
+                <v-card flat outlined class="mt-4 d-flex justify-center py-4">
+                    <v-col cols="10" class="d-flex justify-space-between">
+                        <v-col cols="6" v-show="connSQL.sqlType === 'PostgreSQL' || connSQL.sqlType === 'MySQL'">
                             <v-text-field :rules="rules" label="连接名" v-model="connSQL.connName"></v-text-field>
                             <v-text-field :rules="rules" label="主机" v-model="connSQL.host"></v-text-field>
                             <v-text-field :rules="rules" label="端口" v-model="connSQL.port"></v-text-field>
@@ -114,16 +119,16 @@
                             <v-btn depressed color="light-green lighten-3" @click="testConn()">测试连接</v-btn>
                         </v-col>
 
-                        <v-col align-self="center" cols="7">
+                        <v-col align-self="center" cols="6">
                             <v-card>
-                                <v-img :src="connSQL.cover" height="300" contain class="white"></v-img>
+                                <v-img :src="connSQL.cover" max-width="500" height="300" contain class="white"></v-img>
                                 <v-card-title class="title"> {{ connSQL.sqlType }} </v-card-title>
                             </v-card>
                         </v-col>
                     </v-col>
                 </v-card>
             </v-container>
-        </v-col>
+        </div>
 
         <!-- Dialog -->
         <v-dialog v-model="saveDialog" persistent max-width="350">
@@ -365,6 +370,11 @@ export default {
 }
 </script>
 <style scoped>
+.left-div {
+    border-style: solid;
+    border-width: 0.1px;
+    border-color: rgb(224, 224, 224);
+}
 .alert-area {
     position: absolute;
     right: 0;
