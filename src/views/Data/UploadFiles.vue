@@ -2,7 +2,7 @@
     <div class="d-flex justify-space-around" style="height: 100%">
         <v-card width="10%">
             <v-list-item>
-                <span class="mdi mdi-chevron-left mdi-24px"></span>
+                <v-icon @click="previousPage()" class="mdi mdi-chevron-left mdi-24px"></v-icon>
                 <v-list-item-content>
                     <v-list-item-title> ***航空数据 </v-list-item-title>
                 </v-list-item-content>
@@ -38,10 +38,22 @@
 </template>
 <script>
 export default {
+    name: 'UpLoadFiles',
+    created() {
+
+    },
     data() {
         return {
             items: ['2021年航空数据', '2020年航空数据', '2019年航空数据'],
             number: 2,
+        }
+    },
+    methods: {
+        /**
+         * 返回上一级
+         */
+        previousPage () {
+            this.$router.go(-1)
         }
     },
 }

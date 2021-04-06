@@ -65,6 +65,7 @@
 <script>
 import { mdiFolderPlus } from '@mdi/js'
 export default {
+    name: 'Data',
     data () {
         return {
             disable: '',
@@ -124,7 +125,12 @@ export default {
         },
         // 跳转页面 => 路由传参
         nextPage (index) {
-            this.$router.push({ path: "/addtable", query: { folder: this.folders[index] } })
+            this.$router.push({
+                name: "AddTable",
+                params: {
+                    folder: this.folders[index],
+                }
+            })
         }
     },
 }

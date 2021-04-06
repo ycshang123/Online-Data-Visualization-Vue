@@ -70,6 +70,7 @@
                 </v-list>
             </div>
         </div>
+
         <!-- 右侧数据表预览部分 -->
         <v-main style="height: 100%;"
                 class="pt-3">
@@ -77,7 +78,7 @@
             <v-card flat
                     tile
                     class="">
-
+                <!-- 表名图标 -->
                 <v-card-title style="height: 10%"
                               class="pt-2">
                     <v-btn icon
@@ -101,9 +102,18 @@
                                   class="shrink mr-3"></v-text-field>
 
                     <!-- 编辑和创建组件按钮 -->
-                    <v-card flat class="d-flex px-2" width="20%">
-                        <v-btn small dark class="mr-3" color="#25354d" style="opacity:0.9">编辑</v-btn>
-                        <v-btn small dark color="#25354d" style="opacity:0.9">创建组件</v-btn>
+                    <v-card flat
+                            class="d-flex px-2"
+                            width="20%">
+                        <v-btn small
+                               dark
+                               class="mr-3"
+                               color="#25354d"
+                               style="opacity:0.9">编辑</v-btn>
+                        <v-btn small
+                               dark
+                               color="#25354d"
+                               style="opacity:0.9">创建组件</v-btn>
                     </v-card>
 
                 </v-card-title>
@@ -126,6 +136,7 @@
 
 <script>
 export default {
+    name: 'AddTable',
     data () {
         return {
             // 前一个页面传过来的数据包名称
@@ -137,17 +148,17 @@ export default {
                 {
                     id: 1,
                     name: '数据库表',
-                    path: '/datalink'
+                    path: 'DatabaseConn'
                 },
                 {
                     id: 2,
                     name: '上传文件',
-                    path: '/uploadfiles'
+                    path: 'UpLoadFiles'
                 },
                 {
                     id: 3,
                     name: '自助数据集',
-                    path: '/datalink'
+                    path: 'SelfData'
                 },
             ],
             // 左侧表名
@@ -264,11 +275,17 @@ export default {
         }
     },
     created () {
-        this.folder = this.$route.query.folder
+        // this.folder = this.$route.query.folder
+        this.folder = this.$route.params.folder
     },
     methods: {
         nextPage (path) {
-            this.$router.push(path)
+            this.$router.push({
+                name: path,
+                params: {
+                    isShow: true
+                }
+            })
         },
         previousPage () {
             this.$router.go(-1)
@@ -287,6 +304,4 @@ export default {
 .outline-right {
     border-right: 1px solid #25354d;
 }
-
-
 </style>
