@@ -9,7 +9,7 @@
             <!-- 所选表名 -->
             <v-list-item>
                 <v-icon class="mr-4"
-                        @click="previousPage()">mdi-chevron-left</v-icon>
+                        @click="toDatapage()">mdi-chevron-left</v-icon>
                 <v-list-item-title class="title">{{folder.name}}</v-list-item-title>
             </v-list-item>
 
@@ -59,11 +59,6 @@
 
                             </v-list-item-content>
 
-                            <!-- <v-list-item-action>
-                        <v-btn icon>
-                            <v-icon color="grey lighten-1">mdi-information</v-icon>
-                        </v-btn>
-                    </v-list-item-action> -->
                         </v-list-item>
                     </v-list-item-group>
 
@@ -177,6 +172,7 @@ export default {
                 },
             ],
             // 静态表格
+            // 表头
             headers: [
                 {
                     text: 'Dessert (100g serving)',
@@ -190,6 +186,7 @@ export default {
                 { text: 'Protein (g)', value: 'protein' },
                 { text: 'Iron (%)', value: 'iron' },
             ],
+            // 记录
             desserts: [
                 {
                     name: 'Frozen Yogurt',
@@ -275,8 +272,9 @@ export default {
         }
     },
     created () {
-        // this.folder = this.$route.query.folder
-        this.folder = this.$route.params.folder
+        // 从本地缓存中取出数据包对象
+        var param = localStorage.getItem("folder")
+        this.folder = JSON.parse(param)
     },
     methods: {
         nextPage (path) {
@@ -284,15 +282,14 @@ export default {
                 name: path,
                 params: {
                     isShow: true,
-                    folder: this.folder
                 }
             })
         },
         /**
-         * 返回上一级
+         * 返回数据集界面
          */
-        previousPage () {
-            this.$router.go(-1)
+        toDatapage () {
+            this.$router.push('/data')
         }
     },
 }

@@ -187,10 +187,12 @@ import mysql_mini from '../../assets/pic/mini/MySQL.png'
 import postgresql_mini from '../../assets/pic/mini/Postgresql.png'
 export default {
     name: 'DatabaseConn',
-    created() {
-        // 接收添加表页面传来的数据
+    created () {
+        // 接收添加表页面传来的数据 => 是否显示返回按钮
         this.isShow = this.$route.params.isShow
-        this.folder = this.$route.params.folder
+        // 从本地缓存中取出数据包对象
+        var param = localStorage.getItem("folder")
+        this.folder = JSON.parse(param)
     },
     data: () => ({
         // 是否禁用 “新建连接” 按钮
