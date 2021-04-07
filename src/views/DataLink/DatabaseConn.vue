@@ -218,16 +218,18 @@ import sqlserver_mini from '../../assets/pic/mini/SQLServer.png'
 export default {
     name: 'DatabaseConn',
     created () {
-        // 接收添加表页面传来的数据
+        // 接收添加表页面传来的数据 => 是否显示返回按钮
         this.isShow = this.$route.params.isShow
-        this.folder = this.$route.params.folder
+        // 从本地缓存中取出数据包对象
+        var param = localStorage.getItem("folder")
+        this.folder = JSON.parse(param)
     },
     data: () => ({
         // 是否显示返回图标
         isShow: false,
         // 添加表页面传来的数据
         folder: '',
-        
+
         selectedItem: null,
         // 历史连接数组对象
         historyConnArr: [

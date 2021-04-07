@@ -39,7 +39,7 @@ export default {
             items: [
                 { title: '数据集', icon: 'mdi-link-variant', path: '/data' },
                 { title: '数据连接', icon: 'mdi-database', path: '/datalink' },
-                { title: '仪表盘', icon: 'mdi-view-dashboard', path: '/dashboard' },
+                { title: '仪表盘板', icon: 'mdi-view-dashboard', path: '/dashboard' },
             ],
             clipped: false,
         }

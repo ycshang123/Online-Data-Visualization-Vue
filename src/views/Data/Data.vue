@@ -123,13 +123,12 @@ export default {
         cleantext () {
             this.folderName = ''
         },
-        // 跳转页面 => 路由传参
+        // 数据包的点击事件 => 跳转页面、缓存数据包对象到本地
         nextPage (index) {
+            // 将所点击的数据包对象存到本地缓存
+            localStorage.setItem("folder", JSON.stringify(this.folders[index]))
             this.$router.push({
                 name: "AddTable",
-                params: {
-                    folder: this.folders[index],
-                }
             })
         }
     },

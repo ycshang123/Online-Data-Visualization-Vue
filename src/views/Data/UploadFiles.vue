@@ -142,9 +142,11 @@ import { uloadFilesApi } from '../../common/api/select'
 export default {
     name: 'UpLoadFiles',
     created () {
-        // 接收添加表页面传来的数据
+        // 接收添加表页面传来的数据 => 是否显示返回按钮
         this.isShow = this.$route.params.isShow
-        this.folder = this.$route.params.folder
+        // 从本地缓存中取出数据包对象
+        var param = localStorage.getItem("folder")
+        this.folder = JSON.parse(param)
     },
     data: () => {
         return {
@@ -153,7 +155,7 @@ export default {
             // 添加表页面传来的数据
             folder: '',
 
-            
+
             items: ['2021年航空数据', '2020年航空数据', '2019年航空数据'],
             number: 2,
             files: [],
