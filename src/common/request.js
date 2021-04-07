@@ -62,12 +62,16 @@ instance.interceptors.response.use(
     }
 )
 
-export function get (url, params) {
-    return instance.get(url, params)
+export async function get (url, params) {
+    return await instance.get(url, params)
 }
 
-export function post (url, params) {
-    return instance.post(url, params)
+export async function post (url, params) {
+    return await instance.post(url, params)
+}
+
+export async function put (url, params) {
+    return await instance.put(url, params)
 }
 
 

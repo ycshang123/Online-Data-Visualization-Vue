@@ -17,7 +17,17 @@
                 <v-divider style="width: 50px"></v-divider>
                 <v-card outlined flat style="user-select: none; cursor: pointer">新增列</v-card>
                 <v-divider style="width: 50px"></v-divider>
-                <v-card outlined flat style="user-select: none; cursor: pointer" v-ripple><v-icon>mdi-plus</v-icon></v-card>
+                <v-menu v-ripple offset-y>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-card v-bind="attrs" v-on="on" outlined flat style="cursor: pointer"><v-icon>mdi-plus</v-icon> </v-card>
+                    </template>
+
+                    <v-list>
+                        <v-list-item v-ripple v-for="(item, index) in addColArr" :key="index" style="cursor: pointer">
+                            <v-list-item-title>{{ item }}</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
             </div>
         </v-card>
 
@@ -73,6 +83,7 @@
 export default {
     data() {
         return {
+            addColArr: ['新增列', '过滤', '分组汇总', '字段设置', '排序'],
             headers: [
                 {
                     text: 'Dessert (100g serving)',
@@ -173,6 +184,9 @@ export default {
 }
 </script>
 <style scope lang="scss">
+* {
+    user-select: none;
+}
 .flow-btn-area {
     width: 30%;
 

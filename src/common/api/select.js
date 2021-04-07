@@ -8,11 +8,9 @@ import { get, post } from '../request'
  * @returns
  */
 export function test () {
-    console.log('Enter')
     return get('/select/test')
 }
 
 export function uloadFilesApi (arr) {
-    console.log("接收参数" + arr)
     return post('/select/uploadfile', arr)
 }
