@@ -37,7 +37,10 @@
                                @click="dialog.value = false">取消</v-btn>
                         <v-btn :disabled="folderName.length === 0"
                                text
-                               @click="dialog.value = false;addFolder()">确定</v-btn>
+                               @click="
+                                dialog.value = false
+                                addFolder()
+                            ">确定</v-btn>
                     </v-card-actions>
                 </v-card>
             </template>
@@ -56,7 +59,6 @@
                             medium>mdi-briefcase</v-icon>
                     <v-card-title class="subtitle-1"> {{ folder.name }}</v-card-title>
                 </v-card>
-
             </v-col>
         </v-row>
     </v-card>
@@ -101,9 +103,7 @@ export default {
             ],
         }
     },
-    watch: {
-
-    },
+    watch: {},
     created () { },
     methods: {
         // 添加数据包的确定按钮点击事件

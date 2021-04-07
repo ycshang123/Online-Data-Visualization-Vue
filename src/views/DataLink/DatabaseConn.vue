@@ -218,13 +218,16 @@ import sqlserver_mini from '../../assets/pic/mini/SQLServer.png'
 export default {
     name: 'DatabaseConn',
     created () {
+        // 接收添加表页面传来的数据
         this.isShow = this.$route.params.isShow
-        console.log(this.isShow)
+        this.folder = this.$route.params.folder
     },
     data: () => ({
         // 是否显示返回图标
         isShow: false,
-
+        // 添加表页面传来的数据
+        folder: '',
+        
         selectedItem: null,
         // 历史连接数组对象
         historyConnArr: [
@@ -443,10 +446,15 @@ export default {
         },
 
         /**
-         * 返回上一级
+         * 返回添加表页面
          */
         previousPage () {
-            this.$router.go(-1)
+            this.$router.push({
+                name: 'AddTable',
+                params: {
+                    folder: this.folder
+                }
+            })
         }
     },
 }

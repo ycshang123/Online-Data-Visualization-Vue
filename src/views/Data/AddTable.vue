@@ -283,16 +283,18 @@ export default {
             this.$router.push({
                 name: path,
                 params: {
-                    isShow: true
+                    isShow: true,
+                    folder: this.folder
                 }
             })
         },
+        /**
+         * 返回上一级
+         */
         previousPage () {
             this.$router.go(-1)
         }
     },
-
-
 }
 </script>
 
@@ -300,7 +302,6 @@ export default {
 .pcolor {
     color: #25354d;
 }
-
 .outline-right {
     border-right: 1px solid #25354d;
 }
