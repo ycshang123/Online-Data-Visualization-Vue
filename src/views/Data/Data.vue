@@ -19,7 +19,7 @@
                             class="mr-4">mdi-folder-plus</v-icon>新建数据包
                 </v-btn>
             </template>
-            <!-- 数据包名称弹框 -->
+            <!-- 数据包命名弹框 -->
             <template v-slot:default="dialog">
                 <v-card>
                     <v-toolbar :color="pcolor"
@@ -46,13 +46,13 @@
             </template>
         </v-dialog>
 
-        <!-- 存在历史数据集，展示列表 -->
+        <!-- 存在数据集，展示列表 -->
         <v-row class="d-flex mt-10">
             <v-col cols="3"
                    v-for="(folder, index) in folders"
                    :key="index"
-                   class="d-flex justify-center">
-                <v-card class="d-inline-block d-flex justify-center align-center"
+                   class="d-flex justify-start">
+                <v-card class="d-inline-block d-flex justify-start align-center ml-10"
                         min-width="50%"
                         @click="nextPage(index)">
                     <v-icon class="ml-4 pcolor"
@@ -84,27 +84,29 @@ export default {
                     id: '1',
                     name: '2021年航空数据',
                 },
-                {
-                    id: '2',
-                    name: '2019年航空数据',
-                },
-                {
-                    id: '3',
-                    name: '2018年航空数据',
-                },
-                {
-                    id: '4',
-                    name: '2017年航空数据',
-                },
-                {
-                    id: '5',
-                    name: '2090年航空数据',
-                },
+                // {
+                //     id: '2',
+                //     name: '2019年航空数据',
+                // },
+                // {
+                //     id: '3',
+                //     name: '2018年航空数据',
+                // },
+                // {
+                //     id: '4',
+                //     name: '2017年航空数据',
+                // },
+                // {
+                //     id: '5',
+                //     name: '2090年航空数据',
+                // },
             ],
         }
     },
     watch: {},
-    created () { },
+    created () {
+        console.log('数据集：' + this.folders)
+    },
     methods: {
         // 添加数据包的确定按钮点击事件
         addFolder () {
@@ -118,6 +120,8 @@ export default {
                 folders.push(folder)
                 console.log(this.folders)
             }
+            // 将创建的数据包存到本地
+            localStorage.setItem('folders', JSON.stringify(this.folders))
         },
         // 添加数据包按钮点击事件 => 清除文本
         cleantext () {

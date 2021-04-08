@@ -17,19 +17,19 @@
                             class="ml-1 mr-1"
                             v-show="isShow"
                             @click="previousPage()">mdi-chevron-left</v-icon>
-                    <!-- <v-spacer></v-spacer> -->
 
+                    <v-spacer></v-spacer>
                     <!-- 新建连接按钮 -->
                     <v-btn depressed
                            color="blue lighten-3"
-                           width="180"
+                           width="180px"
                            :disabled="!(isSQLArea === false && isConnectArea === false)"
                            @click="changeSQLArea()">
                         <v-icon dark
                                 class="mr-4">mdi-plus</v-icon>
                         <span>新 建 连 接</span>
                     </v-btn>
-                    <!-- <v-spacer></v-spacer> -->
+                    <v-spacer></v-spacer>
                 </v-card>
 
                 <!-- 历史连接 -->

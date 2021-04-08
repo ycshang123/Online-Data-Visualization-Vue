@@ -43,8 +43,8 @@
                 <!-- 循环的这一行 -->
                 <v-list dense>
                     <v-list-item-group>
-                        <v-list-item v-for="folder in folders"
-                                     :key="folder.title">
+                        <v-list-item v-for="table in tables"
+                                     :key="table.title">
                             <!-- 行左侧图标 -->
                             <v-list-item-avatar size="20">
                                 <v-icon x-small
@@ -56,18 +56,17 @@
                             <!-- 行右侧表名 -->
                             <v-list-item-content>
                                 <v-list-item-title v-text="folder.title"></v-list-item-title>
-
                             </v-list-item-content>
 
                         </v-list-item>
                     </v-list-item-group>
-
                 </v-list>
             </div>
         </div>
 
         <!-- 右侧数据表预览部分 -->
-        <v-main style="height: 100%;"
+        <v-main v-if="tables.length !== 0"
+                style="height: 100%;"
                 class="pt-3">
             <!-- 工具栏 -->
             <v-card flat
@@ -134,6 +133,7 @@ export default {
     name: 'AddTable',
     data () {
         return {
+            tips: '请添加表',
             // 前一个页面传过来的数据包名称
             folder: {},
             // 数据表-搜索的关键字
@@ -157,19 +157,19 @@ export default {
                 },
             ],
             // 左侧表名
-            folders: [
-                {
-                    subtitle: 'Jan 9, 2014',
-                    title: '一月全国数据表',
-                },
-                {
-                    subtitle: 'Jan 17, 2014',
-                    title: '二月全国数据表',
-                },
-                {
-                    subtitle: 'Jan 28, 2014',
-                    title: '三月全国数据表',
-                },
+            tables: [
+                // {
+                //     subtitle: 'Jan 9, 2014',
+                //     title: '一月全国数据表',
+                // },
+                // {
+                //     subtitle: 'Jan 17, 2014',
+                //     title: '二月全国数据表',
+                // },
+                // {
+                //     subtitle: 'Jan 28, 2014',
+                //     title: '三月全国数据表',
+                // },
             ],
             // 静态表格
             // 表头
