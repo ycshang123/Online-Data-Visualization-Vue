@@ -187,11 +187,11 @@ import mysql_mini from '../../assets/pic/mini/MySQL.png'
 import postgresql_mini from '../../assets/pic/mini/Postgresql.png'
 export default {
     name: 'DatabaseConn',
-    created () {
+    created() {
         // 接收添加表页面传来的数据 => 是否显示返回按钮
         this.isShow = this.$route.params.isShow
         // 从本地缓存中取出数据包对象
-        var param = localStorage.getItem("folder")
+        var param = localStorage.getItem('folder')
         this.folder = JSON.parse(param)
     },
     data: () => ({
@@ -304,7 +304,7 @@ export default {
         /**
          * 测试连接 按钮的方法
          */
-        testConn() {
+        async testConn() {
             switch (this.connSQL.sqlType) {
                 case 'MySQL':
                 case 'PostgreSQL':
@@ -318,7 +318,7 @@ export default {
                         this.connSQL.password
                     ) {
                         // 第二步，调用 api 测试
-                        changeDatabase(this.connSQL).then((res) => {
+                        await changeDatabase(this.connSQL).then((res) => {
                             if (res.code === 200) {
                                 this.testConnStatus = true
                                 // 第三步，追加一个成功提示

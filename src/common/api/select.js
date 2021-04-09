@@ -11,6 +11,6 @@ export function test () {
     return get('/select/test')
 }
 
-export async function uloadFilesApi (arr) {
-    return await post('/select/uploadFile', arr)
+export function uloadFilesApi (arr) {
+    return post('/select/uploadFile', arr)
 }
