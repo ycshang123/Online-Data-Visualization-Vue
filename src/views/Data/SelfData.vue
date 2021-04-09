@@ -2,15 +2,17 @@
     <div class="">
         <!-- 上半区域 -->
         <v-card style="height: 20%" class="pa-2" tile outlined flat>
-            <div class="d-flex justify-space-between align-center">
-                <v-col class="d-flex">
-                    <div class="text-body">表名</div>
-                    <v-card outlined flat min-width="200" max-width="300" class="text-center ml-12"> 客公里表 </v-card>
+            <v-card class="d-flex justify-space-between align-center" height="60" tile elevation="0">
+                <v-col class="d-flex align-center justify-space-around" cols="5">
+                    <span>表名:</span>
+                    <v-col cols="10">
+                        <v-text-field placeholder="请输入新增表名" />
+                    </v-col>
                 </v-col>
                 <v-col class="d-flex justify-space-between" cols="2">
                     <v-btn color="indigo lighten-2">取消</v-btn><v-btn color="deep-purple lighten-2">保存</v-btn>
                 </v-col>
-            </div>
+            </v-card>
 
             <div class="flow-btn-area mt-3 d-flex align-center">
                 <v-card text outlined flat style="user-select: none; cursor: pointer">选字段</v-card>
@@ -196,7 +198,6 @@ export default {
         align-items: center;
         width: 100px;
         height: 40px;
-        // margin-right: 10px;
     }
 }
 </style>

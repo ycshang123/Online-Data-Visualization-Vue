@@ -39,8 +39,7 @@
                                text
                                @click="
                                 dialog.value = false
-                                addFolder()
-                            ">确定</v-btn>
+                                addFolder()">确定</v-btn>
                     </v-card-actions>
                 </v-card>
             </template>
