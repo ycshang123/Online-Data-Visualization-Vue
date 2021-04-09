@@ -1,6 +1,6 @@
 <template>
     <!-- 若空数据集，新建数据包 -->
-    <v-card class="mt-10"
+    <v-card class="pt-10"
             elevation="0">
         <v-dialog persistent
                   transition="dialog-bottom-transition"
