@@ -81,7 +81,7 @@
     </div>
 </template>
 
-<style lang="scss" scope>
+<style lang="scss" scoped>
 .v-card {
     padding: 8px 8px 8px 8px;
 }

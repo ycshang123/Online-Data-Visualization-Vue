@@ -1,11 +1,10 @@
 <template>
-    <!-- 若空数据集，新建数据包 -->
+    <!-- 新建数据包 -->
     <v-card class="pt-10"
             elevation="0">
         <v-dialog persistent
                   transition="dialog-bottom-transition"
-                  max-width="600"
-                  class="">
+                  max-width="600">
             <!-- 按钮 -->
             <template v-slot:activator="{ on, attrs }">
                 <v-btn :color="pcolor"
@@ -13,6 +12,7 @@
                        v-bind="attrs"
                        v-on="on"
                        class="ml-10"
+                       style="opacity: 0.9"
                        @click="cleantext()">
                     <v-icon color="whilte"
                             medium
@@ -22,7 +22,7 @@
             <!-- 数据包命名弹框 -->
             <template v-slot:default="dialog">
                 <v-card>
-                    <v-toolbar :color="pcolor"
+                    <v-toolbar color="#25354d"
                                dark>新建数据包</v-toolbar>
                     <v-col cols="12">
                         <v-form>
@@ -45,7 +45,7 @@
             </template>
         </v-dialog>
 
-        <!-- 存在数据集，展示列表 -->
+        <!-- 展示所有数据集 -->
         <v-row class="d-flex mt-10">
             <v-col cols="3"
                    v-for="(folder, index) in folders"
