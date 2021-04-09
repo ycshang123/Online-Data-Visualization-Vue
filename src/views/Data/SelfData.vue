@@ -13,12 +13,16 @@
                     <v-btn color="indigo lighten-2">取消</v-btn><v-btn color="deep-purple lighten-2">保存</v-btn>
                 </v-col>
             </v-card>
-
+            <!-- 选择顺序 -->
             <div class="flow-btn-area mt-3 d-flex align-center">
-                <v-card text outlined flat style="user-select: none; cursor: pointer">选字段</v-card>
-                <v-divider style="width: 50px"></v-divider>
-                <v-card outlined flat style="user-select: none; cursor: pointer">新增列</v-card>
-                <v-divider style="width: 50px"></v-divider>
+                <!-- 动态按钮 -->
+                <v-card v-for="(item, index) in newColArr" :key="index" width="150" tile flat>
+                    <v-card text outlined flat style="user-select: none; cursor: pointer">
+                        {{ item }}
+                    </v-card>
+                    <span>————</span>
+                </v-card>
+                <!-- 加号按钮下面的菜单栏 -->
                 <v-menu v-ripple offset-y>
                     <template v-slot:activator="{ on, attrs }">
                         <v-card v-bind="attrs" v-on="on" outlined flat style="cursor: pointer"><v-icon>mdi-plus</v-icon> </v-card>
@@ -26,7 +30,7 @@
 
                     <v-list>
                         <v-list-item v-ripple v-for="(item, index) in addColArr" :key="index" style="cursor: pointer">
-                            <v-list-item-title>{{ item }}</v-list-item-title>
+                            <v-list-item-title @click="addBtn(index)">{{ item }}</v-list-item-title>
                         </v-list-item>
                     </v-list>
                 </v-menu>
@@ -39,44 +43,35 @@
             <v-col class="pa-0" cols="2">
                 <v-card tile flat class="pa-2" height="100%" outlined>
                     <div class="text-subtitle-1">数据列表/2020航空数据</div>
-
-                    <div class="mt-4">
-                        <div class="text-body-2 mb-2">一月数据表</div>
-                        <div class="text-body-2 mb-2">二月数据表</div>
-                        <div class="text-body-2 mb-2">三月数据表</div>
-                        <div class="text-body-2 mb-2">四月数据表</div>
-                        <div class="text-body-2 mb-2">五月数据表</div>
-                        <div class="text-body-2 mb-2">全年月度数据表</div>
+                    <div v-for="(item, index) in tableList" :key="index" class="mt-4">
+                        <div class="text-body-2 mb-2 ml-3" @click="selectListContent(index)">{{ item }}</div>
                     </div>
                 </v-card>
             </v-col>
             <!-- 字段添加区域 -->
             <v-col cols="2" class="pa-0">
                 <v-card class="pa-2 d-flex flex-column align-center" outlined flat tile style="height: 100%">
-                    <v-card
-                        v-ripple
-                        class="d-flex justify-center align-center"
-                        outlined
-                        tile
-                        flat
-                        width="120"
-                        height="35"
-                        style="user-select: none; cursor: pointer"
-                        >全部添加</v-card
-                    >
-
-                    <v-col cols="7" class="pa-0 mt-4">
-                        <div class="text-body-2 mb-2">承运日期</div>
-                        <div class="text-body-2 mb-2">出发城市</div>
-                        <div class="text-body-2 mb-2">出发机场</div>
-                        <div class="text-body-2 mb-2">到达城市</div>
-                        <div class="text-body-2 mb-2">客公里</div>
+                    <v-card width="100%" class="d-flex align-center justify-space-between" tile elevation="0">
+                        <v-btn @click="chooseAllColumn()" v-if="status">全选</v-btn>
+                        <v-btn v-else @click="notChoose()">取消全选</v-btn>
+                        <v-btn>确定添加</v-btn>
+                    </v-card>
+                    <v-col cols="12">
+                        <div
+                            v-for="(item, index) in listContent"
+                            :key="index"
+                            class="d-flex align-center justify-start"
+                            style="height: 30px"
+                        >
+                            <v-checkbox @click.stop="chooseColumn(index)" v-model="item.checked"></v-checkbox>
+                            <span>{{ item.content }}</span>
+                        </div>
                     </v-col>
                 </v-card>
             </v-col>
 
             <v-col cols="8" class="">
-                <v-data-table :headers="headers" :items="desserts" :items-per-page="9" class="elevation-1"></v-data-table>
+                <v-data-table :headers="this.chooseList" class="elevation-1"></v-data-table>
             </v-col>
         </div>
     </div>
@@ -99,89 +94,84 @@ export default {
                 { text: 'Protein (g)', value: 'protein' },
                 { text: 'Iron (%)', value: 'iron' },
             ],
-            desserts: [
-                {
-                    name: 'Frozen Yogurt',
-                    calories: 159,
-                    fat: 6.0,
-                    carbs: 24,
-                    protein: 4.0,
-                    iron: '1%',
-                },
-                {
-                    name: 'Ice cream sandwich',
-                    calories: 237,
-                    fat: 9.0,
-                    carbs: 37,
-                    protein: 4.3,
-                    iron: '1%',
-                },
-                {
-                    name: 'Eclair',
-                    calories: 262,
-                    fat: 16.0,
-                    carbs: 23,
-                    protein: 6.0,
-                    iron: '7%',
-                },
-                {
-                    name: 'Cupcake',
-                    calories: 305,
-                    fat: 3.7,
-                    carbs: 67,
-                    protein: 4.3,
-                    iron: '8%',
-                },
-                {
-                    name: 'Gingerbread',
-                    calories: 356,
-                    fat: 16.0,
-                    carbs: 49,
-                    protein: 3.9,
-                    iron: '16%',
-                },
-                {
-                    name: 'Jelly bean',
-                    calories: 375,
-                    fat: 0.0,
-                    carbs: 94,
-                    protein: 0.0,
-                    iron: '0%',
-                },
-                {
-                    name: 'Lollipop',
-                    calories: 392,
-                    fat: 0.2,
-                    carbs: 98,
-                    protein: 0,
-                    iron: '2%',
-                },
-                {
-                    name: 'Honeycomb',
-                    calories: 408,
-                    fat: 3.2,
-                    carbs: 87,
-                    protein: 6.5,
-                    iron: '45%',
-                },
-                {
-                    name: 'Donut',
-                    calories: 452,
-                    fat: 25.0,
-                    carbs: 51,
-                    protein: 4.9,
-                    iron: '22%',
-                },
-                {
-                    name: 'KitKat',
-                    calories: 518,
-                    fat: 26.0,
-                    carbs: 65,
-                    protein: 7,
-                    iron: '6%',
-                },
+            content: '',
+            newColArr: ['选字段'],
+            tableList: ['一月数据表', '二月数据表', '三月数据表', '四月数据表', '五月数据表'],
+            listsContent: [
+                [
+                    { content: '承运日期', checked: false },
+                    { content: '出发日期', checked: false },
+                    { content: '出发机场', checked: false },
+                    { content: '到达城市', checked: false },
+                    { content: '客公里', checked: false },
+                    { content: '承运日期', checked: false },
+                    { content: '出发日期', checked: false },
+                ],
+                [{ content: '二月数据表内容', checked: false }],
+                [{ content: '三月数据表内容', checked: false }],
+                [{ content: '四月数据表内容', checked: false }],
+                [{ content: '五月数据表内容', checked: false }],
             ],
+            listContent: null,
+            chooseList: [],
+            status: true,
         }
+    },
+    methods: {
+        // 动态按钮的实现
+        addBtn(index) {
+            this.content = this.addColArr[index]
+            if (this.newColArr.indexOf(this.content) == -1) {
+                this.newColArr.push(this.content)
+            } else {
+                alert('不可以重复添加')
+            }
+            console.log(this.newColArr)
+        },
+        // 查询数据库中的表
+        selectListContent(index) {
+            this.listContent = this.listsContent[index]
+        },
+        // 选择表头
+        chooseColumn(index) {
+            var header = { text: '' }
+            if (this.listContent[index].checked == true) {
+                header.text = this.listContent[index].content
+                this.chooseList.push(header)
+            } else {
+                this.chooseList.pop(header)
+            }
+            console.log(this.chooseList)
+        },
+        // 全选
+        chooseAllColumn() {
+            var header = { text: '' }
+            this.status = !this.status
+            this.listContent.forEach((item) => {
+                item.checked = true
+                if (item.checked == true) {
+                    header.text = item.content
+                    this.chooseList.push(header)
+                } else {
+                    this.chooseList.pop(header)
+                }
+            })
+            console.log(this.listsContent)
+        },
+        // 取消全选
+        notChoose() {
+            var header = { text: '' }
+            this.status = !this.status
+            this.listContent.forEach((item) => {
+                item.checked = false
+                if (item.checked == true) {
+                    header = item.content
+                    this.chooseList.push(header)
+                } else {
+                    this.chooseList.pop(header)
+                }
+            })
+        },
     },
 }
 </script>
@@ -190,8 +180,6 @@ export default {
     user-select: none;
 }
 .flow-btn-area {
-    width: 30%;
-
     .v-card {
         display: flex;
         justify-content: center;
