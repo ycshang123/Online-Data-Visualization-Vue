@@ -1,7 +1,8 @@
 <template>
-    <!-- 新建数据包 -->
+
     <v-card class="pt-10"
             elevation="0">
+        <!-- 新建数据包 -->
         <v-dialog persistent
                   transition="dialog-bottom-transition"
                   max-width="600">

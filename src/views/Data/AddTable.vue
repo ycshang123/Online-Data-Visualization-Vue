@@ -152,48 +152,71 @@
             </v-card>
 
             <!-- 被选中的连接里所有的表 -->
-            <div v-show="isShowOther">
-                <v-card flat
-                        tile
-                        class="">
-                    <!-- 工具栏 -->
-                    <v-card-title style="height: 10%"
-                                  class="pt-2">
-                        <!-- 表名图标 -->
-                        <v-btn icon
-                               x-small
-                               class="mr-2">
-                            <v-img width="10"
-                                   :src="conn.avatar"></v-img>
-                        </v-btn>
-                        <!-- 连接名 -->
-                        {{conn.text}}
+            <v-card v-show="isShowOther"
+                    flat
+                    tile
+                    class="">
+                <!-- 工具栏 -->
+                <v-card-title style="height: 10%"
+                              class="pt-2">
+                    <!-- 表名图标 -->
+                    <v-btn icon
+                           x-small
+                           class="mr-2">
+                        <v-img width="10"
+                               :src="conn.avatar"></v-img>
+                    </v-btn>
+                    <!-- 连接名 -->
+                    {{conn.text}}
 
-                        <!-- 空间填充 -->
-                        <v-spacer></v-spacer>
+                    <!-- 空间填充 -->
+                    <v-spacer></v-spacer>
+                    <!-- 已选择（）项 -->
+                    <v-card flat class="d-flex align-center mr-4" max-height="40">
+                        <v-card-subtitle>已选择{{selectedTables.length}}项</v-card-subtitle>
+                    </v-card>
+                    <!-- 取消和确定按钮 -->
+                    <v-card flat
+                            class="d-flex px-2"
+                            width="20%">
+                        <v-btn small
+                               dark
+                               width="80"
+                               class="mr-8"
+                               color="#25354d"
+                               style="opacity:0.9"
+                               @click="isShowOther = false;selectedTables = []">取消</v-btn>
+                        <v-btn small
+                               dark
+                               width="80"
+                               color="#25354d"
+                               style="opacity:0.9">确定</v-btn>
+                    </v-card>
 
-                        <!-- 取消和确定按钮 -->
-                        <v-card flat
-                                class="d-flex px-2"
-                                width="20%">
-                            <v-btn small
-                                   dark
-                                   width="80"
-                                   class="mr-8"
-                                   color="#25354d"
-                                   style="opacity:0.9"
-                                   @click="isShowOther = false">取消</v-btn>
-                            <v-btn small
-                                   dark
-                                   width="80"
-                                   color="#25354d"
-                                   style="opacity:0.9">确定</v-btn>
-                        </v-card>
-
-                    </v-card-title>
-
-                </v-card>
-            </div>
+                </v-card-title>
+                <!-- 连接中所有的表 -->
+                <v-main>
+                    <v-row class="d-flex mt-10">
+                        <v-col cols="3"
+                               v-for="(item, index) in connTables"
+                               :key="index"
+                               class="d-flex justify-start"
+                               @click="selectTable(item)">
+                            <v-btn class="px-1 d-inline-block d-flex justify-start align-center ml-10 "
+                                   min-width="50%"
+                                   max-height="40"
+                                   elevation="1"
+                                   outlined=""
+                                   color="#3d557c">
+                                <v-icon class="ml-4 "
+                                        color="#3d557c"
+                                        medium>mdi-table</v-icon>
+                                <v-card-title class="subtitle-1">{{ item.name }}</v-card-title>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-main>
+            </v-card>
         </v-main>
 
     </div>
@@ -250,6 +273,23 @@ export default {
                 //     title: '三月全国数据表',
                 // },
             ],
+            // 选中连接中所有的表
+            connTables: [
+                {
+                    id: '0',
+                    name: '一月全国数据表',
+                },
+                {
+                    id: '1',
+                    name: '二月全国数据表',
+                },
+                {
+                    id: '2',
+                    name: '三月全国数据表',
+                },
+            ],
+            // 被选中的表
+            selectedTables: [],
             /**
              * 静态表格
              */
@@ -372,6 +412,15 @@ export default {
         //         }
         //     })
         // },
+
+        /**
+         * 表按钮的点击事件 => 选择表
+         */
+        selectTable (o) {
+            console.log('sajfg')
+            this.selectedTables.push(o)
+            console.log(this.selectedTables)
+        },
 
         /**
          * 连接名的点击事件
