@@ -19,11 +19,6 @@ const routes = [
         redirect: '/addcolumn',
         children: [
             {
-                path: "/addcolumn",
-                name: "AddColumn",
-                component: () => import('../views/Data/AddColumn.vue')
-            },
-            {
                 path: "/data",
                 name: "Data",
                 component: Data
