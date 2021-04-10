@@ -211,51 +211,19 @@ export default {
             { text: 'connection-3visualization', avatar: require('../../assets/pic/miniSqlLogo/SQLServer.png') },
         ],
         options: [
-            {
-                id: 0,
-                cover: 'https://image.16pic.com/00/18/81/16pic_1881896_s.jpg?imageView2/0/format/png',
-                name: 'Oracle',
-            },
-            {
-                id: 1,
-                cover: 'https://img.stackshare.io/service/3093/EhcacheTwitterIcon.png',
-                name: 'Ehcache',
-            },
-            {
-                id: 2,
-                cover: 'http://installvirtual.com/wp-content/uploads/2015/11/postgresql-logo.png',
-                name: 'PostgreSQL',
-            },
+            { id: 0, cover: 'https://image.16pic.com/00/18/81/16pic_1881896_s.jpg?imageView2/0/format/png', name: 'Oracle' },
+            { id: 1, cover: 'https://img.stackshare.io/service/3093/EhcacheTwitterIcon.png', name: 'Ehcache' },
+            { id: 2, cover: 'http://installvirtual.com/wp-content/uploads/2015/11/postgresql-logo.png', name: 'PostgreSQL' },
             {
                 id: 3,
                 cover: 'https://www.datalytic-solutions.com/wp-content/uploads/2019/09/logo-microsoft-sql-server-595x3350.jpg',
                 name: 'SQLServer',
             },
-            {
-                id: 4,
-                cover: 'https://pic1.zhimg.com/v2-754e01e49836a295574661a188161775_r.jpg?source=172ae18b',
-                name: 'MySQL',
-            },
-            {
-                id: 5,
-                cover: 'https://i.pinimg.com/originals/11/a0/6a/11a06a7b4650699a328e25960efbe8af.jpg',
-                name: 'DB2',
-            },
-            {
-                id: 6,
-                cover: 'https://download.logo.wine/logo/Redis/Redis-Logo.wine.png',
-                name: 'Redis',
-            },
-            {
-                id: 7,
-                cover: 'https://miro.medium.com/max/900/1*b0TtGI6gWFLltL1QkRxVdg.png',
-                name: 'MongoDB',
-            },
-            {
-                id: 8,
-                cover: 'https://www.cmsdistribution.com/wp-content/uploads/2017/06/EDB_Logo-175-x-131px-436x228.png',
-                name: 'EDB',
-            },
+            { id: 4, cover: 'https://pic1.zhimg.com/v2-754e01e49836a295574661a188161775_r.jpg?source=172ae18b', name: 'MySQL' },
+            { id: 5, cover: 'https://i.pinimg.com/originals/11/a0/6a/11a06a7b4650699a328e25960efbe8af.jpg', name: 'DB2' },
+            { id: 6, cover: 'https://download.logo.wine/logo/Redis/Redis-Logo.wine.png', name: 'Redis' },
+            { id: 7, cover: 'https://miro.medium.com/max/900/1*b0TtGI6gWFLltL1QkRxVdg.png', name: 'MongoDB' },
+            { id: 8, cover: 'https://www.cmsdistribution.com/wp-content/uploads/2017/06/EDB_Logo-175-x-131px-436x228.png', name: 'EDB' },
         ],
         // 控制数据库选择界面
         isSQLArea: false,

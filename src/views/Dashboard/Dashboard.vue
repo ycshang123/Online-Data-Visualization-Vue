@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- 上半区域 -->
-        <v-card style="height: 8%" flat outlined class="d-flex align-center">
+        <v-card style="height: 8%" flat tile outlined class="d-flex align-center">
             <v-row no-gutters justify="space-between">
                 <v-col cols="4" class="d-flex align-center">
                     <div class="text-h6">一月座客率</div>
@@ -26,25 +26,18 @@
                     </div>
                 </v-col>
                 <v-col cols="1 d-flex justify-end">
-                    <v-btn class="blue-grey lighten-1 white--text">进入仪表板</v-btn>
+                    <v-btn to="/object" class="blue-grey lighten-1 white--text">进入仪表板</v-btn>
                 </v-col>
             </v-row>
         </v-card>
 
         <!-- 下半区域 -->
-        <div class="d-flex" style="height: 92%">
+        <div class="d-flex" style="height: 92%; width: 100%">
             <!-- 左 -->
             <v-col cols="2 red pa-0">
                 <v-card height="100%" class="pa-0" tile flat>
                     <!-- 顶部标题 -->
-                    <v-card
-                        height="6%"
-                        tile
-                        flat
-                        class="d-flex align-center justify-space-between"
-                        outlined
-                        :style="this.GLOBAL.data().borderBottom"
-                    >
+                    <v-card height="6%" tile flat class="d-flex align-center justify-space-between" v-borderBottom>
                         <div>一月航空数据表</div>
                         <!-- 按钮组 -->
                         <div>
@@ -57,7 +50,7 @@
                         </div>
                     </v-card>
                     <!-- 维度 -->
-                    <v-card height="47%" tile flat outlined :style="this.GLOBAL.data().borderBottom">
+                    <v-card height="47%" tile flat v-borderBottom>
                         <div>维度</div>
                         <div class="mt-4 overflow-y-auto overflow-x-hidden">
                             <v-card
@@ -104,7 +97,7 @@
 
             <!-- 中 -->
             <v-col cols="2 pa-0">
-                <v-card height="100%" tile flat outlined class="pa-0">
+                <v-card height="100%" tile flat v-borderLR class="pa-0">
                     <v-card tile flat height="30%">
                         <div>图表类型</div>
                         <v-card class="mt-3 overflow-y-auto overflow-x-hidden" tile outlined flat height="80%">
@@ -130,30 +123,22 @@
                             </v-row>
                         </v-card>
                     </v-card>
-                    <v-card tile flat height="70%" class="pa-0" outlined :style="this.GLOBAL.data().borderTB">
+                    <v-card tile flat height="70%" class="pa-0" v-borderTop>
                         <v-card flat tile class="pa-0" height="8%">
                             <v-row no-gutters>
-                                <v-col cols="6">
-                                    <v-card
-                                        tile
-                                        flat
-                                        class="text-center"
-                                        style="cursor: pointer; user-select: none"
-                                        ripple
-                                        outlined
-                                        :style="this.GLOBAL.data().borderRight"
-                                    >
+                                <v-col cols="6 ">
+                                    <v-card tile flat class="text-center" v-cursor ripple v-borderRight>
                                         <div>图形属性</div>
                                     </v-card>
                                 </v-col>
                                 <v-col cols="6">
-                                    <v-card tile flat class="text-center" style="cursor: pointer; user-select: none" ripple>
+                                    <v-card tile flat class="text-center" v-cursor ripple>
                                         <div>组件样式</div>
                                     </v-card>
                                 </v-col>
                             </v-row>
                         </v-card>
-                        <v-card tile flat height="92%" outlined :style="this.GLOBAL.data().borderTop">
+                        <v-card tile flat height="92%" v-borderTop>
                             <v-card tile flat outlined class="pa-1 mb-4" style="cursor: pointer" ripple>颜色</v-card>
                             <v-card tile flat outlined class="pa-1 mb-4" style="cursor: pointer" ripple>大小</v-card>
                             <v-card tile flat outlined class="pa-1 mb-4" style="cursor: pointer" ripple>标签</v-card>
@@ -166,14 +151,7 @@
 
             <!-- 右 -->
             <v-col cols="8  pa-0">
-                <v-card
-                    class="d-flex flex-column justify-space-between"
-                    tile
-                    flat
-                    height="100%"
-                    outlined
-                    :style="this.GLOBAL.data().borderTB"
-                >
+                <v-card class="d-flex flex-column justify-space-between" tile flat height="100%">
                     <v-card class="" flat height="20%">
                         <v-row no-gutters align="center" class="">
                             <v-col cols="1">
@@ -290,51 +268,15 @@ export default {
         return {
             // 图标类型图标数组
             chartArr: [
-                {
-                    id: 0,
-                    type: '柱状图',
-                    icon: require('../../assets/pic/chart/bar.png'),
-                },
-                {
-                    id: 1,
-                    type: '饼图',
-                    icon: require('../../assets/pic/chart/pie.png'),
-                },
-                {
-                    id: 2,
-                    type: '折线图',
-                    icon: require('../../assets/pic/chart/line.png'),
-                },
-                {
-                    id: 3,
-                    type: '散点图',
-                    icon: require('../../assets/pic/chart/scatter.png'),
-                },
-                {
-                    id: 4,
-                    type: 'K 线图',
-                    icon: require('../../assets/pic/chart/candlestick.png'),
-                },
-                {
-                    id: 5,
-                    type: '雷达图',
-                    icon: require('../../assets/pic/chart/radar.png'),
-                },
-                {
-                    id: 6,
-                    type: '漏斗图',
-                    icon: require('../../assets/pic/chart/funnel.png'),
-                },
-                {
-                    id: 7,
-                    type: '仪表盘',
-                    icon: require('../../assets/pic/chart/gauge.png'),
-                },
-                {
-                    id: 8,
-                    type: '地图',
-                    icon: require('../../assets/pic/chart/map.png'),
-                },
+                { id: 0, type: '柱状图', icon: require('../../assets/pic/chart/bar.png') },
+                { id: 1, type: '饼图', icon: require('../../assets/pic/chart/pie.png') },
+                { id: 2, type: '折线图', icon: require('../../assets/pic/chart/line.png') },
+                { id: 3, type: '散点图', icon: require('../../assets/pic/chart/scatter.png') },
+                { id: 4, type: 'K 线图', icon: require('../../assets/pic/chart/candlestick.png') },
+                { id: 5, type: '雷达图', icon: require('../../assets/pic/chart/radar.png') },
+                { id: 6, type: '漏斗图', icon: require('../../assets/pic/chart/funnel.png') },
+                { id: 7, type: '仪表盘', icon: require('../../assets/pic/chart/gauge.png') },
+                { id: 8, type: '地图', icon: require('../../assets/pic/chart/map.png') },
             ],
             // -------------------图表------------------------
             width: 2,
@@ -355,37 +297,16 @@ export default {
             yIsDisabled: false,
             // 维度 内容数组
             dimensionalityArr: [
-                {
-                    id: 0,
-                    name: '承运日期',
-                },
-                {
-                    id: 1,
-                    name: '出发城市',
-                },
+                { id: 0, name: '承运日期' },
+                { id: 1, name: '出发城市' },
             ],
             // 指标 内容数组
             indicatorArr: [
-                {
-                    id: 0,
-                    name: '航段距离',
-                },
-                {
-                    id: 1,
-                    name: '可供座位',
-                },
-                {
-                    id: 2,
-                    name: '座客率',
-                },
-                {
-                    id: 3,
-                    name: '座公里',
-                },
-                {
-                    id: 4,
-                    name: '客公里',
-                },
+                { id: 0, name: '航段距离' },
+                { id: 1, name: '可供座位' },
+                { id: 2, name: '座客率' },
+                { id: 3, name: '座公里' },
+                { id: 4, name: '客公里' },
             ],
             // X 轴数组
             xAxisArr: [],
@@ -462,9 +383,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-* {
-    user-select: none;
-}
 .v-card {
     padding: 8px 8px 8px 8px;
 }

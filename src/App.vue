@@ -4,6 +4,10 @@
     </v-app>
 </template>
 <style>
+/* 所有文字都不允许被选择 */
+* {
+    user-select: none;
+}
 /* 所有按钮都变为手指头的样式 */
 .v-btn {
     cursor: pointer;
