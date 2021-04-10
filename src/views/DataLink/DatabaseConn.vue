@@ -183,8 +183,8 @@
 </template>
 <script>
 import { changeDatabase } from '../../common/api/database'
-import mysql_mini from '../../assets/pic/mini/MySQL.png'
-import postgresql_mini from '../../assets/pic/mini/Postgresql.png'
+import mysql_mini from '../../assets/pic/miniSqlLogo/MySQL.png'
+import postgresql_mini from '../../assets/pic/miniSqlLogo/Postgresql.png'
 export default {
     name: 'DatabaseConn',
     created() {
@@ -206,9 +206,9 @@ export default {
         selectedItem: null,
         // 历史连接数组对象
         historyConnArr: [
-            { text: 'connection-1connection', avatar: require('../../assets/pic/mini/MySQL.png') },
-            { text: 'connection-2apple', avatar: require('../../assets/pic/mini/Postgresql.png') },
-            { text: 'connection-3visualization', avatar: require('../../assets/pic/mini/SQLServer.png') },
+            { text: 'connection-1connection', avatar: require('../../assets/pic/miniSqlLogo/MySQL.png') },
+            { text: 'connection-2apple', avatar: require('../../assets/pic/miniSqlLogo/Postgresql.png') },
+            { text: 'connection-3visualization', avatar: require('../../assets/pic/miniSqlLogo/SQLServer.png') },
         ],
         options: [
             {

@@ -1,16 +1,12 @@
 <template>
     <!-- 先设置整体高度100%，撑满屏幕 -->
-    <div style="height: 100%"
-         class="d-flex">
-
+    <div style="height: 100%" class="d-flex">
         <!-- 左侧列表部分 -->
         <div style="height: 100%; width: 19%; border-right: 0.5px solid #e0e0e0">
-
             <!-- 所选包名 -->
             <v-list-item>
-                <v-icon class="mr-4"
-                        @click="toDatapage()">mdi-chevron-left</v-icon>
-                <v-list-item-title class="title">{{folder.name}}</v-list-item-title>
+                <v-icon class="mr-4" @click="toDatapage()">mdi-chevron-left</v-icon>
+                <v-list-item-title class="title">{{ folder.name }}</v-list-item-title>
             </v-list-item>
 
             <!-- 分割线 -->
@@ -20,18 +16,11 @@
             <div class="d-flex justify-center mt-3">
                 <v-menu bottom>
                     <template v-slot:activator="{ on, attrs }">
-                        <v-btn width="50%"
-                               color="#25354d"
-                               dark
-                               v-bind="attrs"
-                               style="opacity:0.9"
-                               v-on="on"> 添加表 </v-btn>
+                        <v-btn width="50%" color="#25354d" dark v-bind="attrs" style="opacity: 0.9" v-on="on"> 添加表 </v-btn>
                     </template>
                     <!-- 点击按钮出现的，三种选项 -->
                     <v-list>
-                        <v-list-item v-for="(option, index) in options"
-                                     :key="index"
-                                     @click="isShowOther = true">
+                        <v-list-item v-for="(option, index) in options" :key="index" @click="isShowOther = true">
                             <v-list-item-title> {{ option.name }} </v-list-item-title>
                         </v-list-item>
                     </v-list>
@@ -41,176 +30,141 @@
             <!-- 左侧列表部分下半区，根据条件显示不同内容的变化区域 -->
             <div class="mt-5">
                 <!-- 展示所有表 -->
-                <v-list v-show="!(isShowOther)"
-                        dense>
+                <v-list v-show="!isShowOther" dense>
                     <v-list-item-group>
-                        <v-list-item v-for="table in tables"
-                                     :key="table.title">
+                        <v-list-item v-for="table in tables" :key="table.title">
                             <!-- 行左侧图标 -->
                             <v-list-item-avatar size="20">
-                                <v-icon x-small
-                                        class="grey lighten-1"
-                                        dark>
-                                    mdi-table
-                                </v-icon>
+                                <v-icon x-small class="grey lighten-1" dark> mdi-table </v-icon>
                             </v-list-item-avatar>
                             <!-- 行右侧表名 -->
                             <v-list-item-content>
                                 <v-list-item-title v-text="table.title"></v-list-item-title>
                             </v-list-item-content>
-
                         </v-list-item>
                     </v-list-item-group>
                 </v-list>
 
                 <!-- 展示所有的历史连接 -->
-                <v-list v-show="isShowOther"
-                        dense>
+                <v-list v-show="isShowOther" dense>
                     <v-list-item-group>
-                        <v-list-item v-for="(historyConn, index) in historyConnArr"
-                                     :key="index"
-                                     @click="showAllTable(historyConn)">
+                        <v-list-item v-for="(historyConn, index) in historyConnArr" :key="index" @click="showAllTable(historyConn)">
                             <!-- 行左侧图标 -->
-                            <v-list-item-avatar size="23"
-                                                tile>
-                                <v-img :src="historyConn.avatar"
-                                       lazy-src=""></v-img>
+                            <v-list-item-avatar size="23" tile>
+                                <v-img :src="historyConn.avatar" lazy-src=""></v-img>
                             </v-list-item-avatar>
                             <!-- 行右侧表名 -->
                             <v-list-item-content>
                                 <v-list-item-title v-text="historyConn.text"></v-list-item-title>
                             </v-list-item-content>
-
                         </v-list-item>
                     </v-list-item-group>
                 </v-list>
-
             </div>
-
         </div>
 
         <!-- 右侧部分 -->
-        <v-main v-if="tables.length !== 0"
-                style="height: 100%;"
-                class="pt-3">
-
+        <v-main v-if="tables.length !== 0" style="height: 100%" class="pt-3">
             <!-- 数据表预览 -->
-            <v-card v-show="!(isShowOther)"
-                    flat
-                    tile>
+            <v-card v-show="!isShowOther" flat tile>
                 <!-- 工具栏 -->
                 <!-- 表名图标 -->
-                <v-card-title style="height: 10%"
-                              class="pt-2">
-                    <v-btn icon
-                           x-small
-                           class="mr-2">
+                <v-card-title style="height: 10%" class="pt-2">
+                    <v-btn icon x-small class="mr-2">
                         <v-icon>mdi-table</v-icon>
                     </v-btn>
                     <!-- 表名 -->
-                    {{folder.name}}
+                    {{ folder.name }}
 
                     <!-- 空间填充 -->
                     <v-spacer></v-spacer>
 
                     <!-- 搜索框 -->
-                    <v-text-field v-model="search"
-                                  append-icon="mdi-magnify"
-                                  label="Search"
-                                  single-line
-                                  hide-details
-                                  dense
-                                  class="shrink mr-3"></v-text-field>
+                    <v-text-field
+                        v-model="search"
+                        append-icon="mdi-magnify"
+                        label="Search"
+                        single-line
+                        hide-details
+                        dense
+                        class="shrink mr-3"
+                    ></v-text-field>
 
                     <!-- 编辑和创建组件按钮 -->
-                    <v-card flat
-                            class="d-flex px-2"
-                            width="20%">
-                        <v-btn small
-                               dark
-                               class="mr-3"
-                               color="#25354d"
-                               style="opacity:0.9">编辑</v-btn>
-                        <v-btn small
-                               dark
-                               color="#25354d"
-                               style="opacity:0.9">创建组件</v-btn>
+                    <v-card flat class="d-flex px-2" width="20%">
+                        <v-btn small dark class="mr-3" color="#25354d" style="opacity: 0.9">编辑</v-btn>
+                        <v-btn small dark color="#25354d" style="opacity: 0.9">创建组件</v-btn>
                     </v-card>
-
                 </v-card-title>
 
                 <!-- 表 -->
-                <v-data-table :headers="headers"
-                              :items="desserts"
-                              :sort-by="['calories', 'fat']"
-                              :sort-desc="[false, true]"
-                              multi-sort
-                              class="elevation-1"
-                              loading-text
-                              loading
-                              :search="search"></v-data-table>
+                <v-data-table
+                    :headers="headers"
+                    :items="desserts"
+                    :sort-by="['calories', 'fat']"
+                    :sort-desc="[false, true]"
+                    multi-sort
+                    class="elevation-1"
+                    loading-text
+                    loading
+                    :search="search"
+                ></v-data-table>
             </v-card>
 
             <!-- 被选中的连接里所有的表 -->
-            <v-card v-show="isShowOther"
-                    flat
-                    tile
-                    class="">
+            <v-card v-show="isShowOther" flat tile class="">
                 <!-- 工具栏 -->
-                <v-card-title style="height: 10%"
-                              class="pt-2">
+                <v-card-title style="height: 10%" class="pt-2">
                     <!-- 表名图标 -->
-                    <v-btn icon
-                           x-small
-                           class="mr-2">
-                        <v-img width="10"
-                               :src="conn.avatar"></v-img>
+                    <v-btn icon x-small class="mr-2">
+                        <v-img width="10" :src="conn.avatar"></v-img>
                     </v-btn>
                     <!-- 连接名 -->
-                    {{conn.text}}
+                    {{ conn.text }}
 
                     <!-- 空间填充 -->
                     <v-spacer></v-spacer>
                     <!-- 已选择（）项 -->
                     <v-card flat class="d-flex align-center mr-4" max-height="40">
-                        <v-card-subtitle>已选择{{selectedTables.length}}项</v-card-subtitle>
+                        <v-card-subtitle>已选择{{ selectedTables.length }}项</v-card-subtitle>
                     </v-card>
                     <!-- 取消和确定按钮 -->
-                    <v-card flat
-                            class="d-flex px-2"
-                            width="20%">
-                        <v-btn small
-                               dark
-                               width="80"
-                               class="mr-8"
-                               color="#25354d"
-                               style="opacity:0.9"
-                               @click="isShowOther = false;selectedTables = []">取消</v-btn>
-                        <v-btn small
-                               dark
-                               width="80"
-                               color="#25354d"
-                               style="opacity:0.9">确定</v-btn>
+                    <v-card flat class="d-flex px-2" width="20%">
+                        <v-btn
+                            small
+                            dark
+                            width="80"
+                            class="mr-8"
+                            color="#25354d"
+                            style="opacity: 0.9"
+                            @click="
+                                isShowOther = false
+                                selectedTables = []
+                            "
+                            >取消</v-btn
+                        >
+                        <v-btn small dark width="80" color="#25354d" style="opacity: 0.9">确定</v-btn>
                     </v-card>
-
                 </v-card-title>
                 <!-- 连接中所有的表 -->
                 <v-main>
                     <v-row class="d-flex mt-10">
-                        <v-col cols="3"
-                               v-for="(item, index) in connTables"
-                               :key="index"
-                               class="d-flex justify-start"
-                               @click="selectTable(item)">
-                            <v-btn class="px-1 d-inline-block d-flex justify-start align-center ml-10 "
-                                   min-width="50%"
-                                   max-height="40"
-                                   elevation="1"
-                                   outlined=""
-                                   color="#3d557c">
-                                <v-icon class="ml-4 "
-                                        color="#3d557c"
-                                        medium>mdi-table</v-icon>
+                        <v-col
+                            cols="3"
+                            v-for="(item, index) in connTables"
+                            :key="index"
+                            class="d-flex justify-start"
+                            @click="selectTable(item)"
+                        >
+                            <v-btn
+                                class="px-1 d-inline-block d-flex justify-start align-center ml-10"
+                                min-width="50%"
+                                max-height="40"
+                                elevation="1"
+                                outlined=""
+                                color="#3d557c"
+                            >
+                                <v-icon class="ml-4" color="#3d557c" medium>mdi-table</v-icon>
                                 <v-card-title class="subtitle-1">{{ item.name }}</v-card-title>
                             </v-btn>
                         </v-col>
@@ -218,14 +172,13 @@
                 </v-main>
             </v-card>
         </v-main>
-
     </div>
 </template>
 
 <script>
 export default {
     name: 'AddTable',
-    data () {
+    data() {
         return {
             conn: {},
             isShowOther: false,
@@ -236,26 +189,26 @@ export default {
             search: '',
             // 历史数据库连接数组
             historyConnArr: [
-                { text: 'connection-1connection', avatar: require('../../assets/pic/mini/MySQL.png') },
-                { text: 'connection-2apple', avatar: require('../../assets/pic/mini/Postgresql.png') },
-                { text: 'connection-3visualization', avatar: require('../../assets/pic/mini/SQLServer.png') },
+                { text: 'connection-1connection', avatar: require('../../assets/pic/miniSqlLogo/MySQL.png') },
+                { text: 'connection-2apple', avatar: require('../../assets/pic/miniSqlLogo/Postgresql.png') },
+                { text: 'connection-3visualization', avatar: require('../../assets/pic/miniSqlLogo/SQLServer.png') },
             ],
             // 添加表的三种选项
             options: [
                 {
                     id: 1,
                     name: '数据库表',
-                    showw: 'dataBaseFile'
+                    showw: 'dataBaseFile',
                 },
                 {
                     id: 2,
                     name: '上传文件',
-                    showw: 'upLoadFiles'
+                    showw: 'upLoadFiles',
                 },
                 {
                     id: 3,
                     name: '自助数据集',
-                    showw: 'selfData'
+                    showw: 'selfData',
                 },
             ],
             // 左侧表名
@@ -392,9 +345,9 @@ export default {
             ],
         }
     },
-    created () {
+    created() {
         // 从本地缓存中取出数据包对象
-        var param = localStorage.getItem("folder")
+        var param = localStorage.getItem('folder')
         this.folder = JSON.parse(param)
 
         // 当状态为数据库表时，右侧默认显示第一个连接的所有表
@@ -416,7 +369,7 @@ export default {
         /**
          * 表按钮的点击事件 => 选择表
          */
-        selectTable (o) {
+        selectTable(o) {
             console.log('sajfg')
             this.selectedTables.push(o)
             console.log(this.selectedTables)
@@ -425,7 +378,7 @@ export default {
         /**
          * 连接名的点击事件
          */
-        showAllTable (o) {
+        showAllTable(o) {
             // 把被点击连接对象赋值给单独的变量conn，用作在右侧显示连接名和图标
             this.conn = o
             // 请求接口 => 获取该连接中所有的表
@@ -433,9 +386,9 @@ export default {
         /**
          * 返回数据集界面
          */
-        toDatapage () {
+        toDatapage() {
             this.$router.push('/data')
-        }
+        },
     },
 }
 </script>

@@ -1,90 +1,102 @@
-<style scoped>
-.drag-field,
-.drop-field {
-    height: 10rem;
-    box-sizing: border-box;
-    padding: 1rem;
-    background-color: #eee;
-    margin-top: 1rem;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.item {
-    width: 30%;
-    height: 3rem;
-    text-align: center;
-    line-height: 3rem;
-    font-size: 0.9rem;
-    background-color: royalblue;
-    color: #eee;
-}
-.item:hover {
-    cursor: pointer;
-}
-</style>
-
 <template>
     <div>
-        <div
-            class="item"
-            v-for="(item, index) in items"
-            draggable="true"
-            @dragstart="dragstart($event, item)"
-            @dragend="dragend($event)"
-            :key="index"
-        >
-            {{ item.label }}
-        </div>
-
-        <div class="drop-field" @dragover.prevent @drop="drop">
-            <div class="item" v-if="droppedItem">
-                {{ droppedItem }}
+        <div class="test-view">
+            <div ref="from" class="from">
+                <div
+                    class="item"
+                    draggable
+                    @dragstart="itemDragStart"
+                    :style="{ backgroundColor: item.color }"
+                    v-for="item in fromData"
+                    :key="item.name"
+                >
+                    {{ item.name }}
+                </div>
+            </div>
+            <div class="to" @dragenter="toDragEnter" @dragover="(e) => e.preventDefault()" @drop="drop" @dragleave="toDragLeave">
+                <div class="item" :style="{ backgroundColor: item.color }" v-for="item in toData" :key="item.name">{{ item.name }}</div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-/* eslint-disable */
 export default {
-    name: '',
+    components: {},
     data() {
         return {
-            droppedItem: null,
-            items: [
+            fromData: [
                 {
-                    id: 1,
-                    label: '模块一',
-                    a: 'A',
+                    name: '节点1',
+                    color: 'red',
                 },
                 {
-                    id: 2,
-                    label: '模块二',
-                    b: 'B',
+                    name: '节点2',
+                    color: 'yellow',
                 },
                 {
-                    id: 3,
-                    label: '模块三',
-                    c: '模块三',
+                    name: '节点3',
+                    color: 'blue',
                 },
             ],
+            toData: [],
+            toEle: null,
         }
     },
     methods: {
-        drop(event) {
-            console.log('drop')
-            this.droppedItem = event.dataTransfer.getData('item')
-            console.log(JSON.stringify(this.droppedItem))
+        itemDragStart(e) {
+            console.log('元素拖动开始', e)
         },
-        dragstart(event, item) {
-            event.dataTransfer.setData('item', item)
+        drop(e) {
+            console.log('元素释放', e)
+            // if (!this.toEle) return
+            // const one = this.fromData.find((x) => x.name == e.target.innerText)
+            // this.toData.push(one)
         },
-        dragend(event) {
-            console.log('dragend')
-            event.dataTransfer.clearData()
+        toDragEnter(e) {
+            console.log('元素拖动进入盒子', e)
+            this.toEle = e
+        },
+        toDragLeave(e) {
+            console.log('元素拖动离开盒子', e)
+            this.toEle = null
         },
     },
+    mounted() {},
 }
 </script>
+
+<style <style lang="scss" scoped>
+.test-view {
+    width: 100%;
+    height: 100%;
+    background-color: #1f1d27;
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    .from,
+    .to {
+        width: 200px;
+        height: 500px;
+        background-color: #464648;
+        padding: 10px;
+        border-radius: 10px;
+        .item {
+            width: 100%;
+            height: 35px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #010101;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            user-select: none;
+            cursor: pointer;
+        }
+    }
+}
+</style>

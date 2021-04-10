@@ -144,8 +144,4 @@ export default {
 .pcolor {
     color: #25354d;
 }
-.bg-red {
-    background: red;
-    /* height: 722px; */
-}
 </style>

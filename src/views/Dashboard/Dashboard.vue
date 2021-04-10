@@ -60,17 +60,18 @@
                     <v-card height="47%" tile flat outlined :style="this.GLOBAL.data().borderBottom">
                         <div>维度</div>
                         <div class="mt-4 overflow-y-auto overflow-x-hidden">
-                            <div
+                            <v-card
                                 v-for="(item, index) in dimensionalityArr"
                                 :key="item.id"
                                 draggable="true"
                                 @dragstart="dragstart($event, item, index)"
                                 @dragend="dragend($event)"
-                                class="mb-2 d-flex align-center"
+                                class="pa-1 mb-2 d-flex align-center"
+                                color="#c5cae9"
                                 style="cursor: pointer"
                             >
                                 <v-icon> mdi-menu-right</v-icon> {{ item.name }}
-                            </div>
+                            </v-card>
                         </div>
                     </v-card>
                     <!-- 指标 -->
@@ -84,17 +85,18 @@
                             </v-col>
                         </div>
                         <div class="mt-4 overflow-y-auto overflow-x-hidden">
-                            <div
+                            <v-card
                                 v-for="(item, index) in indicatorArr"
                                 :key="index"
                                 draggable="true"
                                 @dragstart="dragstart($event, item, index)"
                                 @dragend="dragend($event)"
-                                class="mb-2 d-flex align-center"
+                                class="pa-1 mb-2 d-flex align-center"
+                                color="#d1c4e9"
                                 style="cursor: pointer"
                             >
                                 <v-icon> mdi-menu-right</v-icon> {{ item.name }}
-                            </div>
+                            </v-card>
                         </div>
                     </v-card>
                 </v-card>
@@ -107,14 +109,22 @@
                         <div>图表类型</div>
                         <v-card class="mt-3 overflow-y-auto overflow-x-hidden" tile outlined flat height="80%">
                             <v-row>
-                                <v-col cols="3" v-for="i in 16" :key="i">
+                                <v-col cols="4 d-flex justify-center" v-for="(item, index) in chartArr" :key="index">
                                     <v-tooltip nudge-top="10" bottom>
                                         <template v-slot:activator="{ on, attrs }">
-                                            <v-btn icon v-on="on" v-bind="attrs">
-                                                <v-icon>mdi-view-grid</v-icon>
+                                            <v-btn
+                                                class="d-flex align-center justify-center"
+                                                elevation="1"
+                                                width="25"
+                                                height="25"
+                                                icon
+                                                v-on="on"
+                                                v-bind="attrs"
+                                            >
+                                                <img :src="item.icon" />
                                             </v-btn>
                                         </template>
-                                        <span>xx图</span>
+                                        <span>{{ item.type }}</span>
                                     </v-tooltip>
                                 </v-col>
                             </v-row>
@@ -278,6 +288,54 @@ const gradients = [
 export default {
     data() {
         return {
+            // 图标类型图标数组
+            chartArr: [
+                {
+                    id: 0,
+                    type: '柱状图',
+                    icon: require('../../assets/pic/chart/bar.png'),
+                },
+                {
+                    id: 1,
+                    type: '饼图',
+                    icon: require('../../assets/pic/chart/pie.png'),
+                },
+                {
+                    id: 2,
+                    type: '折线图',
+                    icon: require('../../assets/pic/chart/line.png'),
+                },
+                {
+                    id: 3,
+                    type: '散点图',
+                    icon: require('../../assets/pic/chart/scatter.png'),
+                },
+                {
+                    id: 4,
+                    type: 'K 线图',
+                    icon: require('../../assets/pic/chart/candlestick.png'),
+                },
+                {
+                    id: 5,
+                    type: '雷达图',
+                    icon: require('../../assets/pic/chart/radar.png'),
+                },
+                {
+                    id: 6,
+                    type: '漏斗图',
+                    icon: require('../../assets/pic/chart/funnel.png'),
+                },
+                {
+                    id: 7,
+                    type: '仪表盘',
+                    icon: require('../../assets/pic/chart/gauge.png'),
+                },
+                {
+                    id: 8,
+                    type: '地图',
+                    icon: require('../../assets/pic/chart/map.png'),
+                },
+            ],
             // -------------------图表------------------------
             width: 2,
             radius: 10,
