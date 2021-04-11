@@ -31,13 +31,13 @@
                     <v-card class="mx-auto" tile outlined style="border-style: none">
                         <v-list tile dense>
                             <v-subheader>历史连接</v-subheader>
-                            <v-list-item-group v-model="selectedItem" color="primary">
+                            <v-list-item-group v-if="historyConnArr.length !== 0" v-model="selectedItem" color="primary">
                                 <v-list-item v-for="(item, i) in historyConnArr" :key="i">
                                     <v-list-item-avatar size="30" tile>
-                                        <v-img :src="item.avatar" lazy-src=""></v-img>
+                                        <v-img :src="item.miniCover" lazy-src=""></v-img>
                                     </v-list-item-avatar>
                                     <v-list-item-content>
-                                        <v-list-item-title v-text="item.text"></v-list-item-title>
+                                        <v-list-item-title v-text="item.connName"></v-list-item-title>
                                     </v-list-item-content>
                                 </v-list-item>
                             </v-list-item-group>
@@ -185,9 +185,11 @@
 import { changeDatabase } from '../../common/api/database'
 import mysql_mini from '../../assets/pic/miniSqlLogo/MySQL.png'
 import postgresql_mini from '../../assets/pic/miniSqlLogo/Postgresql.png'
+import { mapState } from 'vuex'
 export default {
     name: 'DatabaseConn',
     created() {
+        this.historyConnArr = this.$store.state.databaseConnObjArr
         // 接收添加表页面传来的数据 => 是否显示返回按钮
         this.isShow = this.$route.params.isShow
         // 从本地缓存中取出数据包对象
@@ -205,11 +207,7 @@ export default {
         folder: '',
         selectedItem: null,
         // 历史连接数组对象
-        historyConnArr: [
-            { text: 'connection-1connection', avatar: require('../../assets/pic/miniSqlLogo/MySQL.png') },
-            { text: 'connection-2apple', avatar: require('../../assets/pic/miniSqlLogo/Postgresql.png') },
-            { text: 'connection-3visualization', avatar: require('../../assets/pic/miniSqlLogo/SQLServer.png') },
-        ],
+        historyConnArr: null,
         options: [
             { id: 0, cover: 'https://image.16pic.com/00/18/81/16pic_1881896_s.jpg?imageView2/0/format/png', name: 'Oracle' },
             { id: 1, cover: 'https://img.stackshare.io/service/3093/EhcacheTwitterIcon.png', name: 'Ehcache' },
@@ -321,28 +319,29 @@ export default {
             this.isConnectArea = false
         },
         /**
-         * 保存按钮的监听事件
+         * @description: 保存按钮的监听事件
+         * @param {*}
+         * @return {*}
          */
         save() {
             if (this.testConnStatus) {
-                this.historyConnArr.push({
-                    text: this.connSQL.connName,
-                    avatar: this.connSQL.miniCover,
-                })
+                this.$store.commit('pushDbObj', JSON.stringify(this.connSQL))
                 // 添加一条提示信息
                 this.alertArr.push({
                     type: 'success',
                     content: 'Successful save!',
                 })
                 this.testConnStatus = false
-                this.$store.commit('setDatabaseConnObj', this.connSQL)
                 this.disabledTextField = true
             } else {
                 this.saveDialog = true
             }
         },
+
         /**
-         * 选择数据库的方法
+         * @description: 选择数据库的方法
+         * @param {*} index
+         * @return {*}
          */
         connectSQL(index) {
             setTimeout(() => {
@@ -370,6 +369,11 @@ export default {
         /**
          * "新建连接" 按钮的监听事件
          */
+        /**
+         * @description:
+         * @param {*}
+         * @return {*}
+         */
         changeSQLArea() {
             this.isSQLArea = true
             this.isConnectArea = false
@@ -378,7 +382,9 @@ export default {
         },
 
         /**
-         * 返回添加表页面
+         * @description: 返回添加表页面
+         * @param {*}
+         * @return {*}
          */
         previousPage() {
             this.$router.push({
@@ -389,6 +395,8 @@ export default {
             })
         },
     },
+    computed: {},
+    mounted() {},
 }
 </script>
 <style scoped>
