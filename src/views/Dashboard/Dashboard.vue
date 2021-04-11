@@ -60,7 +60,7 @@
                                 @dragstart="dragstart($event, item, index)"
                                 @dragend="dragend($event)"
                                 class="pa-1 mb-2 d-flex align-center"
-                                color="#c5cae9"
+                                color="#E8EAF6"
                                 style="cursor: pointer"
                             >
                                 <v-icon> mdi-menu-right</v-icon> {{ item.name }}
@@ -85,8 +85,8 @@
                                 @dragstart="dragstart($event, item, index)"
                                 @dragend="dragend($event)"
                                 class="pa-1 mb-2 d-flex align-center"
-                                color="#d1c4e9"
-                                style="cursor: pointer"
+                                color="#EDE7F6"
+                                v-cursor
                             >
                                 <v-icon> mdi-menu-right</v-icon> {{ item.name }}
                             </v-card>
@@ -159,7 +159,7 @@
                             </v-col>
                             <v-col cols="11">
                                 <v-card
-                                    :disabled="xIsDisabled"
+                                    id="xAxis"
                                     flat
                                     tile
                                     outlined
@@ -198,7 +198,7 @@
                             </v-col>
                             <v-col cols="11">
                                 <v-card
-                                    :disabled="yIsDisabled"
+                                    id="yAxis"
                                     flat
                                     tile
                                     outlined
@@ -241,7 +241,7 @@
                             :padding="padding"
                             :line-width="width"
                             :stroke-linecap="lineCap"
-                            :gradient-direction="gradientDirection"
+                            :gradient-type="gradienttype"
                             :fill="fill"
                             :type="type"
                             :auto-line-width="autoLineWidth"
@@ -285,16 +285,12 @@ export default {
             lineCap: 'round',
             gradient: gradients[5],
             value: [0, 2, 5, 9, 5, 10, 3, 5, 0, 0, 1, 8, 2, 9, 0],
-            gradientDirection: 'top',
+            gradienttype: 'top',
             gradients,
             fill: false,
             type: 'trend',
             autoLineWidth: false,
             // ----------------------------------------------
-            // x 轴区域是否可用
-            xIsDisabled: false,
-            // y 轴区域是否可用
-            yIsDisabled: false,
             // 维度 内容数组
             dimensionalityArr: [
                 { id: 0, name: '承运日期' },
@@ -316,15 +312,15 @@ export default {
     },
     methods: {
         delXYAxisArr(o, i) {
-            if (o.direction == 'x') {
+            if (o.type == 'dimensionality') {
                 let obj = this.xAxisArr.splice(i, 1)
                 let objIndex = obj[0].index
-                let { direction, index, isShow, ...item } = obj[0]
+                let { type, index, isShow, ...item } = obj[0]
                 this.dimensionalityArr.splice(objIndex, 0, item)
             } else {
                 let obj = this.yAxisArr.splice(i, 1)
                 let objIndex = obj[0].index
-                let { direction, index, isShow, ...item } = obj[0]
+                let { type, index, isShow, ...item } = obj[0]
                 this.indicatorArr.splice(objIndex, 0, item)
             }
         },
@@ -334,19 +330,17 @@ export default {
          */
         dragstart(event, item, index) {
             /**
-             *  在 维度 数组中找到了目标 item 对象，则表示进行 X 操作
-             *  给 item 对象追加一个索引的属性，以便后续进行删除数组中的数据
+             *  在 维度 数组中找到了目标 item 对象，则表示对 维度 中的元素进行操作
+             *  追加一个 type 属性，表示对哪类数据进行操作
              **/
             if (JSON.stringify(this.dimensionalityArr).indexOf(JSON.stringify(item)) != -1) {
-                this.xIsDisabled = false
-                this.yIsDisabled = true
-                item.direction = 'x'
+                item.type = 'dimensionality'
             } else {
-                this.xIsDisabled = true
-                this.yIsDisabled = false
-                item.direction = 'y'
+                item.type = 'indicator'
             }
+            // 给 item 对象追加一个 索引 的属性，以便后续进行删除数组中的数据
             item.index = index
+            // 追加一个状态值，表示关闭按钮是否显示
             item.isShow = false
             // 注意：这里的 setData() 方法基本上只能传递字符串，不能传递数字、对象等
             event.dataTransfer.setData('item', JSON.stringify(item))
@@ -356,16 +350,26 @@ export default {
          * 拖拉到拖拉结束并放之间 的动作监听方法
          */
         drop(event) {
+            let elId = event.target.id || event.srcElement.id
             let item = JSON.parse(event.dataTransfer.getData('item'))
-            if (item.direction === 'x') {
+            /**
+             * 1. 先删除被拖放元素
+             */
+            if (item.type == 'dimensionality') {
                 // 删除被拖拉的对象
                 this.dimensionalityArr.splice(item.index, 1)
-                // 在 x轴 中追加一个数据
-                this.xAxisArr.push(item)
             } else {
                 // 删除被拖拉的对象
                 this.indicatorArr.splice(item.index, 1)
-                // 在 x轴 中追加一个数据
+            }
+            /**
+             * 2. 在目标区域内追加元素
+             */
+            if (elId == 'xAxis') {
+                // 在 x 轴 中追加一个数据
+                this.xAxisArr.push(item)
+            } else {
+                // 在 y 轴 中追加一个数据
                 this.yAxisArr.push(item)
             }
         },
@@ -374,8 +378,6 @@ export default {
          * 拖 动作结束方法
          */
         dragend(event) {
-            this.yIsDisabled = false
-            this.xIsDisabled = false
             // 无参数则删除所有数据
             event.dataTransfer.clearData()
         },

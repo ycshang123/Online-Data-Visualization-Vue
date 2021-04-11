@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex pa-0">
         <!-- 左侧部分 -->
-        <div class="left-div" style="height: 100%; width: 19%">
+        <div class="" v-borderRight style="height: 100%; width: 19%">
             <v-col style="padding: 0">
                 <!-- 按钮 -->
                 <transition name="global-transition">
@@ -392,11 +392,6 @@ export default {
 }
 </script>
 <style scoped>
-.left-div {
-    border-style: solid;
-    border-width: 0.1px;
-    border-color: rgb(224, 224, 224);
-}
 .alert-area {
     position: absolute;
     right: 0;
