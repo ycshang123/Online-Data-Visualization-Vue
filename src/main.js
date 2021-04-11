@@ -8,7 +8,7 @@ import React, { Component } from 'react'
 import global from './util/Global.vue'
 
 Vue.config.productionTip = false
-
+Vue.use(global)
 Vue.prototype.GLOBAL = global
 
 new Vue({

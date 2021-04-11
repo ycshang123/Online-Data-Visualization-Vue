@@ -48,6 +48,11 @@ const routes = [
                 name: "UpLoadFiles",
                 component: () => import('../views/Data/UploadFiles.vue')
             },
+            {
+                path: "/object",
+                name: "Object",
+                component: () => import('../views/Dashboard/Object.vue')
+            },
 
         ]
     }
