@@ -7,6 +7,7 @@ import Dashboard from "../views/Dashboard/Dashboard.vue"
 Vue.use(VueRouter)
 
 const routes = [
+
     {
         path: "/about",
         name: 'About',
