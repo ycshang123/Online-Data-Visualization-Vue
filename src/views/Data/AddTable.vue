@@ -15,12 +15,15 @@
             <!-- 添加表按钮 -->
             <div class="d-flex justify-center mt-3">
                 <v-menu bottom>
+                    <!-- 按钮 -->
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn width="50%" color="#25354d" dark v-bind="attrs" style="opacity: 0.9" v-on="on"> 添加表 </v-btn>
                     </template>
                     <!-- 点击按钮出现的，三种选项 -->
                     <v-list>
-                        <v-list-item v-for="(option, index) in options" :key="index" @click="isShowOther = true">
+                        <v-list-item v-for="(option, index) in options"
+                                     :key="index"
+                                     @click="nextPage(option.show)">
                             <v-list-item-title> {{ option.name }} </v-list-item-title>
                         </v-list-item>
                     </v-list>
@@ -198,17 +201,17 @@ export default {
                 {
                     id: 1,
                     name: '数据库表',
-                    showw: 'dataBaseFile',
+                    show: 'DataBaseFile'
                 },
                 {
                     id: 2,
                     name: '上传文件',
-                    showw: 'upLoadFiles',
+                    show: 'UpLoadFiles'
                 },
                 {
                     id: 3,
                     name: '自助数据集',
-                    showw: 'selfData',
+                    show: 'SelfData'
                 },
             ],
             // 左侧表名
@@ -357,14 +360,21 @@ export default {
         /**
          * 跳转下一页
          */
-        // nextPage (path) {
-        //     this.$router.push({
-        //         name: path,
-        //         params: {
-        //             isShow: true,
-        //         }
-        //     })
-        // },
+        nextPage (path) {
+            console.log(path)
+            if (path == 'DataBaseFile') {
+                this.isShowOther = true
+                console.log(this.isShowOther)
+            } else {
+                console.log('sa')
+                this.$router.push({
+                    name: path,
+                    params: {
+                        isShow: true,
+                    }
+                })
+            }
+        },
 
         /**
          * 表按钮的点击事件 => 选择表
