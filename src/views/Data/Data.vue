@@ -40,7 +40,8 @@
                                text
                                @click="
                                 dialog.value = false
-                                addFolder()">确定</v-btn>
+                                addFolder()
+                            ">确定</v-btn>
                     </v-card-actions>
                 </v-card>
             </template>
@@ -142,9 +143,5 @@ export default {
 <style scoped>
 .pcolor {
     color: #25354d;
-}
-.bg-red {
-    background: red;
-    /* height: 722px; */
 }
 </style>
