@@ -1,5 +1,5 @@
 <template>
-    <div class="">
+    <div>
         <!-- 上半区域 -->
         <v-card style="height: 20%" class="pa-2" tile outlined flat>
             <v-card class="d-flex justify-space-between align-center" height="60" tile elevation="0">
