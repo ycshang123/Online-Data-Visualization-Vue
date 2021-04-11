@@ -184,7 +184,7 @@
                                             bordered
                                             icon="mdi-close-circle-outline"
                                             color="#bdbdbd"
-                                            @click.native="delXYAxisArr(item, index)"
+                                            @click.native="delXYAxisArr(item, index, 'xAxis')"
                                         >
                                             {{ item.name }}
                                         </v-badge>
@@ -223,7 +223,7 @@
                                             bordered
                                             icon="mdi-close-circle-outline"
                                             color="#bdbdbd"
-                                            @click.native="delXYAxisArr(item, index)"
+                                            @click.native="delXYAxisArr(item, index, 'yAxis')"
                                         >
                                             {{ item.name }}
                                         </v-badge>
@@ -311,17 +311,25 @@ export default {
         }
     },
     methods: {
-        delXYAxisArr(o, i) {
-            if (o.type == 'dimensionality') {
-                let obj = this.xAxisArr.splice(i, 1)
-                let objIndex = obj[0].index
-                let { type, index, isShow, ...item } = obj[0]
-                this.dimensionalityArr.splice(objIndex, 0, item)
+        /**
+         * 删除按钮的监听器
+         * xy: 表示对哪个轴进行操作
+         */
+        delXYAxisArr(o, i, xy) {
+            let obj
+            if (xy == 'xAxis') {
+                obj = this.xAxisArr.splice(i, 1)
             } else {
-                let obj = this.yAxisArr.splice(i, 1)
-                let objIndex = obj[0].index
+                obj = this.yAxisArr.splice(i, 1)
+            }
+            if (o.type == 'dimensionality') {
                 let { type, index, isShow, ...item } = obj[0]
-                this.indicatorArr.splice(objIndex, 0, item)
+                this.dimensionalityArr.push(item)
+                this.dimensionalityArr.sort(this.compare('id'))
+            } else {
+                let { type, index, isShow, ...item } = obj[0]
+                this.indicatorArr.push(item)
+                this.indicatorArr.sort(this.compare('id'))
             }
         },
 
@@ -380,6 +388,17 @@ export default {
         dragend(event) {
             // 无参数则删除所有数据
             event.dataTransfer.clearData()
+        },
+
+        /**
+         * 按照指定属性进行排序的方法
+         */
+        compare(param) {
+            return (obj1, obj2) => {
+                let value1 = obj1[param]
+                let value2 = obj2[param]
+                return value1 - value2
+            }
         },
     },
 }
