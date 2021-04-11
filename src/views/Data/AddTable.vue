@@ -19,6 +19,7 @@
             <!-- 添加表按钮 -->
             <div class="d-flex justify-center mt-3">
                 <v-menu bottom>
+                    <!-- 按钮 -->
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn width="50%"
                                color="#25354d"
@@ -31,7 +32,7 @@
                     <v-list>
                         <v-list-item v-for="(option, index) in options"
                                      :key="index"
-                                     @click="isShowOther = true">
+                                     @click="nextPage(option.show)">
                             <v-list-item-title> {{ option.name }} </v-list-item-title>
                         </v-list-item>
                     </v-list>
@@ -172,7 +173,9 @@
                     <!-- 空间填充 -->
                     <v-spacer></v-spacer>
                     <!-- 已选择（）项 -->
-                    <v-card flat class="d-flex align-center mr-4" max-height="40">
+                    <v-card flat
+                            class="d-flex align-center mr-4"
+                            max-height="40">
                         <v-card-subtitle>已选择{{selectedTables.length}}项</v-card-subtitle>
                     </v-card>
                     <!-- 取消和确定按钮 -->
@@ -245,17 +248,17 @@ export default {
                 {
                     id: 1,
                     name: '数据库表',
-                    showw: 'dataBaseFile'
+                    show: 'DataBaseFile'
                 },
                 {
                     id: 2,
                     name: '上传文件',
-                    showw: 'upLoadFiles'
+                    show: 'UpLoadFiles'
                 },
                 {
                     id: 3,
                     name: '自助数据集',
-                    showw: 'selfData'
+                    show: 'SelfData'
                 },
             ],
             // 左侧表名
@@ -404,14 +407,21 @@ export default {
         /**
          * 跳转下一页
          */
-        // nextPage (path) {
-        //     this.$router.push({
-        //         name: path,
-        //         params: {
-        //             isShow: true,
-        //         }
-        //     })
-        // },
+        nextPage (path) {
+            console.log(path)
+            if (path == 'DataBaseFile') {
+                this.isShowOther = true
+                console.log(this.isShowOther)
+            } else {
+                console.log('sa')
+                this.$router.push({
+                    name: path,
+                    params: {
+                        isShow: true,
+                    }
+                })
+            }
+        },
 
         /**
          * 表按钮的点击事件 => 选择表
