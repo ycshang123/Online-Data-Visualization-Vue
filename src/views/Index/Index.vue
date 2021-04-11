@@ -4,7 +4,7 @@
             <v-app-bar-nav-icon></v-app-bar-nav-icon>
             <v-toolbar-title style="font-size: 20px">数据可视化平台</v-toolbar-title>
             <v-spacer></v-spacer>
-            <span class="mdi mdi-bell mdi-24px" style="color: #4873f5"></span>
+            <span v-cursor class="mdi mdi-bell mdi-24px" style="color: #4873f5"></span>
             <span class="mdi mdi-github mdi-24px ml-4"></span>
             <span>admin</span>
             <span class="mdi mdi-chevron-down mdi-18px ml-4"></span>
@@ -37,7 +37,7 @@ export default {
     data() {
         return {
             items: [
-                { title: '数据准备', icon: 'mdi-database', path: '/datalink' },
+                { title: '数据准备', icon: 'mdi-database', path: '/selfdata' },
                 { title: '数据集', icon: 'mdi-link-variant', path: '/data' },
                 { title: '仪表盘', icon: 'mdi-view-dashboard', path: '/dashboard' },
             ],
