@@ -25,6 +25,32 @@
                             <v-list-item-title> {{ option.name }} </v-list-item-title>
                         </v-list-item>
                     </v-list>
+
+                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
+                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
+                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
+                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
+                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
+                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
+                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
+                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
+                    <!-- 若历史连接为空，则点击数据库表时弹出去新建连接提示 -->
+                    <!-- <v-dialog transition="dialog-bottom-transition" max-width="600">
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn color="primary" v-bind="attrs" v-on="on">From the bottom</v-btn>
+                        </template>
+                        <template v-slot:default="dialog">
+                            <v-card>
+                                <v-toolbar color="primary" dark>Opening from the bottom</v-toolbar>
+                                <v-card-text>
+                                    <div class="text-h2 pa-12">Hello world!</div>
+                                </v-card-text>
+                                <v-card-actions class="justify-end">
+                                    <v-btn text @click="dialog.value = false">Close</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </template>
+                    </v-dialog> -->
                 </v-menu>
             </div>
 
@@ -33,7 +59,7 @@
                 <!-- 展示所有表 -->
                 <v-list v-show="!isShowOther" dense>
                     <v-list-item-group>
-                        <v-list-item v-for="table in tables" :key="table.title">
+                        <v-list-item v-for="table in tables" :key="table.title" @click="getTable(table)">
                             <!-- 行左侧图标 -->
                             <v-list-item-avatar size="20">
                                 <v-icon x-small class="grey lighten-1" dark> mdi-table </v-icon>
@@ -47,20 +73,27 @@
                 </v-list>
 
                 <!-- 展示所有的历史连接 -->
-                <v-list v-show="isShowOther" dense>
+                <v-list v-if="isShowOther && historyConnArr.length !== 0" dense>
                     <v-list-item-group>
                         <v-list-item v-for="(historyConn, index) in historyConnArr" :key="index" @click="showAllTable(historyConn)">
                             <!-- 行左侧图标 -->
                             <v-list-item-avatar size="23" tile>
-                                <v-img :src="historyConn.avatar" lazy-src=""></v-img>
+                                <v-img :src="historyConn.miniCover" lazy-src=""></v-img>
                             </v-list-item-avatar>
                             <!-- 行右侧表名 -->
                             <v-list-item-content>
-                                <v-list-item-title v-text="historyConn.text"></v-list-item-title>
+                                <v-list-item-title v-text="historyConn.connName"></v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
                     </v-list-item-group>
                 </v-list>
+
+                <!-- 新建连接 -->
+                <!-- <v-list v-else-if="isShowOther && historyConnArr.length === 0">
+                    <v-card class="d-flex justify-center" shrink>
+                        <v-card-text class="d-flex justify-center"> 去新建数据连接 </v-card-text>
+                    </v-card>
+                </v-list> -->
             </div>
         </div>
 
@@ -70,12 +103,12 @@
             <v-card v-show="!isShowOther" flat tile>
                 <!-- 工具栏 -->
                 <!-- 表名图标 -->
-                <v-card-title style="height: 10%" class="pt-2">
+                <v-card-title style="height: 10%" class="pt-2 subtitle-2">
                     <v-btn icon x-small class="mr-2">
                         <v-icon>mdi-table</v-icon>
                     </v-btn>
                     <!-- 表名 -->
-                    {{ folder.name }}
+                    {{ table.title }}
 
                     <!-- 空间填充 -->
                     <v-spacer></v-spacer>
@@ -106,22 +139,20 @@
                     :sort-desc="[false, true]"
                     multi-sort
                     class="elevation-1"
-                    loading-text
-                    loading
                     :search="search"
                 ></v-data-table>
             </v-card>
 
-            <!-- 被选中的连接里所有的表 -->
-            <v-card v-show="isShowOther" flat tile class="">
+            <!-- 被选中的连接里，所有的表 -->
+            <v-card v-if="isShowOther && historyConnArr.length !== 0" flat tile class="">
                 <!-- 工具栏 -->
                 <v-card-title style="height: 10%" class="pt-2">
                     <!-- 表名图标 -->
                     <v-btn icon x-small class="mr-2">
-                        <v-img width="10" :src="conn.avatar"></v-img>
+                        <v-img width="10" :src="conn.miniCover"></v-img>
                     </v-btn>
                     <!-- 连接名 -->
-                    {{ conn.text }}
+                    {{ conn.connName }}
 
                     <!-- 空间填充 -->
                     <v-spacer></v-spacer>
@@ -186,13 +217,15 @@ export default {
             tips: '请添加表',
             // 前一个页面传过来的数据包名称
             folder: {},
+            // 点击的表
+            table: {},
             // 数据表-搜索的关键字
             search: '',
             // 历史数据库连接数组
             historyConnArr: [
-                { text: 'connection-1connection', avatar: require('../../assets/pic/miniSqlLogo/MySQL.png') },
-                { text: 'connection-2apple', avatar: require('../../assets/pic/miniSqlLogo/Postgresql.png') },
-                { text: 'connection-3visualization', avatar: require('../../assets/pic/miniSqlLogo/SQLServer.png') },
+                // { connName: 'connection-1connection', miniCover: require('../../assets/pic/miniSqlLogo/MySQL.png') },
+                // { connName: 'connection-2apple', miniCover: require('../../assets/pic/miniSqlLogo/Postgresql.png') },
+                // { connName: 'connection-3visualization', miniCover: require('../../assets/pic/miniSqlLogo/SQLServer.png') },
             ],
             // 添加表的三种选项
             options: [
@@ -202,13 +235,13 @@ export default {
             ],
             // 左侧表名
             tables: [
-                { subtitle: 'Jan 9, 2014', title: '一月全国数据表' },
+                { id: 0, title: '一月全国数据表' },
                 // {
-                //     subtitle: 'Jan 17, 2014',
+                //     id: 1,
                 //     title: '二月全国数据表',
                 // },
                 // {
-                //     subtitle: 'Jan 28, 2014',
+                //     id: 2,
                 //     title: '三月全国数据表',
                 // },
             ],
@@ -248,6 +281,12 @@ export default {
         }
     },
     created() {
+        // 从vuex中取出历史连接
+        this.historyConnArr = this.$store.state.databaseConnObjArr
+
+        // 默认显示第一张表的预览
+        this.table = this.tables[0]
+
         // 从本地缓存中取出数据包对象
         var param = localStorage.getItem('folder')
         this.folder = JSON.parse(param)
@@ -255,6 +294,15 @@ export default {
         this.conn = this.historyConnArr[0]
     },
     methods: {
+        /**
+         * @description: 获取当前点击的表名
+         * @param {*} o
+         * @return {*}
+         */
+        getTable(o) {
+            this.table = o
+            console.log(this.table);
+        },
         /**
          * 跳转下一页
          */
