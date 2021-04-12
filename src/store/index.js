@@ -13,9 +13,6 @@ export default new Vuex.Store({
     state: {
         // 历史连接数组
         databaseConnObjArr: [
-            { connName: 'connection-1connection', miniCover: require('/src/assets/pic/miniSqlLogo/MySQL.png') },
-            { connName: 'connection-2apple', miniCover: require('/src/assets/pic/miniSqlLogo/Postgresql.png') },
-            { connName: 'connection-3visualization', miniCover: require('/src/assets/pic/miniSqlLogo/SQLServer.png') },
         ],
         // 数据包数组
         folders: [],
@@ -23,13 +20,11 @@ export default new Vuex.Store({
         folder: [],
         // 每个连接中所有的表
         connTables: [
-            // { id: '0', name: '一月全国数据表' },
-            // { id: '1', name: '二月全国数据表' },
-            // { id: '2', name: '三月全国数据表' }
+            // "一月数据", "二月数据"
         ],
         // 用户添加的所有的表
         allTables: [
-            // { id: 0, title: '一月全国数据表' },
+            // "重庆市一月数据", "江苏省一月数据"
         ]
     },
     mutations: {
@@ -58,7 +53,6 @@ export default new Vuex.Store({
          * @param {*} v
          */
         saveFolder (state, v) {
-            console.log(v)
             state.folder = v
         },
         /**
@@ -66,7 +60,7 @@ export default new Vuex.Store({
          * @param {*} state
          * @param {*} obj
          */
-        saveConnTable (state, obj) {
+        saveConnTables (state, obj) {
             state.connTables = obj
         },
         /**

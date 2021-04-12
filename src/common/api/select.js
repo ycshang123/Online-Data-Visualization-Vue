@@ -1,3 +1,4 @@
+
 /**
  * 查询类相关接口 API 管理文件
  */
@@ -14,3 +15,9 @@ export function test () {
 export function uloadFilesApi (arr) {
     return post('/select/uploadFile', arr)
 }
+
+export function getConnTables (obj) {
+    return post('/select/allTable', obj)
+}
+
+

@@ -1,7 +1,7 @@
 <template>
     <!-- 先设置整体高度100%，撑满屏幕 -->
     <div style="height: 100%" class="d-flex">
-        <!-- 左侧列表部分 -->
+        <!-- 左侧部分 -->
         <div style="height: 100%; width: 19%; border-right: 0.5px solid #e0e0e0">
             <!-- 所选包名 -->
             <v-list-item>
@@ -12,52 +12,25 @@
             <!-- 分割线 -->
             <v-divider></v-divider>
 
-            <!-- 添加表按钮 -->
-            <div class="d-flex justify-center mt-3">
-                <v-menu bottom>
-                    <!-- 按钮 -->
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn width="50%" color="#25354d" dark v-bind="attrs" style="opacity: 0.9" v-on="on"> 添加表 </v-btn>
-                    </template>
-                    <!-- 点击按钮出现的，三种选项 -->
-                    <v-list>
-                        <v-list-item v-for="(option, index) in options" :key="index" @click="nextPage(option.show)">
-                            <v-list-item-title> {{ option.name }} </v-list-item-title>
-                        </v-list-item>
-                    </v-list>
-
-                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
-                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
-                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
-                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
-                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
-                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
-                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
-                    <!-- ！！！！！！！！！！优化！！！！！！！！！！！ -->
-                    <!-- 若历史连接为空，则点击数据库表时弹出去新建连接提示 -->
-                    <!-- <v-dialog transition="dialog-bottom-transition" max-width="600">
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn color="primary" v-bind="attrs" v-on="on">From the bottom</v-btn>
-                        </template>
-                        <template v-slot:default="dialog">
-                            <v-card>
-                                <v-toolbar color="primary" dark>Opening from the bottom</v-toolbar>
-                                <v-card-text>
-                                    <div class="text-h2 pa-12">Hello world!</div>
-                                </v-card-text>
-                                <v-card-actions class="justify-end">
-                                    <v-btn text @click="dialog.value = false">Close</v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </template>
-                    </v-dialog> -->
-                </v-menu>
-            </div>
-
             <!-- 左侧列表部分下半区，根据条件显示不同内容的变化区域 -->
             <div class="mt-5">
                 <!-- 展示所有表 -->
                 <v-list v-show="!isShowOther" dense>
+                    <!-- 添加表按钮 -->
+                    <div class="d-flex justify-center">
+                        <v-menu bottom>
+                            <!-- 按钮 -->
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn width="50%" color="#25354d" dark v-bind="attrs" style="opacity: 0.9" v-on="on"> 添加表 </v-btn>
+                            </template>
+                            <!-- 点击按钮出现的，三种选项 -->
+                            <v-list>
+                                <v-list-item v-for="(option, index) in options" :key="index" @click="nextPage(option.show)">
+                                    <v-list-item-title> {{ option.name }} </v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </div>
                     <v-list-item-group>
                         <v-list-item v-for="table in allTables" :key="table.title" @click="getTable(table)">
                             <!-- 行左侧图标 -->
@@ -72,7 +45,7 @@
                     </v-list-item-group>
                 </v-list>
 
-                <!-- 展示所有的历史连接 -->
+                <!-- 点击“数据库表”后，展示所有的历史连接 -->
                 <v-list v-if="isShowOther && historyConnArr.length !== 0" dense>
                     <v-list-item-group>
                         <v-list-item v-for="(historyConn, index) in historyConnArr" :key="index" @click="showAllTable(historyConn)">
@@ -98,9 +71,9 @@
         </div>
 
         <!-- 右侧部分 -->
-        <v-main v-if="allTables.length !== 0" style="height: 100%" class="pt-3">
+        <v-main style="height: 100%" class="pt-3">
             <!-- 数据表预览 -->
-            <v-card v-show="!isShowOther" flat tile>
+            <v-card v-if="!isShowOther && allTables.length !== 0" flat tile>
                 <!-- 工具栏 -->
                 <!-- 表名图标 -->
                 <v-card-title style="height: 10%" class="pt-2 subtitle-2">
@@ -143,7 +116,7 @@
                 ></v-data-table>
             </v-card>
 
-            <!-- 被选中的连接里，所有的表 -->
+            <!-- 点击“数据库表”后，被选中的连接里，所有的表 -->
             <v-card v-if="isShowOther && historyConnArr.length !== 0" flat tile class="">
                 <!-- 工具栏 -->
                 <v-card-title style="height: 10%" class="pt-2">
@@ -175,10 +148,10 @@
                             "
                             >取消</v-btn
                         >
-                        <v-btn small dark width="80" color="#25354d" style="opacity: 0.9">确定</v-btn>
+                        <v-btn small dark width="80" color="#25354d" style="opacity: 0.9" @click="pushAllTables()">确定</v-btn>
                     </v-card>
                 </v-card-title>
-                <!-- 连接中所有的表 -->
+                <!-- 数据库表-连接中所有的表 -->
                 <v-main>
                     <v-row class="d-flex mt-10">
                         <v-col
@@ -197,7 +170,7 @@
                                 color="#3d557c"
                             >
                                 <v-icon class="ml-4" color="#3d557c" medium>mdi-table</v-icon>
-                                <v-card-title class="subtitle-1">{{ item.name }}</v-card-title>
+                                <v-card-title class="subtitle-1">{{ item }}</v-card-title>
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -208,6 +181,7 @@
 </template>
 
 <script>
+import { getConnTables } from '../../common/api/select'
 export default {
     name: 'AddTable',
     data() {
@@ -222,11 +196,7 @@ export default {
             // 数据表-搜索的关键字
             search: '',
             // 历史数据库连接数组
-            historyConnArr: [
-                // { connName: 'connection-1connection', miniCover: require('../../assets/pic/miniSqlLogo/MySQL.png') },
-                // { connName: 'connection-2apple', miniCover: require('../../assets/pic/miniSqlLogo/Postgresql.png') },
-                // { connName: 'connection-3visualization', miniCover: require('../../assets/pic/miniSqlLogo/SQLServer.png') },
-            ],
+            historyConnArr: [],
             // 添加表的三种选项
             options: [
                 { id: 1, name: '数据库表', show: 'DataBaseFile' },
@@ -245,13 +215,9 @@ export default {
                 //     title: '三月全国数据表',
                 // },
             ],
-            // 选中连接中所有的表
-            connTables: [
-                { id: '0', name: '一月全国数据表' },
-                { id: '1', name: '二月全国数据表' },
-                { id: '2', name: '三月全国数据表' },
-            ],
-            // 被选中的表
+            // 每个连接中所有的表
+            connTables: [],
+            // 被选中的所有的表
             selectedTables: [],
             /**
              * 静态表格
@@ -286,7 +252,7 @@ export default {
         // 取出用户添加的所有的表
         this.allTables = this.$store.state.allTables
         // 取出每个连接中所有的表
-        this.connTable = this.$store.state.connTables
+        this.connTables = this.$store.state.connTables
         // 取出选中的数据包名称
         this.folder = this.$store.state.folder
 
@@ -298,24 +264,49 @@ export default {
     },
     methods: {
         /**
+         * @description: 构建用户选择的所有的表
+         * @param {*}
+         * @return {*}
+         */
+        pushAllTables() {
+            this.allTables.push(this.selectedTables)
+            console.log(this.allTables)
+        },
+        /**
          * @description: 获取当前点击的表名
          * @param {*} o
          * @return {*}
          */
         getTable(o) {
             this.table = o
-            console.log(this.table);
+            console.log(this.table)
         },
         /**
          * 跳转下一页
          */
-        nextPage(path) {
-            console.log(path)
+        async nextPage(path) {
+            // 如果点击的是“数据库表”
             if (path == 'DataBaseFile') {
+                // 显示数据库表相关的版块
                 this.isShowOther = true
-                console.log(this.isShowOther)
+                // 实时获取历史连接
+                this.historyConnArr = this.$store.state.databaseConnObjArr
+                // 如果历史连接为空，则跳转到新建连接页面
+                if (this.historyConnArr == 0) {
+                    this.$router.push('/datalink')
+                } else {
+                    // 请求接口 => 获取当前连接所有的表名
+                    // 当前连接默认为数组中的第一个
+                    const conn = this.historyConnArr[0]
+                    await getConnTables(conn).then((res) => {
+                        if (res.code === 200) {
+                            console.log('请求接口：' + res.data)
+                            console.log(conn)
+                            this.$store.commit('saveConnTables', res.data)
+                        }
+                    })
+                }
             } else {
-                console.log('sa')
                 this.$router.push({
                     name: path,
                     params: {
@@ -325,10 +316,9 @@ export default {
             }
         },
         /**
-         * 表按钮的点击事件 => 选择表
+         * 每个表名按钮的点击事件 => 选择表
          */
         selectTable(o) {
-            console.log('sajfg')
             this.selectedTables.push(o)
             console.log(this.selectedTables)
         },

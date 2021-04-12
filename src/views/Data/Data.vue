@@ -38,7 +38,7 @@
             <v-col cols="3" v-for="(folder, index) in folders" :key="index" class="d-flex justify-start">
                 <v-card class="d-inline-block d-flex justify-start align-center ml-10" min-width="50%" @click="nextPage(folder)">
                     <v-icon class="ml-4 pcolor" medium>mdi-briefcase</v-icon>
-                    <v-card-title class="subtitle-1"> {{ folder }} </v-card-title>
+                    <v-card-title class="subtitle-1"> {{ folder.name }} </v-card-title>
                 </v-card>
             </v-col>
         </v-row>
@@ -95,15 +95,15 @@ export default {
         addFolder() {
             let folders = this.folders
             let folderName = this.folderName
-            // let folder = { id: folders.length, name: folderName }
+            let folder = { name: folderName, files: null }
             if (folderName == null) {
                 this.disable = true
             } else {
                 this.disable = false
                 // 将创建的数据包存到vuex
-                this.$store.commit('pushDataObj', JSON.stringify(folderName))
+                this.$store.commit('pushDataObj', JSON.stringify(folder))
             }
-            console.log(this.folders)
+            console.log('数据包数组：' + this.folders)
         },
         // 添加数据包按钮点击事件 => 清除文本
         cleantext() {
