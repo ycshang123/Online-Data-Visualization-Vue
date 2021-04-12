@@ -9,6 +9,9 @@
             </v-list-item>
             <v-divider></v-divider>
             <v-list-item v-for="item in filesName" :key="item">
+                <v-list-item-icon>
+                    <v-icon>mdi mdi-file</v-icon>
+                </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-subtitle> {{ item }}</v-list-item-subtitle>
                 </v-list-item-content>
@@ -22,7 +25,7 @@
             <!-- 头部导航栏 -->
             <v-card class="d-flex justify-space-between align-center" height="70px" tile elevation="0">
                 <v-card width="60%" class="d-flex justify-space-around" tile elevation="0" v-if="!isdisplay">
-                    <v-card width="30%" class="d-flex align-center" tile elevation="0"> 上传文件 </v-card>
+                    <v-card width="30%" class="d-flex align-center ma-3" tile elevation="0"> 上传文件 </v-card>
                     <v-card class="d-flex justify-center align-items-center" width="70%" tile elevation="0">
                         <v-col class="d-flex align-center"> 上传数据包至： </v-col>
                         <v-col cols="8" style="margin-top: 8%">
@@ -142,13 +145,18 @@ export default {
             isShow: false,
             // 添加表页面传来的数据
             folder: '',
+            //下拉框出现的所有数据包
             items: ['2021年航空数据', '2020年航空数据', '2019年航空数据'],
-            number: 2,
+            //上传的所有文件
             files: [],
+            //上传的文件名
             filesName: [],
             text: '请选择需要上传的文件',
+            //控制空文件上传
             status: false,
+            //控制文件不要重复上传
             contains: false,
+            // 控制两个入口不同的页面显示
             isdisplay: false,
         }
     },
@@ -170,24 +178,19 @@ export default {
                 this.status = true
             }
             if (this.filesName.length != 0) {
-                let originLength = this.files.length
-                let newFiles = this.files.filter((item) => {
-                    console.log(this.filesName.indexOf(item.name))
-                    if (this.filesName.indexOf(item.name) == -1) {
-                        return true
+                this.files.forEach((file) => {
+                    let isExist = this.filesName.some((item) => item === file.name)
+                    if (!isExist) {
+                        this.filesName.push(file.name)
+                        this.files = []
                     } else {
                         this.contains = true
                         setTimeout(() => {
                             this.contains = false
                         }, 2000)
                         this.files = []
-                        return false
                     }
                 })
-                let nowLength = newFiles.length
-                if (originLength != nowLength) {
-                    return
-                }
             } else {
                 let formData = new FormData()
                 this.files.forEach((file) => {
@@ -195,7 +198,7 @@ export default {
                     this.filesName.push(file.name)
                 })
                 uloadFilesApi(formData).then((res) => {
-                    console.log(res)
+                    // console.log(res)
                     this.files = []
                 })
             }
