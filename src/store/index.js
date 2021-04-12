@@ -18,9 +18,9 @@ export default new Vuex.Store({
             { connName: 'connection-3visualization', miniCover: require('/src/assets/pic/miniSqlLogo/SQLServer.png') },
         ],
         // 数据包数组
-        folders:[],
+        folders: [],
         // 所有的表
-        tables:[]
+        tables: []
     },
     mutations: {
         /**
