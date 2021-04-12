@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex justify-space-around" style="height: 100%">
         <div style="border-right: 0.5px solid #e0e0e0; width: 19%">
-            <v-list-item>
+            <v-list-item v-if="isdisplay">
                 <v-icon @click="previousPage()" class="mdi mdi-chevron-left mdi-24px"></v-icon>
                 <v-list-item-content>
                     <v-list-item-title> ***航空数据 </v-list-item-title>
@@ -9,9 +9,6 @@
             </v-list-item>
             <v-divider></v-divider>
             <v-list-item v-for="item in filesName" :key="item">
-                <!-- <v-list-item-icon>
-                    <v-icon>mdi mdi-file-code </v-icon>
-                </v-list-item-icon> -->
                 <v-list-item-content>
                     <v-list-item-subtitle> {{ item }}</v-list-item-subtitle>
                 </v-list-item-content>
@@ -23,15 +20,17 @@
 
         <v-card width="81%" tile elevation="0">
             <!-- 头部导航栏 -->
-            <v-card class="d-flex justify-space-around align-center" height="8%" tile elevation="0">
-                <v-col cols="2"> 上传文件 </v-col>
-                <v-col class="d-flex justify-center align-items-center" cols="5">
-                    <v-col class="d-flex align-center"> 上传数据包至： </v-col>
-                    <v-col cols="8" style="margin-top: 8%">
-                        <v-select label="***航空公司" solo :items="items"></v-select>
-                    </v-col>
-                </v-col>
-                <v-col cols="4"> 已选择{{ this.files.length }}项 </v-col>
+            <v-card class="d-flex justify-space-between align-center" height="70px" tile elevation="0">
+                <v-card width="60%" class="d-flex justify-space-around" tile elevation="0" v-if="!isdisplay">
+                    <v-card width="30%" class="d-flex align-center" tile elevation="0"> 上传文件 </v-card>
+                    <v-card class="d-flex justify-center align-items-center" width="70%" tile elevation="0">
+                        <v-col class="d-flex align-center"> 上传数据包至： </v-col>
+                        <v-col cols="8" style="margin-top: 8%">
+                            <v-select label="***航空公司" solo :items="items"></v-select>
+                        </v-col>
+                    </v-card>
+                </v-card>
+                <v-col cols="3"> 已选择{{ this.files.length }}项 </v-col>
                 <v-col cols="1">
                     <v-btn @click="uploadFile()">确定</v-btn>
                 </v-col>
@@ -130,11 +129,11 @@
 import { uloadFilesApi } from '../../common/api/select'
 export default {
     name: 'UpLoadFiles',
-    created () {
+    created() {
         // 接收添加表页面传来的数据 => 是否显示返回按钮
         this.isShow = this.$route.params.isShow
         // 从本地缓存中取出数据包对象
-        var param = localStorage.getItem("folder")
+        var param = localStorage.getItem('folder')
         this.folder = JSON.parse(param)
     },
     data: () => {
@@ -150,6 +149,7 @@ export default {
             text: '请选择需要上传的文件',
             status: false,
             contains: false,
+            isdisplay: false,
         }
     },
     methods: {
