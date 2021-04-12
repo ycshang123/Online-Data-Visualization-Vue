@@ -34,7 +34,6 @@ export default new Vuex.Store({
          * @param {*} obj   JSON 字符串类型 ---> 数据库连接对象的基本信息
          */
         pushDbObj (state, obj) {
-            console.log(JSON.parse(obj))
             state.databaseConnObjArr.push(JSON.parse(obj))
         },
         /**

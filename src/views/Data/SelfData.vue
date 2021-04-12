@@ -32,7 +32,7 @@
                     <span style="color: #a4a6a6">数</span>
                 </v-card>
                 <v-card width="78%" height="100%" tile elevation="0" v-borderTB class="d-flex">
-                    <v-card width="25%" height="100%" tile elevation="0" v-borderLR class="d-flex flex-column align-center">
+                    <v-card width="25%" height="100%" tile elevation="0" v-borderLR class="d-flex flex-column align-center justify-center">
                         <input
                             type="text"
                             placeholder="搜索"
@@ -40,7 +40,9 @@
                             class="pl-2 mt-1"
                         />
                         <div style="height: 93%; width: 100%; overflow-y: auto; white-space: nowrap">
-                            <v-treeview :items="textType" hoverable dense style="font-size: 6px" :open-on-click="true"> </v-treeview>
+                            <div v-for="(item, index) in listContent" :key="index" class="ml-2">
+                                <span style="color: #3f3f4c; font-size: 12px" @click="addColumnContent(index)">{{ item.content }}</span>
+                            </div>
                         </div>
                     </v-card>
                     <v-card width="75%" height="100%" tile elevation="0" v-borderRight>
@@ -50,7 +52,7 @@
                                     style="color: #b1b1b1"
                                     v-for="(item, index) in functionSign"
                                     :key="index"
-                                    @click="addColumnContent(index)"
+                                    @click="operation(index)"
                                     v-cursor
                                 >
                                     {{ item }}</span
@@ -61,7 +63,13 @@
                             <span v-if="newColumnContent.length == 0" style="font-size: 12px; color: #d5dbe0" class="pa-2"
                                 >示例：销售额/计划销售额</span
                             >
-                            <span v-else v-for="(item, index) in newColumnContent" :key="index" class="pa-3">
+                            <span
+                                v-else
+                                v-for="(item, index) in newColumnContent"
+                                :key="index"
+                                class="pa-3"
+                                style="font-size: 12px; color: #616161"
+                            >
                                 {{ item }}
                             </span>
                         </v-card>
@@ -82,7 +90,7 @@
                 <v-col class="d-flex align-center justify-space-around" cols="5">
                     <span>表名:</span>
                     <v-col cols="10">
-                        <v-text-field placeholder="请输入新增表名" v-model="newColumn" />
+                        <v-text-field placeholder="请输入新增表名" />
                     </v-col>
                 </v-col>
                 <v-col class="d-flex justify-space-between" cols="2">
@@ -151,9 +159,6 @@
             <v-card v-if="chooseList.length > 0" style="overflow-y: auto; overflow-x: auto" tile elevation="0">
                 <v-data-table :headers="this.chooseList" class="elevation-1"></v-data-table>
             </v-card>
-            <!-- <v-col cols="8">
-                <v-data-table :headers="this.chooseList" class="elevation-1"></v-data-table>
-            </v-col> -->
         </v-card>
     </div>
 </template>
@@ -163,17 +168,16 @@ export default {
         return {
             addColArr: ['新增列', '过滤', '分组汇总', '字段设置', '排序'],
             content: '',
+            // 动态按钮添加进的数组
             newColArr: ['选字段'],
+            // 数据库表名
             tableList: ['一月数据表', '二月数据表', '三月数据表', '四月数据表', '五月数据表'],
+            // 全部数据表中的表头
             listsContent: [
                 [
                     { content: '承运日期', checked: false },
                     { content: '出发日期', checked: false },
                     { content: '出发机场', checked: false },
-                    { content: '到达城市', checked: false },
-                    { content: '客公里', checked: false },
-                    { content: '承运日期', checked: false },
-                    { content: '出发日期', checked: false },
                 ],
                 [
                     { content: '二月数据表内容', checked: false },
@@ -189,31 +193,44 @@ export default {
                 [{ content: '四月数据表内容', checked: false }],
                 [{ content: '五月数据表内容', checked: false }],
             ],
+            // 每个数据表对应的表头
             listContent: null,
+            // 选择的表头
             chooseList: [],
+            // 是否全选、取消全选
             status: true,
+            // 新增列弹框是否弹出
             isPop: false,
+            // 新增列窗口左侧对应的函数
             functionSelect: ['公式/函数', '时间差', '获取时间', '所有值/组内', '分组赋值', '排名'],
+            // 可以操作的算数运算
             functionSign: ['+', '-', '*', '/', '{', '}'],
             textType: [{ name: '数值字段' }, { name: '文本字段' }, { name: '时间字段' }],
+            // 新增列右侧进行运算的部分
             newColumnContent: [],
-            isEmpty: false,
-            newColumn: '',
+            // 新增列的名称
+            newColumn: null,
         }
     },
     methods: {
         // 动态按钮的实现
         addBtn(index) {
             console.log(index)
+            console.log('数组长度' + this.newColArr.length)
+
             this.content = this.addColArr[index]
-            if (index > this.newColumn.length) {
+            if (index > this.newColArr.length - 1) {
                 alert('请按照顺序操作')
             } else {
-                if (this.newColArr.indexOf(this.content) == -1) {
-                    this.newColArr.push(this.content)
-                    this.popWindow()
+                if (this.listContent == null) {
+                    alert('请选择需要新增列的表')
                 } else {
-                    alert('不可以重复添加')
+                    if (this.newColArr.indexOf(this.content) == -1) {
+                        this.newColArr.push(this.content)
+                        this.popWindow()
+                    } else {
+                        alert('不可以重复添加')
+                    }
                 }
             }
 
@@ -221,9 +238,11 @@ export default {
         },
         // 新增列元素
         addColumnContent(index) {
-            console.log('点击成功')
-            // this.newColumnContent.push(this.functionSign[index])
-            console.log(this.newColumnContent)
+            this.newColumnContent.push(this.listContent[index].content)
+        },
+        //新增算数方法
+        operation(index) {
+            this.newColumnContent.push(this.functionSign[index])
         },
         // 查询数据库中的表
         selectListContent(index) {
@@ -247,17 +266,11 @@ export default {
                 item.checked = true
                 var header = { text: '' }
                 header.text = item.content
-                if (item.checked == true) {
-                    console.log(this.chooseList)
-                    console.log(this.chooseList.indexOf(header.text))
-                    if (this.chooseList.indexOf(header.text) == -1) {
-                        this.chooseList.push(header)
-                    }
-                } else {
-                    this.chooseList.pop(header)
+                let isExist = this.chooseList.some((item) => item.text === header.text)
+                if (!isExist) {
+                    this.chooseList.push(header)
                 }
             })
-            console.log(this.chooseList)
         },
         // 取消全选
         notChoose() {
@@ -278,10 +291,21 @@ export default {
             this.newColumnContent = []
             this.isPop = true
         },
-        //确认添加@click="confirmColumn()"
+        //确认添加
         confirmColumn() {
-            this.listContent.push(this.newColumn)
-            console.log(this.newColumn)
+            if (this.newColumn != null) {
+                var column = { content: '', checked: false }
+                column.content = this.newColumn
+                this.listContent.push(column)
+                this.isPop = false
+            } else {
+                if (this.newColumnContent.length > 0) {
+                    alert('请输入列名')
+                } else {
+                    this.isPop = false
+                }
+            }
+            console.log(this.listContent)
         },
     },
 }
