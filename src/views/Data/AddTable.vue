@@ -6,7 +6,7 @@
             <!-- 所选包名 -->
             <v-list-item>
                 <v-icon class="mr-4" @click="toDatapage()">mdi-chevron-left</v-icon>
-                <v-list-item-title class="title">{{ folder.name }}</v-list-item-title>
+                <v-list-item-title class="title">{{ folder }}</v-list-item-title>
             </v-list-item>
 
             <!-- 分割线 -->
@@ -59,7 +59,7 @@
                 <!-- 展示所有表 -->
                 <v-list v-show="!isShowOther" dense>
                     <v-list-item-group>
-                        <v-list-item v-for="table in tables" :key="table.title" @click="getTable(table)">
+                        <v-list-item v-for="table in allTables" :key="table.title" @click="getTable(table)">
                             <!-- 行左侧图标 -->
                             <v-list-item-avatar size="20">
                                 <v-icon x-small class="grey lighten-1" dark> mdi-table </v-icon>
@@ -98,7 +98,7 @@
         </div>
 
         <!-- 右侧部分 -->
-        <v-main v-if="tables.length !== 0" style="height: 100%" class="pt-3">
+        <v-main v-if="allTables.length !== 0" style="height: 100%" class="pt-3">
             <!-- 数据表预览 -->
             <v-card v-show="!isShowOther" flat tile>
                 <!-- 工具栏 -->
@@ -215,7 +215,7 @@ export default {
             conn: {},
             isShowOther: false,
             tips: '请添加表',
-            // 前一个页面传过来的数据包名称
+            // 选中的数据包名称
             folder: {},
             // 点击的表
             table: {},
@@ -233,8 +233,8 @@ export default {
                 { id: 2, name: '上传文件', show: 'UpLoadFiles' },
                 { id: 3, name: '自助数据集', show: 'SelfData' },
             ],
-            // 左侧表名
-            tables: [
+            // 左侧表名,用户添加的所有的表
+            allTables: [
                 { id: 0, title: '一月全国数据表' },
                 // {
                 //     id: 1,
@@ -283,13 +283,16 @@ export default {
     created() {
         // 从vuex中取出历史连接
         this.historyConnArr = this.$store.state.databaseConnObjArr
+        // 取出用户添加的所有的表
+        this.allTables = this.$store.state.allTables
+        // 取出每个连接中所有的表
+        this.connTable = this.$store.state.connTables
+        // 取出选中的数据包名称
+        this.folder = this.$store.state.folder
 
         // 默认显示第一张表的预览
-        this.table = this.tables[0]
+        this.table = this.allTables[0]
 
-        // 从本地缓存中取出数据包对象
-        var param = localStorage.getItem('folder')
-        this.folder = JSON.parse(param)
         // 当状态为数据库表时，右侧默认显示第一个连接的所有表
         this.conn = this.historyConnArr[0]
     },
