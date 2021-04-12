@@ -21,9 +21,7 @@
                     </template>
                     <!-- 点击按钮出现的，三种选项 -->
                     <v-list>
-                        <v-list-item v-for="(option, index) in options"
-                                     :key="index"
-                                     @click="nextPage(option.show)">
+                        <v-list-item v-for="(option, index) in options" :key="index" @click="nextPage(option.show)">
                             <v-list-item-title> {{ option.name }} </v-list-item-title>
                         </v-list-item>
                     </v-list>
@@ -198,28 +196,13 @@ export default {
             ],
             // 添加表的三种选项
             options: [
-                {
-                    id: 1,
-                    name: '数据库表',
-                    show: 'DataBaseFile'
-                },
-                {
-                    id: 2,
-                    name: '上传文件',
-                    show: 'UpLoadFiles'
-                },
-                {
-                    id: 3,
-                    name: '自助数据集',
-                    show: 'SelfData'
-                },
+                { id: 1, name: '数据库表', show: 'DataBaseFile' },
+                { id: 2, name: '上传文件', show: 'UpLoadFiles' },
+                { id: 3, name: '自助数据集', show: 'SelfData' },
             ],
             // 左侧表名
             tables: [
-                {
-                    subtitle: 'Jan 9, 2014',
-                    title: '一月全国数据表',
-                },
+                { subtitle: 'Jan 9, 2014', title: '一月全国数据表' },
                 // {
                 //     subtitle: 'Jan 17, 2014',
                 //     title: '二月全国数据表',
@@ -231,18 +214,9 @@ export default {
             ],
             // 选中连接中所有的表
             connTables: [
-                {
-                    id: '0',
-                    name: '一月全国数据表',
-                },
-                {
-                    id: '1',
-                    name: '二月全国数据表',
-                },
-                {
-                    id: '2',
-                    name: '三月全国数据表',
-                },
+                { id: '0', name: '一月全国数据表' },
+                { id: '1', name: '二月全国数据表' },
+                { id: '2', name: '三月全国数据表' },
             ],
             // 被选中的表
             selectedTables: [],
@@ -251,12 +225,7 @@ export default {
              */
             // 表头
             headers: [
-                {
-                    text: 'Dessert (100g serving)',
-                    align: 'start',
-                    sortable: false,
-                    value: 'name',
-                },
+                { text: 'Dessert (100g serving)', align: 'start', sortable: false, value: 'name' },
                 { text: 'Calories', value: 'calories' },
                 { text: 'Fat (g)', value: 'fat' },
                 { text: 'Carbs (g)', value: 'carbs' },
@@ -265,86 +234,16 @@ export default {
             ],
             // 记录
             desserts: [
-                {
-                    name: 'Frozen Yogurt',
-                    calories: 200,
-                    fat: 6.0,
-                    carbs: 24,
-                    protein: 4.0,
-                    iron: '1%',
-                },
-                {
-                    name: 'Ice cream sandwich',
-                    calories: 200,
-                    fat: 9.0,
-                    carbs: 37,
-                    protein: 4.3,
-                    iron: '1%',
-                },
-                {
-                    name: 'Eclair',
-                    calories: 300,
-                    fat: 16.0,
-                    carbs: 23,
-                    protein: 6.0,
-                    iron: '7%',
-                },
-                {
-                    name: 'Cupcake',
-                    calories: 300,
-                    fat: 3.7,
-                    carbs: 67,
-                    protein: 4.3,
-                    iron: '8%',
-                },
-                {
-                    name: 'Gingerbread',
-                    calories: 400,
-                    fat: 16.0,
-                    carbs: 49,
-                    protein: 3.9,
-                    iron: '16%',
-                },
-                {
-                    name: 'Jelly bean',
-                    calories: 400,
-                    fat: 0.0,
-                    carbs: 94,
-                    protein: 0.0,
-                    iron: '0%',
-                },
-                {
-                    name: 'Lollipop',
-                    calories: 400,
-                    fat: 0.2,
-                    carbs: 98,
-                    protein: 0,
-                    iron: '2%',
-                },
-                {
-                    name: 'Honeycomb',
-                    calories: 400,
-                    fat: 3.2,
-                    carbs: 87,
-                    protein: 6.5,
-                    iron: '45%',
-                },
-                {
-                    name: 'Donut',
-                    calories: 500,
-                    fat: 25.0,
-                    carbs: 51,
-                    protein: 4.9,
-                    iron: '22%',
-                },
-                {
-                    name: 'KitKat',
-                    calories: 500,
-                    fat: 26.0,
-                    carbs: 65,
-                    protein: 7,
-                    iron: '6%',
-                },
+                { name: 'Frozen Yogurt', calories: 200, fat: 6.0, carbs: 24, protein: 4.0, iron: '1%' },
+                { name: 'Ice cream sandwich', calories: 200, fat: 9.0, carbs: 37, protein: 4.3, iron: '1%' },
+                { name: 'Eclair', calories: 300, fat: 16.0, carbs: 23, protein: 6.0, iron: '7%' },
+                { name: 'Cupcake', calories: 300, fat: 3.7, carbs: 67, protein: 4.3, iron: '8%' },
+                { name: 'Gingerbread', calories: 400, fat: 16.0, carbs: 49, protein: 3.9, iron: '16%' },
+                { name: 'Jelly bean', calories: 400, fat: 0.0, carbs: 94, protein: 0.0, iron: '0%' },
+                { name: 'Lollipop', calories: 400, fat: 0.2, carbs: 98, protein: 0, iron: '2%' },
+                { name: 'Honeycomb', calories: 400, fat: 3.2, carbs: 87, protein: 6.5, iron: '45%' },
+                { name: 'Donut', calories: 500, fat: 25.0, carbs: 51, protein: 4.9, iron: '22%' },
+                { name: 'KitKat', calories: 500, fat: 26.0, carbs: 65, protein: 7, iron: '6%' },
             ],
         }
     },
@@ -352,7 +251,6 @@ export default {
         // 从本地缓存中取出数据包对象
         var param = localStorage.getItem('folder')
         this.folder = JSON.parse(param)
-
         // 当状态为数据库表时，右侧默认显示第一个连接的所有表
         this.conn = this.historyConnArr[0]
     },
@@ -360,7 +258,7 @@ export default {
         /**
          * 跳转下一页
          */
-        nextPage (path) {
+        nextPage(path) {
             console.log(path)
             if (path == 'DataBaseFile') {
                 this.isShowOther = true
@@ -371,11 +269,10 @@ export default {
                     name: path,
                     params: {
                         isShow: true,
-                    }
+                    },
                 })
             }
         },
-
         /**
          * 表按钮的点击事件 => 选择表
          */
@@ -384,7 +281,6 @@ export default {
             this.selectedTables.push(o)
             console.log(this.selectedTables)
         },
-
         /**
          * 连接名的点击事件
          */
