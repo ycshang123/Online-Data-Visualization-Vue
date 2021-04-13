@@ -22,7 +22,10 @@
                         <v-btn
                             :disabled="folderName.length === 0"
                             text
-                            @click="dialog.value = false;addFolder()"
+                            @click="
+                                dialog.value = false
+                                addFolder()
+                            "
                             >确定</v-btn
                         >
                     </v-card-actions>
@@ -33,8 +36,7 @@
         <!-- 右侧展示所有数据集 -->
         <v-row class="d-flex mt-10">
             <v-col cols="3" v-for="(folder, index) in folders" :key="index" class="d-flex justify-start">
-                <v-card class="d-inline-block d-flex justify-start align-center ml-10"
-                min-width="50%" @click="nextPage(index)">
+                <v-card class="d-inline-block d-flex justify-start align-center ml-10" min-width="50%" @click="nextPage(folder)">
                     <v-icon class="ml-4 pcolor" medium>mdi-briefcase</v-icon>
                     <v-card-title class="subtitle-1"> {{ folder.name }} </v-card-title>
                 </v-card>
@@ -86,31 +88,30 @@ export default {
     created() {
         // 取出已经创建的数据包数组
         this.folders = this.$store.state.folders
+
     },
     methods: {
         // 添加数据包的确定按钮点击事件
         addFolder() {
             let folders = this.folders
             let folderName = this.folderName
-            let folder = { id: folders.length, name: folderName }
+            let folder = { name: folderName, files: null }
             if (folderName == null) {
                 this.disable = true
             } else {
                 this.disable = false
-                folders.push(folder)
                 // 将创建的数据包存到vuex
-                // this.$store.commit('pushDataObj', JSON.stringify(folders))
+                this.$store.commit('pushDataObj', JSON.stringify(folder))
             }
-            console.log(this.folders)
+            console.log('数据包数组：' + this.folders)
         },
         // 添加数据包按钮点击事件 => 清除文本
         cleantext() {
             this.folderName = ''
         },
-        // 数据包的点击事件 => 跳转页面、缓存数据包对象到本地
-        nextPage(index) {
-            // 将所点击的数据包对象存到本地缓存
-            // localStorage.setItem('folder', JSON.stringify(this.folders[index]))
+        // 数据包的点击事件 => 跳转页面、将数据包
+        nextPage(v) {
+            this.$store.commit('saveFolder', v)
             this.$router.push({
                 name: 'AddTable',
             })
