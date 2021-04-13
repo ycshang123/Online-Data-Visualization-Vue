@@ -142,24 +142,25 @@ export default {
         this.isShow = this.$route.params.isShow
         // 接收store里面存的数据包文件
         this.folders = this.$store.state.folders
-        console.log(JSON.stringify(this.$store.state.folders))
+        // 当前数据包的名称
+        this.folderName = this.$store.state.folder.name
         if (this.folders.length == 0) {
             var myDate = new Date()
             this.folder.name = myDate.getFullYear() + '年' + '数据包'
-            this.folder.files = []
+            this.folder.tables = []
             this.folders.push(this.folder)
             this.folders.forEach((item) => {
                 this.items.push(item.name)
-                this.foldersFile.push(item.files)
+                this.foldersFile.push(item.tables)
             })
             this.$store.commit('folders', this.folders)
         } else {
             this.folders.forEach((item) => {
                 this.items.push(item.name)
-                if (item.files == null) {
-                    item.files = []
+                if (item.tables == null) {
+                    item.tables = []
                 }
-                this.foldersFile.push(item.files)
+                this.foldersFile.push(item.tables)
                 console.log(this.foldersFile)
             })
         }
@@ -169,9 +170,10 @@ export default {
             // 是否显示返回图标
             isShow: false,
             // 添加表页面传来的数据
-            folder: { name: '', files: null },
+            folder: { name: '', tables: null },
             // 获取数据包
             folders: [],
+            folderName:'',
             //下拉框出现的所有数据包
             items: [],
             //上传的所有文件

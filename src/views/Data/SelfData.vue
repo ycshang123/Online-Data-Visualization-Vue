@@ -132,7 +132,7 @@
             <!-- 左边的数据列表区域 -->
             <v-col class="pa-0" cols="2">
                 <v-card tile flat class="pa-2" height="100%" outlined>
-                    <div class="text-subtitle-1">数据列表/2020航空数据</div>
+                    <div class="text-subtitle-1">{{ this.folder }}</div>
                     <div v-for="(item, index) in tableList" :key="index" class="mt-4">
                         <div class="text-body-2 mb-2 ml-3" @click="selectListContent(index)">{{ item }}</div>
                     </div>
@@ -176,7 +176,7 @@ export default {
             // 动态按钮添加进的数组
             newColArr: ['选字段'],
             // 数据库表名
-            tableList: ['一月数据表', '二月数据表', '三月数据表', '四月数据表', '五月数据表'],
+            tableList: [],
             // 全部数据表中的表头
             listsContent: [
                 [
@@ -219,7 +219,13 @@ export default {
             LeftNumber: 0,
             //右括号的数量
             RightNumber: 0,
+            // 数据包名称
+            folder: '',
         }
+    },
+    created() {
+        this.folder = this.$store.state.folder.name
+        this.tableList = this.$store.state.allTables
     },
     methods: {
         // 动态按钮的实现
