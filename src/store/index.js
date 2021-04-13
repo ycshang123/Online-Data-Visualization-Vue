@@ -77,6 +77,7 @@ export default new Vuex.Store({
          * @param {*} obj
          */
         saveConnTables (state, obj) {
+            state.connTables = null
             state.connTables = obj
         },
         /**
@@ -85,7 +86,7 @@ export default new Vuex.Store({
          */
         saveAllTables (state, obj) {
             state.allTables = JSON.parse(obj)
-            
+
         }
     },
     actions: {},

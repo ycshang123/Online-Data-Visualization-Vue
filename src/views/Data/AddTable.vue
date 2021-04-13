@@ -21,11 +21,26 @@
                         <v-menu bottom>
                             <!-- 按钮 -->
                             <template v-slot:activator="{ on, attrs }">
-                                <v-btn width="50%" color="#25354d" dark v-bind="attrs" style="opacity: 0.9" v-on="on"> 添加表 </v-btn>
+                                <v-btn
+                                    @click="addBtnClick()"
+                                    width="50%"
+                                    color="#25354d"
+                                    dark
+                                    v-bind="attrs"
+                                    style="opacity: 0.9"
+                                    v-on="on"
+                                >
+                                    添加表
+                                </v-btn>
                             </template>
                             <!-- 点击按钮出现的，三种选项 -->
                             <v-list>
-                                <v-list-item v-for="(option, index) in options" :key="index" @click="nextPage(option.show)">
+                                <v-list-item
+                                    v-show="option.isShow"
+                                    v-for="(option, index) in options"
+                                    :key="index"
+                                    @click="nextPage(option.show)"
+                                >
                                     <v-list-item-title> {{ option.name }} </v-list-item-title>
                                 </v-list-item>
                             </v-list>
@@ -131,7 +146,7 @@
                     <v-spacer></v-spacer>
                     <!-- 已选择（）项 -->
                     <v-card flat class="d-flex align-center mr-4" max-height="40">
-                        <v-card-subtitle>已选择{{ allTables.length }}项</v-card-subtitle>
+                        <v-card-subtitle>已选择{{ selectedTables.length }}项</v-card-subtitle>
                     </v-card>
                     <!-- 取消和确定按钮 -->
                     <v-card flat class="d-flex px-2" width="20%">
@@ -153,7 +168,7 @@
                 </v-card-title>
                 <!-- 数据库表-连接中所有的表 -->
                 <v-main>
-                    <v-row class="d-flex mt-10">
+                    <v-row class="d-flex">
                         <v-col
                             cols="3"
                             v-for="(item, index) in connTables"
@@ -199,9 +214,9 @@ export default {
             historyConnArr: [],
             // 添加表的三种选项
             options: [
-                { id: 1, name: '数据库表', show: 'DataBaseFile' },
-                { id: 2, name: '上传文件', show: 'UpLoadFiles' },
-                { id: 3, name: '自助数据集', show: 'SelfData' },
+                { id: 1, name: '数据库表', show: 'DataBaseFile', isShow: true },
+                { id: 2, name: '上传文件', show: 'UpLoadFiles', isShow: true },
+                { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
             ],
             // 左侧表名,用户添加的所有的表
             allTables: [
@@ -264,6 +279,17 @@ export default {
     },
     methods: {
         /**
+         * @description: 添加表按钮的点击事件，判断是否显示“自助数据集选项”
+         * @param {*}
+         * @return {*}
+         */
+        addBtnClick() {
+            if (this.allTables.length != 0) {
+                this.options[2].isShow = true
+            }
+        },
+
+        /**
          * @description: 确定按钮点击事件，构建用户选择的所有的表
          * @param {*}
          * @return {*}
@@ -305,6 +331,8 @@ export default {
                             console.log('当前连接中所有的表：' + res.data)
                             console.log('当前连接对象：' + conn)
                             this.$store.commit('saveConnTables', res.data)
+                            // 取出每个连接中所有的表
+                            this.connTables = this.$store.state.connTables
                         }
                     })
                 }
@@ -322,7 +350,10 @@ export default {
          */
         selectTable(o) {
             const allTables = this.allTables
+            const selectedTables = this.selectedTables
             allTables.push(o)
+            selectedTables.push(o)
+
             // allTables.forEach((element) => {
             //     if (element != o) {
             //         allTables.push(o)
@@ -330,15 +361,28 @@ export default {
             //         alert('请勿重复选择')
             //     }
             // })
-            console.log(this.allTables)
         },
         /**
          * 连接名的点击事件
          */
-        showAllTable(o) {
+        async showAllTable(o) {
             // 把被点击连接对象赋值给单独的变量conn，用作在右侧显示连接名和图标
             this.conn = o
-            // 请求接口 => 获取该连接中所有的表
+            console.log(this.conn)
+            // 请求接口 => 获取当前连接所有的表名
+            // 当前连接默认为数组中的第一个
+            await getConnTables(this.conn).then((res) => {
+                console.log('请求接口')
+                if (res.code === 200) {
+                    console.log('当前连接中所有的表：' + res.data)
+                    console.log('当前连接对象：' + this.conn)
+                    this.$store.commit('saveConnTables', res.data)
+                    // 取出每个连接中所有的表
+                    this.connTables = this.$store.state.connTables
+                } else {
+                    console.log('连接失败')
+                }
+            })
         },
         /**
          * 返回数据集界面
