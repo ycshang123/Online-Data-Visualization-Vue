@@ -46,6 +46,7 @@
                             </v-list>
                         </v-menu>
                     </div>
+                    <!-- 表名 -->
                     <v-list-item-group>
                         <v-list-item v-for="(table, index) in allTables" :key="index" @click="getTable(table)">
                             <!-- 行左侧图标 -->
@@ -54,7 +55,7 @@
                             </v-list-item-avatar>
                             <!-- 行右侧表名 -->
                             <v-list-item-content>
-                                <v-list-item-title v-text="table"></v-list-item-title>
+                                <v-list-item-title v-text="table.name"></v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
                     </v-list-item-group>
@@ -96,7 +97,7 @@
                         <v-icon>mdi-table</v-icon>
                     </v-btn>
                     <!-- 表名 -->
-                    {{ table }}
+                    {{ table.name }}
 
                     <!-- 空间填充 -->
                     <v-spacer></v-spacer>
@@ -262,9 +263,8 @@ export default {
         this.folder = this.$store.state.folder
         console.log(this.folder)
 
-
         // 默认显示第一张表的预览
-        // this.table = this.allTables[0]
+        this.table = this.allTables[0]
 
         // 当状态为数据库表时，右侧默认显示第一个连接的所有表
         this.conn = this.historyConnArr[0]
@@ -348,12 +348,14 @@ export default {
         /**
          * 每个表名按钮的点击事件 => 选择表
          */
-        selectTable(o) {
-            this.allTables=[]
+        selectTable(v) {
+            this.allTables = []
+            var table = { name: '' }
+            table.name = v
             const allTables = this.allTables
             const selectedTables = this.selectedTables
-            allTables.push(o)
-            selectedTables.push(o)
+            allTables.push(table)
+            selectedTables.push(table)
 
             // allTables.forEach((element) => {
             //     if (element != o) {
