@@ -219,17 +219,7 @@ export default {
                 { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
             ],
             // 左侧表名,用户添加的所有的表
-            allTables: [
-                // { id: 0, title: '一月全国数据表' },
-                // {
-                //     id: 1,
-                //     title: '二月全国数据表',
-                // },
-                // {
-                //     id: 2,
-                //     title: '三月全国数据表',
-                // },
-            ],
+            allTables: [],
             // 每个连接中所有的表
             connTables: [],
             // 被选中的所有的表
@@ -270,6 +260,7 @@ export default {
         this.connTables = this.$store.state.connTables
         // 取出选中的数据包名称
         this.folder = this.$store.state.folder
+        console.log(this.folder)
 
         // 默认显示第一张表的预览
         this.table = this.allTables[0]
@@ -297,8 +288,16 @@ export default {
         pushAllTables() {
             this.isShowOther = false
             // this.allTables.push(this.selectedTables)
-            this.$store.commit('saveAllTables', JSON.stringify(this.allTables))
-            console.log(this.allTables)
+            this.folder.tables = this.allTables
+            console.log(this.folder.tables)
+            const folders = this.$store.state.folders
+            folders.forEach((element) => {
+                if (element.name == this.folder.name) {
+                    element.tables = this.folder.tables
+                }
+            })
+            this.$store.commit('folders', folders)
+            console.log(folders)
         },
         /**
          * @description: 左侧部分，获取当前点击的表名
