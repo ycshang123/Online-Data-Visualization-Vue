@@ -217,7 +217,6 @@ export default {
         addBtn(index) {
             console.log(index)
             console.log('数组长度' + this.newColArr.length)
-
             this.content = this.addColArr[index]
             if (index > this.newColArr.length - 1) {
                 alert('请按照顺序操作')
@@ -238,11 +237,45 @@ export default {
         },
         // 新增列元素
         addColumnContent(index) {
-            this.newColumnContent.push(this.listContent[index].content)
+            var length = this.newColumnContent.length
+            if (length == 0) {
+                this.newColumnContent.push(this.listContent[index].content)
+            } else {
+                var position = length - 1
+                var sign = this.newColumnContent[position]
+                //没有找到运算符号
+                if (this.functionSign.indexOf(sign) == -1) {
+                    alert('请选择合适的运算符号')
+                } else {
+                    this.newColumnContent.push(this.listContent[index].content)
+                }
+            }
         },
         //新增算数方法
         operation(index) {
-            this.newColumnContent.push(this.functionSign[index])
+            var length = this.newColumnContent.length
+            if (length == 0) {
+                console.log('我进来啦')
+                alert('请选择合适的列进行运算')
+            } else {
+                var position = length - 1
+                var sign = this.newColumnContent[[position]]
+                console.log(this.newColumnContent)
+                let isExist = this.listContent.some((item) => item.content === sign)
+                // 数组的前一个数据是字段时为true
+                if (isExist) {
+                    if (this.functionSign[index] == '}') {
+                        console.log(this.newColumnContent.some((item) => item === '{'))
+                        if (!this.newColumnContent.some((item) => item === '{')) {
+                            alert('请先选择左括号')
+                        } else {
+                            this.newColumnContent.push(this.functionSign[index])
+                        }
+                    }
+                } else {
+                    alert('请选择合适的列进行运算')
+                }
+            }
         },
         // 查询数据库中的表
         selectListContent(index) {

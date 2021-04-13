@@ -28,7 +28,7 @@
                 <v-card width="60%" class="d-flex justify-space-around" tile elevation="0" v-if="!isdisplay">
                     <v-card width="30%" class="d-flex align-center ma-3" tile elevation="0"> 上传文件 </v-card>
                     <v-card class="d-flex justify-center align-items-center" width="70%" tile elevation="0">
-                        <v-col class="d-flex align-center"> 上传数据包至： </v-col>
+                        <!-- <v-col class="d-flex align-center"> 上传数据包至： </v-col> -->
                         <v-col cols="8" style="margin-top: 8%">
                             <v-select :label="items[0]" solo :items="items" @change="changeNumber"> </v-select>
                         </v-col>
@@ -39,6 +39,9 @@
                 <v-col cols="1">
                     <v-btn @click="uploadFile()">确定</v-btn>
                 </v-col>
+                <v-col cols="1">
+                    <v-btn @click="returnPage()">上传完成</v-btn>
+                </v-col>
             </v-card>
 
             <v-card width="92%" tile flat>
@@ -47,12 +50,12 @@
                     v-if="status"
                     width="600px"
                     height="370px"
-                    color="rgba(38, 50, 56,0.1)"
+                    color="rgba(38, 50, 56,0.5)"
                     class="d-flex flex-column"
                     style="margin-top: 13%; margin-left: 20%"
                 >
                     <span class="mdi mdi-close mdi-24px" style="padding-left: 94%" @click="changeStatus()"></span>
-                    <span style="padding-left: 40%; padding-top: 20%">{{ text }}</span>
+                    <v-card height="90%" class="d-flex justify-center align-center" tile elevation="0" color="#92989b">{{ text }}</v-card>
                 </v-card>
                 <!-- 文件上传 -->
                 <v-card
@@ -122,7 +125,7 @@
                             style="position: fixed; z-index: 1; margin-bottom: 10%"
                             class="d-flex align-center justify-center"
                         >
-                            请不要上传重复文件
+                            {{ tips }}
                         </v-card>
                     </v-card>
                 </v-card>
@@ -142,7 +145,7 @@ export default {
         console.log(JSON.stringify(this.$store.state.folders))
         if (this.folders.length == 0) {
             var myDate = new Date()
-            this.folder.name = myDate.getFullYear() + '年' + myDate.getMonth() + '月数据包'
+            this.folder.name = myDate.getFullYear() + '年' + '数据包'
             this.folder.files = []
             this.folders.push(this.folder)
             this.folders.forEach((item) => {
@@ -158,9 +161,6 @@ export default {
                 }
                 this.foldersFile.push(item.files)
                 console.log(this.foldersFile)
-                // if (item.files.length > 0) {
-                //     this.foldersFile[this.number] = items.files
-                // }
             })
         }
     },
@@ -187,9 +187,7 @@ export default {
             isdisplay: false,
             // 默认给第一个数据包传送数据
             number: 0,
-            //
-            isEmpty: undefined,
-            isObject: Object,
+            tips: '',
         }
     },
     methods: {
@@ -209,7 +207,7 @@ export default {
             if (this.files.length == 0) {
                 this.status = true
             }
-            if (this.foldersFile[this.number] == this.isObject) {
+            if (this.foldersFile[this.number].length != 0) {
                 this.files.forEach((file) => {
                     let isExist = this.foldersFile[this.number].some((item) => item.name === file.name)
                     if (!isExist) {
@@ -217,6 +215,7 @@ export default {
                         this.files = []
                     } else {
                         this.contains = true
+                        this.tips = '请不要上传重复文件'
                         setTimeout(() => {
                             this.contains = false
                         }, 2000)
@@ -230,10 +229,18 @@ export default {
                     this.foldersFile[this.number].push(file)
                 })
                 console.log(this.foldersFile)
-                // uloadFilesApi(formData).then((res) => {
-                //     console.log(res)
-                //     this.files = []
-                // })
+                uloadFilesApi(formData).then((res) => {
+                    if (res.code == 200) {
+                        this.contains = true
+                        this.tips = '文件上传成功'
+                        setTimeout(() => {
+                            this.contains = false
+                        }, 2000)
+                        this.files = []
+                    }
+                    console.log(res)
+                    this.files = []
+                })
             }
         },
         changeStatus() {
@@ -253,6 +260,9 @@ export default {
             }
             console.log(typeof this.foldersFile[this.number])
             // this.number = index
+        },
+        returnPage() {
+            this.$router.go(-1)
         },
     },
 }
