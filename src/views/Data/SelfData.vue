@@ -60,18 +60,24 @@
                             </div>
                         </v-card>
                         <v-card height="92%" width="100%" tile elevation="0">
-                            <span v-if="newColumnContent.length == 0" style="font-size: 12px; color: #d5dbe0" class="pa-2"
-                                >示例：销售额/计划销售额</span
+                            <v-card v-if="newColumnContent.length == 0" width="100%" height="90%" tile elevation="0">
+                                <span style="font-size: 12px; color: #d5dbe0" class="pa-2">示例：销售额/计划销售额</span></v-card
                             >
-                            <span
-                                v-else
-                                v-for="(item, index) in newColumnContent"
-                                :key="index"
-                                class="pa-3"
-                                style="font-size: 12px; color: #616161"
+
+                            <v-card width="100%" height="90%" v-else>
+                                <span
+                                    style="font-size: 12px; color: #616161"
+                                    v-for="(item, index) in newColumnContent"
+                                    :key="index"
+                                    tile
+                                    elevation="0"
+                                >
+                                    {{ item }}</span
+                                >
+                            </v-card>
+                            <v-card height="10%" tile elevation="0" class="d-flex align-center justify-end">
+                                <span style="font-size: 14px; color: #3296fa" class="mr-4" @click="clearContent()">清空</span></v-card
                             >
-                                {{ item }}
-                            </span>
                         </v-card>
                     </v-card>
                 </v-card>
@@ -140,7 +146,6 @@
                             >全选</v-btn
                         >
                         <v-btn v-else @click="notChoose()">取消全选</v-btn>
-                        <v-btn>确定添加</v-btn>
                     </v-card>
                     <v-card width="100%" height="90%" class="pa-2" tile flat>
                         <div
@@ -204,12 +209,16 @@ export default {
             // 新增列窗口左侧对应的函数
             functionSelect: ['公式/函数', '时间差', '获取时间', '所有值/组内', '分组赋值', '排名'],
             // 可以操作的算数运算
-            functionSign: ['+', '-', '*', '/', '{', '}'],
+            functionSign: ['+', '-', '*', '/', '(', ')'],
             textType: [{ name: '数值字段' }, { name: '文本字段' }, { name: '时间字段' }],
             // 新增列右侧进行运算的部分
             newColumnContent: [],
             // 新增列的名称
             newColumn: null,
+            //左括号的数量
+            LeftNumber: 0,
+            //右括号的数量
+            RightNumber: 0,
         }
     },
     methods: {
@@ -255,22 +264,31 @@ export default {
         operation(index) {
             var length = this.newColumnContent.length
             if (length == 0) {
-                console.log('我进来啦')
-                alert('请选择合适的列进行运算')
+                if (this.functionSign[index] == '(') {
+                    this.LeftNumber = this.LeftNumber + 1
+                    this.newColumnContent.push(this.functionSign[index])
+                }
             } else {
                 var position = length - 1
                 var sign = this.newColumnContent[[position]]
                 console.log(this.newColumnContent)
                 let isExist = this.listContent.some((item) => item.content === sign)
+                console.log(isExist)
                 // 数组的前一个数据是字段时为true
-                if (isExist) {
-                    if (this.functionSign[index] == '}') {
-                        console.log(this.newColumnContent.some((item) => item === '{'))
-                        if (!this.newColumnContent.some((item) => item === '{')) {
+                if (isExist || this.functionSign[index] == '(' || this.functionSign[index] == ')') {
+                    if (this.functionSign[index] == ')') {
+                        if (!this.newColumnContent.some((item) => item === '(')) {
                             alert('请先选择左括号')
                         } else {
+                            if (this.functionSign[index] == '(') {
+                                this.LeftNumber = this.LeftNumber + 1
+                            } else if (this.functionSign[index] == ')') {
+                                this.RightNumber = this.RightNumber + 1
+                            }
                             this.newColumnContent.push(this.functionSign[index])
                         }
+                    } else {
+                        this.newColumnContent.push(this.functionSign[index])
                     }
                 } else {
                     alert('请选择合适的列进行运算')
@@ -326,6 +344,11 @@ export default {
         },
         //确认添加
         confirmColumn() {
+            console.log(this.LeftNumber)
+            console.log(this.RightNumber)
+            if (this.LeftNumber != this.RightNumber) {
+                alert('左右括号不对称')
+            }
             if (this.newColumn != null) {
                 var column = { content: '', checked: false }
                 column.content = this.newColumn
@@ -339,6 +362,10 @@ export default {
                 }
             }
             console.log(this.listContent)
+        },
+        // 清空新增列的内容
+        clearContent() {
+            this.newColumnContent = []
         },
     },
 }

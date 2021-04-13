@@ -1,5 +1,6 @@
 <template>
     <div class="d-flex justify-space-around" style="height: 100%">
+        <v-overlay v-if="contains" style="position: absolute; z-index: 1"></v-overlay>
         <div style="border-right: 0.5px solid #e0e0e0; width: 19%">
             <v-list-item v-if="isdisplay">
                 <v-icon @click="previousPage()" class="mdi mdi-chevron-left mdi-24px"></v-icon>
@@ -16,9 +17,9 @@
                 <v-list-item-content>
                     <v-list-item-subtitle> {{ item.name }}</v-list-item-subtitle>
                 </v-list-item-content>
-                <v-list-item-icon>
+                <!-- <v-list-item-icon>
                     <v-icon @click="delectFile(item)">mdi mdi-close</v-icon>
-                </v-list-item-icon>
+                </v-list-item-icon> -->
             </v-list-item>
         </div>
 
@@ -120,7 +121,6 @@
                         <v-card
                             width="400px"
                             height="270px"
-                            color="rgba(38, 50, 56,0.1)"
                             v-if="this.contains"
                             style="position: fixed; z-index: 1; margin-bottom: 10%"
                             class="d-flex align-center justify-center"
