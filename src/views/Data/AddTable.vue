@@ -6,7 +6,7 @@
             <!-- 所选包名 -->
             <v-list-item>
                 <v-icon class="mr-4" @click="toDatapage()">mdi-chevron-left</v-icon>
-                <v-list-item-title class="title">{{ folder }}</v-list-item-title>
+                <v-list-item-title class="title">{{ folder.name }}</v-list-item-title>
             </v-list-item>
 
             <!-- 分割线 -->
@@ -21,25 +21,40 @@
                         <v-menu bottom>
                             <!-- 按钮 -->
                             <template v-slot:activator="{ on, attrs }">
-                                <v-btn width="50%" color="#25354d" dark v-bind="attrs" style="opacity: 0.9" v-on="on"> 添加表 </v-btn>
+                                <v-btn
+                                    @click="addBtnClick()"
+                                    width="50%"
+                                    color="#25354d"
+                                    dark
+                                    v-bind="attrs"
+                                    style="opacity: 0.9"
+                                    v-on="on"
+                                >
+                                    添加表
+                                </v-btn>
                             </template>
                             <!-- 点击按钮出现的，三种选项 -->
                             <v-list>
-                                <v-list-item v-for="(option, index) in options" :key="index" @click="nextPage(option.show)">
+                                <v-list-item
+                                    v-show="option.isShow"
+                                    v-for="(option, index) in options"
+                                    :key="index"
+                                    @click="nextPage(option.show)"
+                                >
                                     <v-list-item-title> {{ option.name }} </v-list-item-title>
                                 </v-list-item>
                             </v-list>
                         </v-menu>
                     </div>
                     <v-list-item-group>
-                        <v-list-item v-for="table in allTables" :key="table.title" @click="getTable(table)">
+                        <v-list-item v-for="(table, index) in allTables" :key="index" @click="getTable(table)">
                             <!-- 行左侧图标 -->
                             <v-list-item-avatar size="20">
                                 <v-icon x-small class="grey lighten-1" dark> mdi-table </v-icon>
                             </v-list-item-avatar>
                             <!-- 行右侧表名 -->
                             <v-list-item-content>
-                                <v-list-item-title v-text="table.title"></v-list-item-title>
+                                <v-list-item-title v-text="table"></v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
                     </v-list-item-group>
@@ -81,7 +96,7 @@
                         <v-icon>mdi-table</v-icon>
                     </v-btn>
                     <!-- 表名 -->
-                    {{ table.title }}
+                    {{ table }}
 
                     <!-- 空间填充 -->
                     <v-spacer></v-spacer>
@@ -153,7 +168,7 @@
                 </v-card-title>
                 <!-- 数据库表-连接中所有的表 -->
                 <v-main>
-                    <v-row class="d-flex mt-10">
+                    <v-row class="d-flex">
                         <v-col
                             cols="3"
                             v-for="(item, index) in connTables"
@@ -199,13 +214,13 @@ export default {
             historyConnArr: [],
             // 添加表的三种选项
             options: [
-                { id: 1, name: '数据库表', show: 'DataBaseFile' },
-                { id: 2, name: '上传文件', show: 'UpLoadFiles' },
-                { id: 3, name: '自助数据集', show: 'SelfData' },
+                { id: 1, name: '数据库表', show: 'DataBaseFile', isShow: true },
+                { id: 2, name: '上传文件', show: 'UpLoadFiles', isShow: true },
+                { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
             ],
             // 左侧表名,用户添加的所有的表
             allTables: [
-                { id: 0, title: '一月全国数据表' },
+                // { id: 0, title: '一月全国数据表' },
                 // {
                 //     id: 1,
                 //     title: '二月全国数据表',
@@ -264,16 +279,29 @@ export default {
     },
     methods: {
         /**
-         * @description: 构建用户选择的所有的表
+         * @description: 添加表按钮的点击事件，判断是否显示“自助数据集选项”
+         * @param {*}
+         * @return {*}
+         */
+        addBtnClick() {
+            if (this.allTables.length != 0) {
+                this.options[2].isShow = true
+            }
+        },
+
+        /**
+         * @description: 确定按钮点击事件，构建用户选择的所有的表
          * @param {*}
          * @return {*}
          */
         pushAllTables() {
-            this.allTables.push(this.selectedTables)
+            this.isShowOther = false
+            // this.allTables.push(this.selectedTables)
+            this.$store.commit('saveAllTables', JSON.stringify(this.allTables))
             console.log(this.allTables)
         },
         /**
-         * @description: 获取当前点击的表名
+         * @description: 左侧部分，获取当前点击的表名
          * @param {*} o
          * @return {*}
          */
@@ -300,9 +328,11 @@ export default {
                     const conn = this.historyConnArr[0]
                     await getConnTables(conn).then((res) => {
                         if (res.code === 200) {
-                            console.log('请求接口：' + res.data)
-                            console.log(conn)
+                            console.log('当前连接中所有的表：' + res.data)
+                            console.log('当前连接对象：' + conn)
                             this.$store.commit('saveConnTables', res.data)
+                            // 取出每个连接中所有的表
+                            this.connTables = this.$store.state.connTables
                         }
                     })
                 }
@@ -319,16 +349,40 @@ export default {
          * 每个表名按钮的点击事件 => 选择表
          */
         selectTable(o) {
-            this.selectedTables.push(o)
-            console.log(this.selectedTables)
+            const allTables = this.allTables
+            const selectedTables = this.selectedTables
+            allTables.push(o)
+            selectedTables.push(o)
+
+            // allTables.forEach((element) => {
+            //     if (element != o) {
+            //         allTables.push(o)
+            //     }else {
+            //         alert('请勿重复选择')
+            //     }
+            // })
         },
         /**
          * 连接名的点击事件
          */
-        showAllTable(o) {
+        async showAllTable(o) {
             // 把被点击连接对象赋值给单独的变量conn，用作在右侧显示连接名和图标
             this.conn = o
-            // 请求接口 => 获取该连接中所有的表
+            console.log(this.conn)
+            // 请求接口 => 获取当前连接所有的表名
+            // 当前连接默认为数组中的第一个
+            await getConnTables(this.conn).then((res) => {
+                console.log('请求接口')
+                if (res.code === 200) {
+                    console.log('当前连接中所有的表：' + res.data)
+                    console.log('当前连接对象：' + this.conn)
+                    this.$store.commit('saveConnTables', res.data)
+                    // 取出每个连接中所有的表
+                    this.connTables = this.$store.state.connTables
+                } else {
+                    console.log('连接失败')
+                }
+            })
         },
         /**
          * 返回数据集界面
