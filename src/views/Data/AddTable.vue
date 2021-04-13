@@ -88,7 +88,7 @@
         <!-- 右侧部分 -->
         <v-main style="height: 100%" class="pt-3">
             <!-- 数据表预览 -->
-            <v-card v-if="!isShowOther && allTables.length !== 0" flat tile>
+            <v-card v-if="!isShowOther && allTables !== null" flat tile>
                 <!-- 工具栏 -->
                 <!-- 表名图标 -->
                 <v-card-title style="height: 10%" class="pt-2 subtitle-2">
@@ -219,17 +219,7 @@ export default {
                 { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
             ],
             // 左侧表名,用户添加的所有的表
-            allTables: [
-                // { id: 0, title: '一月全国数据表' },
-                // {
-                //     id: 1,
-                //     title: '二月全国数据表',
-                // },
-                // {
-                //     id: 2,
-                //     title: '三月全国数据表',
-                // },
-            ],
+            allTables: null,
             // 每个连接中所有的表
             connTables: [],
             // 被选中的所有的表
@@ -265,14 +255,16 @@ export default {
         // 从vuex中取出历史连接
         this.historyConnArr = this.$store.state.databaseConnObjArr
         // 取出用户添加的所有的表
-        this.allTables = this.$store.state.allTables
+        this.allTables = this.$store.state.folder.tables
         // 取出每个连接中所有的表
         this.connTables = this.$store.state.connTables
         // 取出选中的数据包名称
         this.folder = this.$store.state.folder
+        console.log(this.folder)
+
 
         // 默认显示第一张表的预览
-        this.table = this.allTables[0]
+        // this.table = this.allTables[0]
 
         // 当状态为数据库表时，右侧默认显示第一个连接的所有表
         this.conn = this.historyConnArr[0]
@@ -284,7 +276,7 @@ export default {
          * @return {*}
          */
         addBtnClick() {
-            if (this.allTables.length != 0) {
+            if (this.allTables != null) {
                 this.options[2].isShow = true
             }
         },
@@ -297,8 +289,16 @@ export default {
         pushAllTables() {
             this.isShowOther = false
             // this.allTables.push(this.selectedTables)
-            this.$store.commit('saveAllTables', JSON.stringify(this.allTables))
-            console.log(this.allTables)
+            this.folder.tables = this.allTables
+            console.log(this.folder.tables)
+            const folders = this.$store.state.folders
+            folders.forEach((element) => {
+                if (element.name == this.folder.name) {
+                    element.tables = this.folder.tables
+                }
+            })
+            this.$store.commit('folders', folders)
+            console.log(folders)
         },
         /**
          * @description: 左侧部分，获取当前点击的表名
@@ -349,6 +349,7 @@ export default {
          * 每个表名按钮的点击事件 => 选择表
          */
         selectTable(o) {
+            this.allTables=[]
             const allTables = this.allTables
             const selectedTables = this.selectedTables
             allTables.push(o)
