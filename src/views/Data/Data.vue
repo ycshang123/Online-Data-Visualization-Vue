@@ -100,7 +100,26 @@ export default {
                 this.disable = true
             } else {
                 this.disable = false
+                this.folders = this.$store.state.folders
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 // 将创建的数据包存到vuex
+                this.folders.some(item => item.name)
+                // if(){
+
+                // }
                 this.$store.commit('pushDataObj', JSON.stringify(folder))
                 // console.log(this.folders);
             }

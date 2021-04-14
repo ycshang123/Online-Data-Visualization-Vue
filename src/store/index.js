@@ -75,7 +75,7 @@ export default new Vuex.Store({
          * @param {*} obj
          */
         pushDataObj (state, obj) {
-            console.log(JSON.parse(obj))
+            console.log("新建数据包：" + JSON.parse(obj))
             state.folders.push(JSON.parse(obj))
         },
 
@@ -86,6 +86,14 @@ export default new Vuex.Store({
          */
         saveFolder (state, obj) {
             state.folder = obj
+        },
+        /**
+         * @description:存储数据集
+         * @param {*} state
+         * @param {*} v
+         */
+        saveFolders (state, obj) {
+            state.folders = obj
         },
         /**
          * @description:存每个连接所有的表名

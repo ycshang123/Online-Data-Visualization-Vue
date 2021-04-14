@@ -292,36 +292,41 @@ export default {
             this.isShowOther = false
             // 被选择的表
             const selectedTables = this.selectedTables
+            if (this.allTables == null){
+                // 用户选择的所有的表 => 数据包中所有的表
+                this.allTables = []
+            }else {
+                this.allTables = this.$store.state.folder.tables
+            }
+
+            // 将被选中的表push到allTables数组中
             selectedTables.forEach((element) => {
                 this.allTables.push(element)
             })
+            console.log(this.allTables)
             this.folder.tables = this.allTables
+            // 实时更新每个数据包里的数据
             const folders = this.$store.state.folders
             folders.forEach((element) => {
                 if (element.name == this.folder.name) {
                     element.tables = this.folder.tables
                 }
             })
-            this.$store.commit('folders', folders)
+            this.$store.commit('saveFolders', folders)
+
             // console.log(folders)
         },
+
         /**
-         * @description: 左侧部分，获取当前点击的表名
-         * @param {*} o
-         * @return {*}
-         */
-        getTable(o) {
-            this.table = o
-            console.log(this.table)
-        },
-        /**
-         * 跳转下一页
+         *  options的点击事件 => 跳转下一页
          */
         async nextPage(path) {
             // 如果点击的是“数据库表”
             if (path == 'DatabaseConn') {
                 // 显示数据库表相关的版块
                 this.isShowOther = true
+                // 置空数组
+                // this.selectedTables = []
                 // 实时获取历史连接
                 this.historyConnArr = this.$store.state.databaseConnObjArr
                 // 如果历史连接为空，则跳转到新建连接页面
@@ -359,18 +364,19 @@ export default {
          * 每个表名按钮的点击事件 => 选择表
          */
         selectTable(v) {
-            this.allTables = []
+            // this.allTables = []
             var table = { name: '' }
             table.name = v
-            const allTables = this.allTables
+            // const allTables = this.allTables
             const selectedTables = this.selectedTables
             // 去重
             const isExist = selectedTables.some((item) => item.name === table.name)
             if (!isExist) {
-                allTables.push(table)
+                // allTables.push(table)
                 selectedTables.push(table)
             }
-            this.allTables = allTables
+
+            // this.allTables = allTables
             // allTables.forEach((element) => {
             //     if (element != o) {
             //         allTables.push(o)
@@ -406,6 +412,16 @@ export default {
          */
         toDatapage() {
             this.$router.push('/data')
+        },
+
+        /**
+         * @description: 左侧部分，获取当前点击的表名
+         * @param {*} o
+         * @return {*}
+         */
+        getTable(o) {
+            this.table = o
+            console.log(this.table)
         },
     },
 }
