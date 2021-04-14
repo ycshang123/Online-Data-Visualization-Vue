@@ -372,7 +372,7 @@ export default {
             // 去重
             const isExist = selectedTables.some((item) => item.name === table.name)
             if (!isExist) {
-                // allTables.push(table)
+                allTables.push(table)
                 selectedTables.push(table)
             }
 

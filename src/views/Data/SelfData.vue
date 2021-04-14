@@ -41,7 +41,9 @@
                         />
                         <div style="height: 93%; width: 100%; overflow-y: auto; white-space: nowrap">
                             <div v-for="(item, index) in listContent" :key="index" class="ml-2">
-                                <span style="color: #3f3f4c; font-size: 12px" @click="addColumnContent(index)">{{ item.content }}</span>
+                                <span style="color: #3f3f4c; font-size: 12px" @click="addColumnContent(index)">{{
+                                    item.content.substring(0, 3)
+                                }}</span>
                             </div>
                         </div>
                     </v-card>
@@ -132,9 +134,12 @@
             <!-- 左边的数据列表区域 -->
             <v-col class="pa-0" cols="2">
                 <v-card tile flat class="pa-2" height="100%" outlined>
-                    <div class="text-subtitle-1">数据列表/2020航空数据</div>
+                    <div class="text-subtitle-1">{{ this.folder }}</div>
                     <div v-for="(item, index) in tableList" :key="index" class="mt-4">
-                        <div class="text-body-2 mb-2 ml-3" @click="selectListContent(index)">{{ item }}</div>
+                        <div class="text-body-2 mb-2 ml-3" @click="ColumnArr(index)" v-cursor>
+                            <span class="mdi mdi-table-large"></span>
+                            <span> {{ item.name }}</span>
+                        </div>
                     </div>
                 </v-card>
             </v-col>
@@ -142,9 +147,7 @@
             <v-col cols="2" class="pa-0 red d-flex flex-column align-center">
                 <v-card class="d-flex flex-column align-center" outlined flat tile style="height: 100%; width: 100%">
                     <v-card width="100%" height="10%" class="d-flex align-center justify-space-between pa-2" tile elevation="0">
-                        <v-btn @click="chooseAllColumn()" v-if="status" :disabled="listContent == null || listContent.length == 0"
-                            >全选</v-btn
-                        >
+                        <v-btn @click="chooseAllColumn()" v-if="status" :disabled="listContent.length == 0">全选</v-btn>
                         <v-btn v-else @click="notChoose()">取消全选</v-btn>
                     </v-card>
                     <v-card width="100%" height="90%" class="pa-2" tile flat>
@@ -168,6 +171,7 @@
     </div>
 </template>
 <script>
+import { getConnTableColumn } from '../../common/api/select'
 export default {
     data() {
         return {
@@ -176,7 +180,7 @@ export default {
             // 动态按钮添加进的数组
             newColArr: ['选字段'],
             // 数据库表名
-            tableList: ['一月数据表', '二月数据表', '三月数据表', '四月数据表', '五月数据表'],
+            tableList: [],
             // 全部数据表中的表头
             listsContent: [
                 [
@@ -199,7 +203,7 @@ export default {
                 [{ content: '五月数据表内容', checked: false }],
             ],
             // 每个数据表对应的表头
-            listContent: null,
+            listContent: [],
             // 选择的表头
             chooseList: [],
             // 是否全选、取消全选
@@ -219,7 +223,19 @@ export default {
             LeftNumber: 0,
             //右括号的数量
             RightNumber: 0,
+            // 数据包名称
+            folder: '',
+            // 数据库连接信息
+            databaseConn: {},
+            // 获取表中的字段
+            columnArr: { tableName: '', sqlType: '', userName: '', password: '', host: '', port: '', database: '' },
         }
+    },
+    created() {
+        this.folder = this.$store.state.folder.name
+        this.tableList = this.$store.state.folder.tables
+        console.log(this.tableList)
+        this.databaseConn = this.$store.state.databaseConnObjArr[0]
     },
     methods: {
         // 动态按钮的实现
@@ -366,6 +382,41 @@ export default {
         // 清空新增列的内容
         clearContent() {
             this.newColumnContent = []
+        },
+        // 获取表中的字段
+        ColumnArr(index) {
+            if (
+                this.tableList[index].name.endsWith('.csv') ||
+                this.tableList[index].name.endsWith('.xlsx') ||
+                this.tableList[index].name.endsWith('.xls')
+            ) {
+                this.listContent = []
+                this.tableList.forEach((item) => {
+                    if (item.name == this.tableList[index].name) {
+                        var fieldsList = item.file_list[0]
+                        fieldsList.forEach((item) => {
+                            var field = { content: null, checked: false }
+                            field.content = item
+                            console.log(field)
+                            this.listContent.push(field)
+                        })
+                    }
+                })
+            } else {
+                this.columnArr = this.databaseConn
+                this.columnArr.tableName = this.tableList[index].name
+                getConnTableColumn(this.columnArr).then((res) => {
+                    this.listContent = []
+                    var fieldsList = res.data
+                    console.log(fieldsList)
+                    fieldsList.forEach((item) => {
+                        var field = { content: null, checked: false }
+                        field.content = item
+                        console.log(field)
+                        this.listContent.push(field)
+                    })
+                })
+            }
         },
     },
 }
