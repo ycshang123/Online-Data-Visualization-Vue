@@ -29,7 +29,7 @@
                 <v-card width="60%" class="d-flex justify-space-around" tile elevation="0" v-if="!isdisplay">
                     <v-card width="30%" class="d-flex align-center ma-3" tile elevation="0"> 上传文件 </v-card>
                     <v-card class="d-flex justify-center align-items-center" width="70%" tile elevation="0">
-                        <!-- <v-col class="d-flex align-center"> 上传数据包至： </v-col> -->
+                        <v-col class="d-flex align-center"> 上传数据包至： </v-col>
                         <v-col cols="8" style="margin-top: 8%">
                             <v-select :label="items[this.number]" solo :items="items" @change="changeNumber"> </v-select>
                         </v-col>
@@ -144,14 +144,13 @@ export default {
         if (this.folders.length == 0) {
             this.folder.name = '默认数据包'
             this.folder.tables = null
+            this.items.push(this.folder.name)
             this.folders.push(this.folder)
-            // this.folders.forEach((item) => {
-            //     this.items.push(item.name)
-            //     this.foldersFile.push(item.tables)
-            // })
-            // this.$store.commit('folders', this.folders)
+            this.$store.commit('folders', this.folders)
         } else {
             this.folders.forEach((item) => {
+                // 当前点击的数据包
+                this.folder = this.$store.state.folder
                 this.items.push(item.name)
                 if (item.tables == null) {
                     item.tables = []
@@ -159,8 +158,6 @@ export default {
                 this.foldersFile.push(item.tables)
             })
         }
-        // 当前点击的数据包
-        this.folder = this.$store.state.folder
         var i = 0
         for (i; i < this.folders.length; i++) {
             if (this.folders[i].name == this.folder.name) {
@@ -220,7 +217,27 @@ export default {
                 this.files.forEach((file) => {
                     let isExist = this.foldersFile[this.number].some((item) => item.name === file.name)
                     if (!isExist) {
-                        this.foldersFile[this.number].push(file)
+                        let formData = new FormData()
+                        this.files.forEach((file) => {
+                            formData.append('file', file)
+                            console.log(formData)
+                        })
+                        uloadFilesApi(formData).then((res) => {
+                            if (res.code == 200) {
+                                this.contains = true
+                                this.tips = '文件上传成功'
+                                setTimeout(() => {
+                                    this.contains = false
+                                }, 2000)
+                                this.files = []
+                            }
+                            var filesData = res.data
+                            filesData.forEach((item) => {
+                                this.foldersFile[this.number].push(item)
+                            })
+                            console.log(this.foldersFile[this.number])
+                            this.files = []
+                        })
                         this.files = []
                     } else {
                         this.contains = true
@@ -235,7 +252,9 @@ export default {
                 let formData = new FormData()
                 this.files.forEach((file) => {
                     formData.append('file', file)
+                    console.log(formData)
                 })
+                console.log(formData)
                 uloadFilesApi(formData).then((res) => {
                     if (res.code == 200) {
                         this.contains = true

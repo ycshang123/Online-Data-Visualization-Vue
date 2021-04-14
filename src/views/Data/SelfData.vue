@@ -42,7 +42,7 @@
                         <div style="height: 93%; width: 100%; overflow-y: auto; white-space: nowrap">
                             <div v-for="(item, index) in listContent" :key="index" class="ml-2">
                                 <span style="color: #3f3f4c; font-size: 12px" @click="addColumnContent(index)">{{
-                                    item.content.substring(0, 3)
+                                    item.content.splice(0, 4)
                                 }}</span>
                             </div>
                         </div>
