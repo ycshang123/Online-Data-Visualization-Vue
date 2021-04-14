@@ -31,11 +31,12 @@
                     <v-card class="d-flex justify-center align-items-center" width="70%" tile elevation="0">
                         <!-- <v-col class="d-flex align-center"> 上传数据包至： </v-col> -->
                         <v-col cols="8" style="margin-top: 8%">
-                            <v-select :label="items[0]" solo :items="items" @change="changeNumber"> </v-select>
+                            <v-select :label="items[this.number]" solo :items="items" @change="changeNumber"> </v-select>
                         </v-col>
                     </v-card>
                 </v-card>
-                <v-col cols="3">已选择{{ this.foldersFile[this.number].length }} 项</v-col>
+                <v-col cols="3" v-if="this.foldersFile[this.number] != null">已选择{{ this.foldersFile[this.number].length }} 项</v-col>
+                <v-col cols="3" v-else>已选择0项</v-col>
 
                 <v-col cols="1">
                     <v-btn @click="uploadFile()">确定</v-btn>
@@ -97,7 +98,7 @@
                                 <v-file-input
                                     v-model="files"
                                     counter
-                                    accept=".csv,.xlsx,.xlsm,.xls,.xlsb"
+                                    accept=".csv,.xlsx,.xls,"
                                     label="选择上传的文件"
                                     multiple
                                     placeholder="Select your files"
@@ -138,22 +139,17 @@ import { uloadFilesApi } from '../../common/api/select'
 export default {
     name: 'UpLoadFiles',
     created() {
-        // 接收添加表页面传来的数据 => 是否显示返回按钮
-        this.isShow = this.$route.params.isShow
-        // 接收store里面存的数据包文件
+        // store里面存的所有数据包文件
         this.folders = this.$store.state.folders
-        // 当前数据包的名称
-        this.folderName = this.$store.state.folder.name
         if (this.folders.length == 0) {
-            var myDate = new Date()
-            this.folder.name = myDate.getFullYear() + '年' + '数据包'
-            this.folder.tables = []
+            this.folder.name = '默认数据包'
+            this.folder.tables = null
             this.folders.push(this.folder)
-            this.folders.forEach((item) => {
-                this.items.push(item.name)
-                this.foldersFile.push(item.tables)
-            })
-            this.$store.commit('folders', this.folders)
+            // this.folders.forEach((item) => {
+            //     this.items.push(item.name)
+            //     this.foldersFile.push(item.tables)
+            // })
+            // this.$store.commit('folders', this.folders)
         } else {
             this.folders.forEach((item) => {
                 this.items.push(item.name)
@@ -161,8 +157,20 @@ export default {
                     item.tables = []
                 }
                 this.foldersFile.push(item.tables)
-                console.log(this.foldersFile)
             })
+        }
+        // 当前点击的数据包
+        this.folder = this.$store.state.folder
+        var i = 0
+        for (i; i < this.folders.length; i++) {
+            if (this.folders[i].name == this.folder.name) {
+                this.number = i
+            }
+        }
+        if (this.folder.tables == null) {
+            this.foldersFile[this.number] = []
+        } else {
+            this.foldersFile[this.number] = this.folder.tables
         }
     },
     data: () => {
@@ -173,7 +181,6 @@ export default {
             folder: { name: '', tables: null },
             // 获取数据包
             folders: [],
-            folderName:'',
             //下拉框出现的所有数据包
             items: [],
             //上传的所有文件
@@ -228,9 +235,7 @@ export default {
                 let formData = new FormData()
                 this.files.forEach((file) => {
                     formData.append('file', file)
-                    this.foldersFile[this.number].push(file)
                 })
-                console.log(this.foldersFile)
                 uloadFilesApi(formData).then((res) => {
                     if (res.code == 200) {
                         this.contains = true
@@ -240,7 +245,11 @@ export default {
                         }, 2000)
                         this.files = []
                     }
-                    console.log(res)
+                    var filesData = res.data
+                    filesData.forEach((item) => {
+                        this.foldersFile[this.number].push(item)
+                    })
+                    console.log(this.foldersFile[this.number])
                     this.files = []
                 })
             }
