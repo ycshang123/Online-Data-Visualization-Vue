@@ -316,7 +316,7 @@ export default {
          * “去选择表” 按钮的动作监听
          */
         goChangeTable() {
-            this.$router.push('/data')
+            this.$router.push('/addtable')
         },
         /**
          * 测试连接 按钮的方法
