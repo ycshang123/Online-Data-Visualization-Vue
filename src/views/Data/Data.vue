@@ -101,27 +101,14 @@ export default {
             } else {
                 this.disable = false
                 this.folders = this.$store.state.folders
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                // 将创建的数据包存到vuex
-                this.folders.some(item => item.name)
-                // if(){
-
-                // }
-                this.$store.commit('pushDataObj', JSON.stringify(folder))
-                // console.log(this.folders);
+                // 去重，将创建的数据包存到vuex
+                const isExist = this.folders.some((item) => item.name === folder.name)
+                if (!isExist) {
+                    this.$store.commit('pushDataObj', JSON.stringify(folder))
+                } else {
+                    alert('包名不能重复！')
+                }
+                console.log(this.folders)
             }
         },
         // 添加数据包按钮点击事件 => 清除文本

@@ -292,10 +292,10 @@ export default {
             this.isShowOther = false
             // 被选择的表
             const selectedTables = this.selectedTables
-            if (this.allTables == null){
+            if (this.allTables == null) {
                 // 用户选择的所有的表 => 数据包中所有的表
                 this.allTables = []
-            }else {
+            } else {
                 this.allTables = this.$store.state.folder.tables
             }
 
@@ -313,7 +313,7 @@ export default {
                 }
             })
             this.$store.commit('saveFolders', folders)
-
+            this.selectedTables = []
             // console.log(folders)
         },
 
