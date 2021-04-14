@@ -263,7 +263,9 @@ export default {
         this.folder = this.$store.state.folder
 
         // 默认显示第一张表的预览
-        this.table = this.allTables[0]
+        if (this.allTables != null) {
+            this.table = this.allTables[0]
+        }
 
         // 当状态为数据库表时，右侧默认显示第一个连接的所有表
         this.conn = this.historyConnArr[0]
@@ -288,14 +290,12 @@ export default {
         pushAllTables() {
             // 是否显示“数据库连接部分”
             this.isShowOther = false
-            // // 被选择的表
+            // 被选择的表
             const selectedTables = this.selectedTables
             selectedTables.forEach((element) => {
-                    this.allTables.push(element)
+                this.allTables.push(element)
             })
-            console.log('alltables' + this.allTables)
             this.folder.tables = this.allTables
-            console.log('this.folder.tables' + this.folder.tables)
             const folders = this.$store.state.folders
             folders.forEach((element) => {
                 if (element.name == this.folder.name) {
@@ -366,7 +366,7 @@ export default {
             const selectedTables = this.selectedTables
             // 去重
             const isExist = selectedTables.some((item) => item.name === table.name)
-            if(!isExist) {
+            if (!isExist) {
                 allTables.push(table)
                 selectedTables.push(table)
             }
