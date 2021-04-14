@@ -46,7 +46,8 @@
                             </v-list>
                         </v-menu>
                     </div>
-                    <v-list-item-group>
+                    <!-- 表名 -->
+                    <v-list-item-group v-if="allTables != null">
                         <v-list-item v-for="(table, index) in allTables" :key="index" @click="getTable(table)">
                             <!-- 行左侧图标 -->
                             <v-list-item-avatar size="20">
@@ -54,7 +55,7 @@
                             </v-list-item-avatar>
                             <!-- 行右侧表名 -->
                             <v-list-item-content>
-                                <v-list-item-title v-text="table"></v-list-item-title>
+                                <v-list-item-title v-text="table.name"></v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
                     </v-list-item-group>
@@ -88,7 +89,7 @@
         <!-- 右侧部分 -->
         <v-main style="height: 100%" class="pt-3">
             <!-- 数据表预览 -->
-            <v-card v-if="!isShowOther && allTables.length !== 0" flat tile>
+            <v-card v-if="!isShowOther && allTables !== null" flat tile>
                 <!-- 工具栏 -->
                 <!-- 表名图标 -->
                 <v-card-title style="height: 10%" class="pt-2 subtitle-2">
@@ -96,7 +97,7 @@
                         <v-icon>mdi-table</v-icon>
                     </v-btn>
                     <!-- 表名 -->
-                    {{ table }}
+                    {{ table.name }}
 
                     <!-- 空间填充 -->
                     <v-spacer></v-spacer>
@@ -214,22 +215,12 @@ export default {
             historyConnArr: [],
             // 添加表的三种选项
             options: [
-                { id: 1, name: '数据库表', show: 'DataBaseFile', isShow: true },
+                { id: 1, name: '数据库表', show: 'DatabaseConn', isShow: true },
                 { id: 2, name: '上传文件', show: 'UpLoadFiles', isShow: true },
                 { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
             ],
             // 左侧表名,用户添加的所有的表
-            allTables: [
-                // { id: 0, title: '一月全国数据表' },
-                // {
-                //     id: 1,
-                //     title: '二月全国数据表',
-                // },
-                // {
-                //     id: 2,
-                //     title: '三月全国数据表',
-                // },
-            ],
+            allTables: null,
             // 每个连接中所有的表
             connTables: [],
             // 被选中的所有的表
@@ -265,14 +256,16 @@ export default {
         // 从vuex中取出历史连接
         this.historyConnArr = this.$store.state.databaseConnObjArr
         // 取出用户添加的所有的表
-        this.allTables = this.$store.state.allTables
+        this.allTables = this.$store.state.folder.tables
         // 取出每个连接中所有的表
         this.connTables = this.$store.state.connTables
         // 取出选中的数据包名称
         this.folder = this.$store.state.folder
 
         // 默认显示第一张表的预览
-        this.table = this.allTables[0]
+        if (this.allTables != null) {
+            this.table = this.allTables[0]
+        }
 
         // 当状态为数据库表时，右侧默认显示第一个连接的所有表
         this.conn = this.historyConnArr[0]
@@ -284,7 +277,7 @@ export default {
          * @return {*}
          */
         addBtnClick() {
-            if (this.allTables.length != 0) {
+            if (this.allTables != null) {
                 this.options[2].isShow = true
             }
         },
@@ -295,33 +288,55 @@ export default {
          * @return {*}
          */
         pushAllTables() {
+            // 是否显示“数据库连接部分”
             this.isShowOther = false
-            // this.allTables.push(this.selectedTables)
-            this.$store.commit('saveAllTables', JSON.stringify(this.allTables))
+            // 被选择的表
+            const selectedTables = this.selectedTables
+            if (this.allTables == null){
+                // 用户选择的所有的表 => 数据包中所有的表
+                this.allTables = []
+            }else {
+                this.allTables = this.$store.state.folder.tables
+            }
+
+            // 将被选中的表push到allTables数组中
+            selectedTables.forEach((element) => {
+                this.allTables.push(element)
+            })
             console.log(this.allTables)
+            this.folder.tables = this.allTables
+            // 实时更新每个数据包里的数据
+            const folders = this.$store.state.folders
+            folders.forEach((element) => {
+                if (element.name == this.folder.name) {
+                    element.tables = this.folder.tables
+                }
+            })
+            this.$store.commit('saveFolders', folders)
+
+            // console.log(folders)
         },
+
         /**
-         * @description: 左侧部分，获取当前点击的表名
-         * @param {*} o
-         * @return {*}
-         */
-        getTable(o) {
-            this.table = o
-            console.log(this.table)
-        },
-        /**
-         * 跳转下一页
+         *  options的点击事件 => 跳转下一页
          */
         async nextPage(path) {
             // 如果点击的是“数据库表”
-            if (path == 'DataBaseFile') {
+            if (path == 'DatabaseConn') {
                 // 显示数据库表相关的版块
                 this.isShowOther = true
+                // 置空数组
+                // this.selectedTables = []
                 // 实时获取历史连接
                 this.historyConnArr = this.$store.state.databaseConnObjArr
                 // 如果历史连接为空，则跳转到新建连接页面
                 if (this.historyConnArr == 0) {
-                    this.$router.push('/datalink')
+                    this.$router.push({
+                        name: path,
+                        params: {
+                            isShow: false,
+                        },
+                    })
                 } else {
                     // 请求接口 => 获取当前连接所有的表名
                     // 当前连接默认为数组中的第一个
@@ -340,7 +355,7 @@ export default {
                 this.$router.push({
                     name: path,
                     params: {
-                        isShow: true,
+                        isShow: false,
                     },
                 })
             }
@@ -348,12 +363,20 @@ export default {
         /**
          * 每个表名按钮的点击事件 => 选择表
          */
-        selectTable(o) {
-            const allTables = this.allTables
+        selectTable(v) {
+            // this.allTables = []
+            var table = { name: '' }
+            table.name = v
+            // const allTables = this.allTables
             const selectedTables = this.selectedTables
-            allTables.push(o)
-            selectedTables.push(o)
+            // 去重
+            const isExist = selectedTables.some((item) => item.name === table.name)
+            if (!isExist) {
+                // allTables.push(table)
+                selectedTables.push(table)
+            }
 
+            // this.allTables = allTables
             // allTables.forEach((element) => {
             //     if (element != o) {
             //         allTables.push(o)
@@ -389,6 +412,16 @@ export default {
          */
         toDatapage() {
             this.$router.push('/data')
+        },
+
+        /**
+         * @description: 左侧部分，获取当前点击的表名
+         * @param {*} o
+         * @return {*}
+         */
+        getTable(o) {
+            this.table = o
+            console.log(this.table)
         },
     },
 }
