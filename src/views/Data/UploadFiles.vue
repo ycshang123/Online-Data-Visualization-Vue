@@ -1,5 +1,6 @@
 <template>
     <div class="d-flex justify-space-around" style="height: 100%">
+        <v-overlay v-if="contains" style="position: absolute; z-index: 1"></v-overlay>
         <div style="border-right: 0.5px solid #e0e0e0; width: 19%">
             <v-list-item v-if="isdisplay">
                 <v-icon @click="previousPage()" class="mdi mdi-chevron-left mdi-24px"></v-icon>
@@ -16,9 +17,9 @@
                 <v-list-item-content>
                     <v-list-item-subtitle> {{ item.name }}</v-list-item-subtitle>
                 </v-list-item-content>
-                <v-list-item-icon>
+                <!-- <v-list-item-icon>
                     <v-icon @click="delectFile(item)">mdi mdi-close</v-icon>
-                </v-list-item-icon>
+                </v-list-item-icon> -->
             </v-list-item>
         </div>
 
@@ -28,13 +29,14 @@
                 <v-card width="60%" class="d-flex justify-space-around" tile elevation="0" v-if="!isdisplay">
                     <v-card width="30%" class="d-flex align-center ma-3" tile elevation="0"> 上传文件 </v-card>
                     <v-card class="d-flex justify-center align-items-center" width="70%" tile elevation="0">
-                        <!-- <v-col class="d-flex align-center"> 上传数据包至： </v-col> -->
+                        <v-col class="d-flex align-center"> 上传数据包至： </v-col>
                         <v-col cols="8" style="margin-top: 8%">
-                            <v-select :label="items[0]" solo :items="items" @change="changeNumber"> </v-select>
+                            <v-select :label="items[this.number]" solo :items="items" @change="changeNumber"> </v-select>
                         </v-col>
                     </v-card>
                 </v-card>
-                <v-col cols="3">已选择{{ this.foldersFile[this.number].length }} 项</v-col>
+                <v-col cols="3" v-if="this.foldersFile[this.number] != null">已选择{{ this.foldersFile[this.number].length }} 项</v-col>
+                <v-col cols="3" v-else>已选择0项</v-col>
 
                 <v-col cols="1">
                     <v-btn @click="uploadFile()">确定</v-btn>
@@ -96,7 +98,7 @@
                                 <v-file-input
                                     v-model="files"
                                     counter
-                                    accept=".csv,.xlsx,.xlsm,.xls,.xlsb"
+                                    accept=".csv,.xlsx,.xls,"
                                     label="选择上传的文件"
                                     multiple
                                     placeholder="Select your files"
@@ -120,7 +122,6 @@
                         <v-card
                             width="400px"
                             height="270px"
-                            color="rgba(38, 50, 56,0.1)"
                             v-if="this.contains"
                             style="position: fixed; z-index: 1; margin-bottom: 10%"
                             class="d-flex align-center justify-center"
@@ -138,30 +139,35 @@ import { uloadFilesApi } from '../../common/api/select'
 export default {
     name: 'UpLoadFiles',
     created() {
-        // 接收添加表页面传来的数据 => 是否显示返回按钮
-        this.isShow = this.$route.params.isShow
-        // 接收store里面存的数据包文件
+        // store里面存的所有数据包文件
         this.folders = this.$store.state.folders
-        console.log(JSON.stringify(this.$store.state.folders))
         if (this.folders.length == 0) {
-            var myDate = new Date()
-            this.folder.name = myDate.getFullYear() + '年' + '数据包'
-            this.folder.files = []
+            this.folder.name = '默认数据包'
+            this.folder.tables = null
+            this.items.push(this.folder.name)
             this.folders.push(this.folder)
-            this.folders.forEach((item) => {
-                this.items.push(item.name)
-                this.foldersFile.push(item.files)
-            })
             this.$store.commit('folders', this.folders)
         } else {
             this.folders.forEach((item) => {
+                // 当前点击的数据包
+                this.folder = this.$store.state.folder
                 this.items.push(item.name)
-                if (item.files == null) {
-                    item.files = []
+                if (item.tables == null) {
+                    item.tables = []
                 }
-                this.foldersFile.push(item.files)
-                console.log(this.foldersFile)
+                this.foldersFile.push(item.tables)
             })
+        }
+        var i = 0
+        for (i; i < this.folders.length; i++) {
+            if (this.folders[i].name == this.folder.name) {
+                this.number = i
+            }
+        }
+        if (this.folder.tables == null) {
+            this.foldersFile[this.number] = []
+        } else {
+            this.foldersFile[this.number] = this.folder.tables
         }
     },
     data: () => {
@@ -169,7 +175,7 @@ export default {
             // 是否显示返回图标
             isShow: false,
             // 添加表页面传来的数据
-            folder: { name: '', files: null },
+            folder: { name: '', tables: null },
             // 获取数据包
             folders: [],
             //下拉框出现的所有数据包
@@ -211,7 +217,27 @@ export default {
                 this.files.forEach((file) => {
                     let isExist = this.foldersFile[this.number].some((item) => item.name === file.name)
                     if (!isExist) {
-                        this.foldersFile[this.number].push(file)
+                        let formData = new FormData()
+                        this.files.forEach((file) => {
+                            formData.append('file', file)
+                            console.log(formData)
+                        })
+                        uloadFilesApi(formData).then((res) => {
+                            if (res.code == 200) {
+                                this.contains = true
+                                this.tips = '文件上传成功'
+                                setTimeout(() => {
+                                    this.contains = false
+                                }, 2000)
+                                this.files = []
+                            }
+                            var filesData = res.data
+                            filesData.forEach((item) => {
+                                this.foldersFile[this.number].push(item)
+                            })
+                            console.log(this.foldersFile[this.number])
+                            this.files = []
+                        })
                         this.files = []
                     } else {
                         this.contains = true
@@ -226,9 +252,9 @@ export default {
                 let formData = new FormData()
                 this.files.forEach((file) => {
                     formData.append('file', file)
-                    this.foldersFile[this.number].push(file)
+                    console.log(formData)
                 })
-                console.log(this.foldersFile)
+                console.log(formData)
                 uloadFilesApi(formData).then((res) => {
                     if (res.code == 200) {
                         this.contains = true
@@ -238,7 +264,11 @@ export default {
                         }, 2000)
                         this.files = []
                     }
-                    console.log(res)
+                    var filesData = res.data
+                    filesData.forEach((item) => {
+                        this.foldersFile[this.number].push(item)
+                    })
+                    console.log(this.foldersFile[this.number])
                     this.files = []
                 })
             }
