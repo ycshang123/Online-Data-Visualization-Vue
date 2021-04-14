@@ -321,7 +321,12 @@ export default {
                 this.historyConnArr = this.$store.state.databaseConnObjArr
                 // 如果历史连接为空，则跳转到新建连接页面
                 if (this.historyConnArr == 0) {
-                    this.$router.push('/datalink')
+                    this.$router.push({
+                    name: path,
+                    params: {
+                        isShow: true,
+                    },
+                })
                 } else {
                     // 请求接口 => 获取当前连接所有的表名
                     // 当前连接默认为数组中的第一个
