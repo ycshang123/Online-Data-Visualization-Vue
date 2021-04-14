@@ -334,7 +334,7 @@ export default {
                     this.$router.push({
                         name: path,
                         params: {
-                            isShow: true,
+                            isShow: false,
                         },
                     })
                 } else {
@@ -355,7 +355,7 @@ export default {
                 this.$router.push({
                     name: path,
                     params: {
-                        isShow: true,
+                        isShow: false,
                     },
                 })
             }
