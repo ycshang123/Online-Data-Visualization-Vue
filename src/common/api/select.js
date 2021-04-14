@@ -29,3 +29,7 @@ export function getConnTableColumn (obj) {
     return post('/select/allColumn', obj)
 }
 
+export function getColumnData (obj) {
+    return post('/select/addDataByColumn', obj)
+}
+

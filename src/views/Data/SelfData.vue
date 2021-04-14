@@ -41,9 +41,7 @@
                         />
                         <div style="height: 93%; width: 100%; overflow-y: auto; white-space: nowrap">
                             <div v-for="(item, index) in listContent" :key="index" class="ml-2">
-                                <span style="color: #3f3f4c; font-size: 12px" @click="addColumnContent(index)">{{
-                                    item.content.splice(0, 4)
-                                }}</span>
+                                <span style="color: #3f3f4c; font-size: 12px" @click="addColumnContent(index)"> {{ item.content }}</span>
                             </div>
                         </div>
                     </v-card>
@@ -149,29 +147,30 @@
                     <v-card width="100%" height="10%" class="d-flex align-center justify-space-between pa-2" tile elevation="0">
                         <v-btn @click="chooseAllColumn()" v-if="status" :disabled="listContent.length == 0">全选</v-btn>
                         <v-btn v-else @click="notChoose()">取消全选</v-btn>
+                        <v-btn @click="joinColumnData()">确认</v-btn>
                     </v-card>
-                    <v-card width="100%" height="90%" class="pa-2" tile flat>
+                    <v-card width="100%" height="90%" class="pl-2" tile flat style="overflow-y: auto">
                         <div
                             v-for="(item, index) in listContent"
                             :key="index"
                             class="d-flex align-center justify-start"
-                            style="height: 30px"
+                            style="height: 25px"
                         >
                             <v-checkbox @click.stop="chooseColumn(index)" v-model="item.checked"></v-checkbox>
-                            <span>{{ item.content }}</span>
+                            <span>{{ item.content.substring(0, 10) }}</span>
                         </div>
                     </v-card>
                 </v-card>
             </v-col>
 
-            <v-card v-if="chooseList.length > 0" style="overflow-y: auto; overflow-x: auto" tile elevation="0">
-                <v-data-table :headers="this.chooseList" class="elevation-1"></v-data-table>
+            <v-card v-if="!isDisplayTable" style="overflow-y: auto; overflow-x: auto" tile elevation="0">
+                <v-data-table :headers="this.chooseList" class="elevation-1" :items="this.numberList"></v-data-table>
             </v-card>
         </v-card>
     </div>
 </template>
 <script>
-import { getConnTableColumn } from '../../common/api/select'
+import { getConnTableColumn, getColumnData } from '../../common/api/select'
 export default {
     data() {
         return {
@@ -183,24 +182,24 @@ export default {
             tableList: [],
             // 全部数据表中的表头
             listsContent: [
-                [
-                    { content: '承运日期', checked: false },
-                    { content: '出发日期', checked: false },
-                    { content: '出发机场', checked: false },
-                ],
-                [
-                    { content: '二月数据表内容', checked: false },
-                    { content: '承运日期', checked: false },
-                    { content: '出发日期', checked: false },
-                    { content: '出发机场', checked: false },
-                    { content: '到达城市', checked: false },
-                    { content: '客公里', checked: false },
-                    { content: '承运日期', checked: false },
-                    { content: '出发日期', checked: false },
-                ],
-                [{ content: '三月数据表内容', checked: false }],
-                [{ content: '四月数据表内容', checked: false }],
-                [{ content: '五月数据表内容', checked: false }],
+                // [
+                //     { content: '承运日期', checked: false },
+                //     { content: '出发日期', checked: false },
+                //     { content: '出发机场', checked: false },
+                // ],
+                // [
+                //     { content: '二月数据表内容', checked: false },
+                //     { content: '承运日期', checked: false },
+                //     { content: '出发日期', checked: false },
+                //     { content: '出发机场', checked: false },
+                //     { content: '到达城市', checked: false },
+                //     { content: '客公里', checked: false },
+                //     { content: '承运日期', checked: false },
+                //     { content: '出发日期', checked: false },
+                // ],
+                // [{ content: '三月数据表内容', checked: false }],
+                // [{ content: '四月数据表内容', checked: false }],
+                // [{ content: '五月数据表内容', checked: false }],
             ],
             // 每个数据表对应的表头
             listContent: [],
@@ -229,6 +228,23 @@ export default {
             databaseConn: {},
             // 获取表中的字段
             columnArr: { tableName: '', sqlType: '', userName: '', password: '', host: '', port: '', database: '' },
+            // 拼接的数据
+            joinColumn: {
+                tableName: '',
+                sqlType: '',
+                userName: '',
+                password: '',
+                host: '',
+                port: '',
+                database: '',
+                limitCount: 0,
+                columnName: '',
+            },
+            //是否显示表格
+            isDisplayTable: false,
+            //选择表格中的第一个表
+            number: 0,
+            numberList: [],
         }
     },
     created() {
@@ -317,9 +333,10 @@ export default {
         },
         // 选择表头
         chooseColumn(index) {
-            var header = { text: '' }
+            var header = { text: '', value: '' }
             if (this.listContent[index].checked == true) {
                 header.text = this.listContent[index].content
+                header.value = this.listContent[index].content
                 this.chooseList.push(header)
             } else {
                 this.chooseList.pop(header)
@@ -331,8 +348,9 @@ export default {
             this.status = !this.status
             this.listContent.forEach((item) => {
                 item.checked = true
-                var header = { text: '' }
+                var header = { text: '', value: '' }
                 header.text = item.content
+                header.value = item.content
                 let isExist = this.chooseList.some((item) => item.text === header.text)
                 if (!isExist) {
                     this.chooseList.push(header)
@@ -385,6 +403,7 @@ export default {
         },
         // 获取表中的字段
         ColumnArr(index) {
+            this.number = index
             if (
                 this.tableList[index].name.endsWith('.csv') ||
                 this.tableList[index].name.endsWith('.xlsx') ||
@@ -397,7 +416,6 @@ export default {
                         fieldsList.forEach((item) => {
                             var field = { content: null, checked: false }
                             field.content = item
-                            console.log(field)
                             this.listContent.push(field)
                         })
                     }
@@ -412,11 +430,31 @@ export default {
                     fieldsList.forEach((item) => {
                         var field = { content: null, checked: false }
                         field.content = item
-                        console.log(field)
                         this.listContent.push(field)
                     })
                 })
             }
+        },
+        // 获取表中的数据
+        joinColumnData() {
+            this.joinColumn = this.databaseConn
+            this.joinColumn.tableName = this.tableList[this.number].name
+            this.joinColumn.limitCount = 2
+            this.joinColumn.page = 1
+            this.joinColumn.columnName = this.listContent[0].content
+            var columnName = this.chooseList[0].text
+            console.log('fghjkl;' + JSON.stringify(this.chooseList[0]))
+            console.log(this.joinColumn)
+            getColumnData(this.joinColumn).then((res) => {
+                var columnList = res.data
+                columnList.forEach((item) => {
+                    var obj = {}
+                    obj[columnName] = item[0] + ','
+
+                    this.numberList.push(obj)
+                })
+                console.log(this.numberList)
+            })
         },
     },
 }
