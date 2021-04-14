@@ -47,7 +47,7 @@
                         </v-menu>
                     </div>
                     <!-- 表名 -->
-                    <v-list-item-group>
+                    <v-list-item-group v-if="allTables != null">
                         <v-list-item v-for="(table, index) in allTables" :key="index" @click="getTable(table)">
                             <!-- 行左侧图标 -->
                             <v-list-item-avatar size="20">
@@ -215,7 +215,7 @@ export default {
             historyConnArr: [],
             // 添加表的三种选项
             options: [
-                { id: 1, name: '数据库表', show: 'DataBaseFile', isShow: true },
+                { id: 1, name: '数据库表', show: 'DatabaseConn', isShow: true },
                 { id: 2, name: '上传文件', show: 'UpLoadFiles', isShow: true },
                 { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
             ],
@@ -261,7 +261,6 @@ export default {
         this.connTables = this.$store.state.connTables
         // 取出选中的数据包名称
         this.folder = this.$store.state.folder
-        console.log(this.folder)
 
         // 默认显示第一张表的预览
         this.table = this.allTables[0]
@@ -287,10 +286,16 @@ export default {
          * @return {*}
          */
         pushAllTables() {
+            // 是否显示“数据库连接部分”
             this.isShowOther = false
-            // this.allTables.push(this.selectedTables)
+            // // 被选择的表
+            const selectedTables = this.selectedTables
+            selectedTables.forEach((element) => {
+                    this.allTables.push(element)
+            })
+            console.log('alltables' + this.allTables)
             this.folder.tables = this.allTables
-            console.log(this.folder.tables)
+            console.log('this.folder.tables' + this.folder.tables)
             const folders = this.$store.state.folders
             folders.forEach((element) => {
                 if (element.name == this.folder.name) {
@@ -298,7 +303,7 @@ export default {
                 }
             })
             this.$store.commit('folders', folders)
-            console.log(folders)
+            // console.log(folders)
         },
         /**
          * @description: 左侧部分，获取当前点击的表名
@@ -314,14 +319,19 @@ export default {
          */
         async nextPage(path) {
             // 如果点击的是“数据库表”
-            if (path == 'DataBaseFile') {
+            if (path == 'DatabaseConn') {
                 // 显示数据库表相关的版块
                 this.isShowOther = true
                 // 实时获取历史连接
                 this.historyConnArr = this.$store.state.databaseConnObjArr
                 // 如果历史连接为空，则跳转到新建连接页面
                 if (this.historyConnArr == 0) {
-                    this.$router.push('/datalink')
+                    this.$router.push({
+                        name: path,
+                        params: {
+                            isShow: true,
+                        },
+                    })
                 } else {
                     // 请求接口 => 获取当前连接所有的表名
                     // 当前连接默认为数组中的第一个
@@ -354,9 +364,13 @@ export default {
             table.name = v
             const allTables = this.allTables
             const selectedTables = this.selectedTables
-            allTables.push(table)
-            selectedTables.push(table)
-
+            // 去重
+            const isExist = selectedTables.some((item) => item.name === table.name)
+            if(!isExist) {
+                allTables.push(table)
+                selectedTables.push(table)
+            }
+            this.allTables = allTables
             // allTables.forEach((element) => {
             //     if (element != o) {
             //         allTables.push(o)
