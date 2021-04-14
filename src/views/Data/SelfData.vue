@@ -128,10 +128,10 @@
         </v-card>
 
         <!-- 下半区域 -->
-        <v-card class="d-flex" height="80%">
+        <v-card flat tile class="d-flex" height="80%">
             <!-- 左边的数据列表区域 -->
             <v-col class="pa-0" cols="2">
-                <v-card tile flat class="pa-2" height="100%" outlined>
+                <v-card tile flat class="pa-2" height="100%" outlined v-borderTop>
                     <div class="text-subtitle-1">{{ this.folder }}</div>
                     <div v-for="(item, index) in tableList" :key="index" class="mt-4">
                         <div class="text-body-2 mb-2 ml-3" @click="ColumnArr(index)" v-cursor>
@@ -142,28 +142,36 @@
                 </v-card>
             </v-col>
             <!-- 字段添加区域 -->
-            <v-col cols="2" class="pa-0 red d-flex flex-column align-center">
-                <v-card class="d-flex flex-column align-center" outlined flat tile style="height: 100%; width: 100%">
-                    <v-card width="100%" height="10%" class="d-flex align-center justify-space-between pa-2" tile elevation="0">
+            <v-col cols="2" class="pa-0 d-flex flex-column align-center" style="height: 100%">
+                <v-card class="pa-0 d-flex flex-column align-center" outlined flat tile style="height: 100%; width: 100%">
+                    <v-card
+                        width="100%"
+                        height="10%"
+                        outlined
+                        v-borderBottom
+                        class="d-flex align-center justify-space-between pa-2"
+                        tile
+                        flat
+                    >
                         <v-btn @click="chooseAllColumn()" v-if="status" :disabled="listContent.length == 0">全选</v-btn>
                         <v-btn v-else @click="notChoose()">取消全选</v-btn>
                         <v-btn @click="joinColumnData()">确认</v-btn>
                     </v-card>
-                    <v-card width="100%" height="90%" class="pl-2" tile flat style="overflow-y: auto">
+                    <v-card width="100%" height="520px" class="pa-2 py-4 overflow-y-auto overflow-x-hidden" tile flat>
                         <div
                             v-for="(item, index) in listContent"
                             :key="index"
                             class="d-flex align-center justify-start"
                             style="height: 25px"
                         >
-                            <v-checkbox @click.stop="chooseColumn(index)" v-model="item.checked"></v-checkbox>
+                            <v-checkbox dense @click.stop="chooseColumn(index)" v-model="item.checked"></v-checkbox>
                             <span>{{ item.content.substring(0, 10) }}</span>
                         </div>
                     </v-card>
                 </v-card>
             </v-col>
 
-            <v-card v-if="!isDisplayTable" style="overflow-y: auto; overflow-x: auto" tile elevation="0">
+            <v-card v-if="!isDisplayTable" style="overflow-y: auto; overflow-x: auto" tile flat elevation="0">
                 <v-data-table :headers="this.chooseList" class="elevation-1" :items="this.numberList"></v-data-table>
             </v-card>
         </v-card>

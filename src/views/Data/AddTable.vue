@@ -170,20 +170,16 @@
                 <!-- 数据库表-连接中所有的表 -->
                 <v-main>
                     <v-row class="d-flex">
-                        <v-col
-                            cols="3"
-                            v-for="(item, index) in connTables"
-                            :key="index"
-                            class="d-flex justify-start"
-                            @click="selectTable(item)"
-                        >
+                        <v-col cols="3" v-for="(item, index) in connTables" :key="index" class="d-flex justify-start">
                             <v-btn
                                 class="px-1 d-inline-block d-flex justify-start align-center ml-10"
+                                :class="isSelectArr[index] ? 'bc-selected' : ''"
                                 min-width="50%"
                                 max-height="40"
                                 elevation="1"
                                 outlined=""
                                 color="#3d557c"
+                                @click="selectTable(item, index)"
                             >
                                 <v-icon class="ml-4" color="#3d557c" medium>mdi-table</v-icon>
                                 <v-card-title class="subtitle-1">{{ item }}</v-card-title>
@@ -202,6 +198,8 @@ export default {
     name: 'AddTable',
     data() {
         return {
+            // 是否被选择的状态数组
+            isSelectArr: [],
             conn: {},
             isShowOther: false,
             tips: '请添加表',
@@ -259,6 +257,9 @@ export default {
         this.allTables = this.$store.state.folder.tables
         // 取出每个连接中所有的表
         this.connTables = this.$store.state.connTables
+        for (let i = 0; i < this.connTables.length; i++) {
+            this.isSelectArr.push(false)
+        }
         // 取出选中的数据包名称
         this.folder = this.$store.state.folder
 
@@ -314,6 +315,9 @@ export default {
             })
             this.$store.commit('saveFolders', folders)
             this.selectedTables = []
+            for (let i = 0; i < this.connTables.length; i++) {
+                this.isSelectArr.push(false)
+            }
             // console.log(folders)
         },
 
@@ -348,6 +352,9 @@ export default {
                             this.$store.commit('saveConnTables', res.data)
                             // 取出每个连接中所有的表
                             this.connTables = this.$store.state.connTables
+                            for (let i = 0; i < this.connTables.length; i++) {
+                                this.isSelectArr.push(false)
+                            }
                         }
                     })
                 }
@@ -363,7 +370,9 @@ export default {
         /**
          * 每个表名按钮的点击事件 => 选择表
          */
-        selectTable(v) {
+        selectTable(v, index) {
+            console.log(this.isSelectArr[index])
+            this.isSelectArr.splice(index, 1, !this.isSelectArr[index])
             // this.allTables = []
             var table = { name: '' }
             table.name = v
@@ -401,6 +410,9 @@ export default {
                     this.$store.commit('saveConnTables', res.data)
                     // 取出每个连接中所有的表
                     this.connTables = this.$store.state.connTables
+                    for (let i = 0; i < this.connTables.length; i++) {
+                        this.isSelectArr.push(false)
+                    }
                 } else {
                     console.log('连接失败')
                 }
@@ -432,5 +444,8 @@ export default {
 }
 .outline-right {
     border-right: 1px solid #25354d;
+}
+.bc-selected {
+    background-color: #bdbdbd;
 }
 </style>
