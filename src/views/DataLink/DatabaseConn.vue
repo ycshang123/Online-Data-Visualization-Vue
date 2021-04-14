@@ -163,7 +163,7 @@
                         <v-card flat tile class="pa-4 d-flex justify-space-between align-center">
                             <v-btn color="#e5dbff" @click="changeSQLArea()">新建连接</v-btn>
                             <div class="text-h5 indigo--text text--lighten-2">>></div>
-                            <v-btn color="#d0ebff" @click="goChangeTable()">去选则表</v-btn>
+                            <v-btn color="#d0ebff" @click="goChangeTable()">去选择表</v-btn>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -218,10 +218,13 @@ import postgresql_mini from '../../assets/pic/miniSqlLogo/Postgresql.png'
 export default {
     name: 'DatabaseConn',
     created() {
+        console.log(this.$route.params.isShow)
         if (this.$route.params.isShow == false) {
+            console.log('进入')
             this.isUploadCard = false
+        } else {
+            this.isUploadCard = true
         }
-        this.isUploadCard = true
         this.historyConnArr = this.$store.state.databaseConnObjArr
         // 接收添加表页面传来的数据 => 是否显示返回按钮
         this.isShow = this.$route.params.isShow
@@ -310,7 +313,7 @@ export default {
             this.hisConnDetail = item
         },
         /**
-         * “去选则表” 按钮的动作监听
+         * “去选择表” 按钮的动作监听
          */
         goChangeTable() {
             this.$router.push('/data')

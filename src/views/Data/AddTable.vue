@@ -215,7 +215,7 @@ export default {
             historyConnArr: [],
             // 添加表的三种选项
             options: [
-                { id: 1, name: '数据库表', show: 'DataBaseFile', isShow: true },
+                { id: 1, name: '数据库表', show: 'DatabaseConn', isShow: true },
                 { id: 2, name: '上传文件', show: 'UpLoadFiles', isShow: true },
                 { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
             ],
@@ -322,11 +322,11 @@ export default {
                 // 如果历史连接为空，则跳转到新建连接页面
                 if (this.historyConnArr == 0) {
                     this.$router.push({
-                    name: path,
-                    params: {
-                        isShow: true,
-                    },
-                })
+                        name: path,
+                        params: {
+                            isShow: false,
+                        },
+                    })
                 } else {
                     // 请求接口 => 获取当前连接所有的表名
                     // 当前连接默认为数组中的第一个
@@ -345,7 +345,7 @@ export default {
                 this.$router.push({
                     name: path,
                     params: {
-                        isShow: true,
+                        isShow: false,
                     },
                 })
             }
