@@ -4,14 +4,16 @@ import router from "./router"
 import store from "./store"
 import vuetify from "./plugins/vuetify"
 import Icon from '@mdi/react'
-import React, { Component } from 'react'
+import React from 'react'
 import global from './util/Global.vue'
+import VCharts from 'v-charts'
 
 Vue.config.productionTip = false
-Vue.use(global)
 Vue.prototype.GLOBAL = global
 
 new Vue({
+    global,
+    VCharts,
     router,
     store,
     vuetify,
