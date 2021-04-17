@@ -171,7 +171,7 @@
                 </v-card>
             </v-col>
 
-            <v-card v-if="!isDisplayTable" style="overflow-y: auto; overflow-x: auto" tile flat elevation="0">
+            <v-card v-if="this.chooseList.length > 0" style="overflow-y: auto; overflow-x: auto" tile flat elevation="0">
                 <v-data-table :headers="this.chooseList" class="elevation-1" :items="this.numberList"></v-data-table>
             </v-card>
         </v-card>
@@ -189,26 +189,7 @@ export default {
             // 数据库表名
             tableList: [],
             // 全部数据表中的表头
-            listsContent: [
-                // [
-                //     { content: '承运日期', checked: false },
-                //     { content: '出发日期', checked: false },
-                //     { content: '出发机场', checked: false },
-                // ],
-                // [
-                //     { content: '二月数据表内容', checked: false },
-                //     { content: '承运日期', checked: false },
-                //     { content: '出发日期', checked: false },
-                //     { content: '出发机场', checked: false },
-                //     { content: '到达城市', checked: false },
-                //     { content: '客公里', checked: false },
-                //     { content: '承运日期', checked: false },
-                //     { content: '出发日期', checked: false },
-                // ],
-                // [{ content: '三月数据表内容', checked: false }],
-                // [{ content: '四月数据表内容', checked: false }],
-                // [{ content: '五月数据表内容', checked: false }],
-            ],
+            listsContent: [],
             // 每个数据表对应的表头
             listContent: [],
             // 选择的表头
@@ -221,9 +202,11 @@ export default {
             functionSelect: ['公式/函数', '时间差', '获取时间', '所有值/组内', '分组赋值', '排名'],
             // 可以操作的算数运算
             functionSign: ['+', '-', '*', '/', '(', ')'],
+            // 算数运算
+            operationList: ['+', '-', '*', '/'],
             textType: [{ name: '数值字段' }, { name: '文本字段' }, { name: '时间字段' }],
             // 新增列右侧进行运算的部分
-            newColumnContent: [],
+            newColumnContent: ['+', '-', '*', '/'],
             // 新增列的名称
             newColumn: null,
             //左括号的数量
@@ -270,7 +253,7 @@ export default {
             if (index > this.newColArr.length - 1) {
                 alert('请按照顺序操作')
             } else {
-                if (this.listContent == null) {
+                if (this.listContent.length == 0) {
                     alert('请选择需要新增列的表')
                 } else {
                     if (this.newColArr.indexOf(this.content) == -1) {
@@ -295,6 +278,8 @@ export default {
                 //没有找到运算符号
                 if (this.functionSign.indexOf(sign) == -1) {
                     alert('请选择合适的运算符号')
+                } else if (sign === ')') {
+                    alert('请选择合适的运算符号')
                 } else {
                     this.newColumnContent.push(this.listContent[index].content)
                 }
@@ -310,28 +295,40 @@ export default {
                 }
             } else {
                 var position = length - 1
-                var sign = this.newColumnContent[[position]]
-                console.log(this.newColumnContent)
+                // 获取数组前一个位置元素的值
+                var sign = this.newColumnContent[position]
+                // 判断前一个元素是否为字段
                 let isExist = this.listContent.some((item) => item.content === sign)
-                console.log(isExist)
-                // 数组的前一个数据是字段时为true
-                if (isExist || this.functionSign[index] == '(' || this.functionSign[index] == ')') {
-                    if (this.functionSign[index] == ')') {
-                        if (!this.newColumnContent.some((item) => item === '(')) {
-                            alert('请先选择左括号')
-                        } else {
-                            if (this.functionSign[index] == '(') {
-                                this.LeftNumber = this.LeftNumber + 1
-                            } else if (this.functionSign[index] == ')') {
-                                this.RightNumber = this.RightNumber + 1
-                            }
-                            this.newColumnContent.push(this.functionSign[index])
-                        }
+                //判断前一个是加减乘除运算符号
+                let isOperation = this.operationList.some((item) => item === sign)
+                // 获取的元素是左括号
+                if (this.functionSign[index] == '(') {
+                    if (sign === ')') {
+                        alert('请选择合适的运算符号')
+                    } else if (isExist) {
+                        alert('请选择合适的运算符号')
                     } else {
+                        this.LeftNumber = this.LeftNumber + 1
                         this.newColumnContent.push(this.functionSign[index])
                     }
-                } else {
-                    alert('请选择合适的列进行运算')
+                } else if (this.functionSign[index] == ')') {
+                    if (this.newColumnContent.indexOf('(') == -1) {
+                        alert('请先选择左括号')
+                    } else if (isOperation) {
+                        alert('请选择合适的字段进行运算')
+                    } else {
+                        this.RightNumber = this.RightNumber + 1
+                        this.newColumnContent.push(this.functionSign[index])
+                    }
+                } else if (isExist) {
+                    if (this.functionSign[index] == '(') {
+                        this.LeftNumber = this.LeftNumber + 1
+                    } else if (this.functionSign[index] == ')') {
+                        this.RightNumber = this.RightNumber + 1
+                    }
+                    this.newColumnContent.push(this.functionSign[index])
+                } else if (sign === ')') {
+                    this.newColumnContent.push(this.functionSign[index])
                 }
             }
         },
