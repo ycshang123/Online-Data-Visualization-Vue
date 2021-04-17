@@ -57,7 +57,6 @@ export default new Vuex.Store({
         ],
         // 用户添加的所有的表
         allTables: [
-            // "重庆市一月数据", "江苏省一月数据"
         ]
     },
     mutations: {
@@ -101,7 +100,6 @@ export default new Vuex.Store({
          * @param {*} obj
          */
         saveConnTables (state, obj) {
-            state.connTables = null
             state.connTables = obj
         },
         /**

@@ -47,7 +47,7 @@
                         </v-menu>
                     </div>
                     <!-- 表名 -->
-                    <v-list-item-group v-if="allTables != null">
+                    <v-list-item-group v-if="allTables.length !== 0">
                         <v-list-item v-for="(table, index) in allTables" :key="index" @click="getTable(table)">
                             <!-- 行左侧图标 -->
                             <v-list-item-avatar size="20">
@@ -76,20 +76,13 @@
                         </v-list-item>
                     </v-list-item-group>
                 </v-list>
-
-                <!-- 新建连接 -->
-                <!-- <v-list v-else-if="isShowOther && historyConnArr.length === 0">
-                    <v-card class="d-flex justify-center" shrink>
-                        <v-card-text class="d-flex justify-center"> 去新建数据连接 </v-card-text>
-                    </v-card>
-                </v-list> -->
             </div>
         </div>
 
         <!-- 右侧部分 -->
         <v-main style="height: 100%" class="pt-3">
             <!-- 数据表预览 -->
-            <v-card v-if="!isShowOther && allTables !== null" flat tile>
+            <v-card v-if="!isShowOther && allTables.length !== 0" flat tile>
                 <!-- 工具栏 -->
                 <!-- 表名图标 -->
                 <v-card-title style="height: 10%" class="pt-2 subtitle-2">
@@ -147,7 +140,7 @@
                     <v-spacer></v-spacer>
                     <!-- 已选择（）项 -->
                     <v-card flat class="d-flex align-center mr-4" max-height="40">
-                        <v-card-subtitle>已选择{{ selectedTables.length }}项</v-card-subtitle>
+                        <v-card-subtitle>已选择{{ selectCount }}项</v-card-subtitle>
                     </v-card>
                     <!-- 取消和确定按钮 -->
                     <v-card flat class="d-flex px-2" width="20%">
@@ -170,23 +163,19 @@
                 <!-- 数据库表-连接中所有的表 -->
                 <v-main>
                     <v-row class="d-flex">
-                        <v-col
-                            cols="3"
-                            v-for="(item, index) in connTables"
-                            :key="index"
-                            class="d-flex justify-start"
-                            @click="selectTable(item)"
-                        >
+                        <v-col cols="3" v-for="(item, index) in connTables" :key="index" class="d-flex justify-start">
                             <v-btn
                                 class="px-1 d-inline-block d-flex justify-start align-center ml-10"
-                                min-width="50%"
+                                :class="item.isSelected ? 'bc-selected' : ''"
+                                min-width="80%"
                                 max-height="40"
                                 elevation="1"
                                 outlined=""
                                 color="#3d557c"
+                                @click="selectTable(item, index)"
                             >
                                 <v-icon class="ml-4" color="#3d557c" medium>mdi-table</v-icon>
-                                <v-card-title class="subtitle-1">{{ item }}</v-card-title>
+                                <v-card-title class="subtitle-1">{{ item.name }}</v-card-title>
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -202,6 +191,9 @@ export default {
     name: 'AddTable',
     data() {
         return {
+            selectCount: 0,
+            // 是否被选择的状态数组
+            // isSelectArr: [],
             conn: {},
             isShowOther: false,
             tips: '请添加表',
@@ -220,11 +212,9 @@ export default {
                 { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
             ],
             // 左侧表名,用户添加的所有的表
-            allTables: null,
+            allTables: [],
             // 每个连接中所有的表
             connTables: [],
-            // 被选中的所有的表
-            selectedTables: [],
             /**
              * 静态表格
              */
@@ -256,17 +246,20 @@ export default {
         // 从vuex中取出历史连接
         this.historyConnArr = this.$store.state.databaseConnObjArr
         // 取出用户添加的所有的表
-        this.allTables = this.$store.state.folder.tables
+        if (this.$store.state.folder.tables != undefined) {
+            this.allTables = this.$store.state.folder.tables
+        }
         // 取出每个连接中所有的表
         this.connTables = this.$store.state.connTables
+        // for (let i = 0; i < this.connTables.length; i++) {
+        //     this.isSelectArr.push(false)
+        // }
         // 取出选中的数据包名称
         this.folder = this.$store.state.folder
-
         // 默认显示第一张表的预览
-        if (this.allTables != null) {
+        if (this.allTables.length != 0) {
             this.table = this.allTables[0]
         }
-
         // 当状态为数据库表时，右侧默认显示第一个连接的所有表
         this.conn = this.historyConnArr[0]
     },
@@ -281,7 +274,6 @@ export default {
                 this.options[2].isShow = true
             }
         },
-
         /**
          * @description: 确定按钮点击事件，构建用户选择的所有的表
          * @param {*}
@@ -291,19 +283,13 @@ export default {
             // 是否显示“数据库连接部分”
             this.isShowOther = false
             // 被选择的表
-            const selectedTables = this.selectedTables
-            if (this.allTables == null) {
-                // 用户选择的所有的表 => 数据包中所有的表
-                this.allTables = []
-            } else {
-                this.allTables = this.$store.state.folder.tables
-            }
-
-            // 将被选中的表push到allTables数组中
-            selectedTables.forEach((element) => {
-                this.allTables.push(element)
+            const selectedTables = this.connTables.filter((item) => {
+                if (item.isSelected) {
+                    return item
+                }
             })
-            console.log(this.allTables)
+            this.allTables = this.allTables.concat(selectedTables)
+
             this.folder.tables = this.allTables
             // 实时更新每个数据包里的数据
             const folders = this.$store.state.folders
@@ -312,25 +298,22 @@ export default {
                     element.tables = this.folder.tables
                 }
             })
+            this.table = this.allTables[0]
             this.$store.commit('saveFolders', folders)
-            this.selectedTables = []
-            // console.log(folders)
+            this.selectCount = 0
         },
-
         /**
-         *  options的点击事件 => 跳转下一页
+         *  options的点击事件
          */
         async nextPage(path) {
             // 如果点击的是“数据库表”
             if (path == 'DatabaseConn') {
                 // 显示数据库表相关的版块
                 this.isShowOther = true
-                // 置空数组
-                // this.selectedTables = []
                 // 实时获取历史连接
                 this.historyConnArr = this.$store.state.databaseConnObjArr
                 // 如果历史连接为空，则跳转到新建连接页面
-                if (this.historyConnArr == 0) {
+                if (this.historyConnArr.length == 0) {
                     this.$router.push({
                         name: path,
                         params: {
@@ -340,14 +323,32 @@ export default {
                 } else {
                     // 请求接口 => 获取当前连接所有的表名
                     // 当前连接默认为数组中的第一个
-                    const conn = this.historyConnArr[0]
+                    let conn = this.historyConnArr[0]
                     await getConnTables(conn).then((res) => {
                         if (res.code === 200) {
-                            console.log('当前连接中所有的表：' + res.data)
-                            console.log('当前连接对象：' + conn)
-                            this.$store.commit('saveConnTables', res.data)
-                            // 取出每个连接中所有的表
-                            this.connTables = this.$store.state.connTables
+                            const data = res.data
+                            // 构造connTable对象，push进connTables数组
+                            let connTableArr = []
+                            let id = 0
+                            for (let i = 0; i < data.length; i++) {
+                                /**
+                                 * 去重操作
+                                 */
+                                let item = data[i]
+                                if (!this.isRepeat(item)) {
+                                    let connTable = {
+                                        id: id,
+                                        name: data[i],
+                                        isSelected: false,
+                                    }
+                                    connTableArr.push(connTable)
+                                    id++
+                                }
+                            }
+                            // this.$store.commit('saveConnTables', connTableArr)
+                            this.connTables = connTableArr
+                            // console.log('当前连接中所有的表：')
+                            // console.log(this.connTables)
                         }
                     })
                 }
@@ -360,29 +361,37 @@ export default {
                 })
             }
         },
-        /**
-         * 每个表名按钮的点击事件 => 选择表
-         */
-        selectTable(v) {
-            // this.allTables = []
-            var table = { name: '' }
-            table.name = v
-            // const allTables = this.allTables
-            const selectedTables = this.selectedTables
-            // 去重
-            const isExist = selectedTables.some((item) => item.name === table.name)
-            if (!isExist) {
-                selectedTables.push(table)
-            }
 
-            // this.allTables = allTables
-            // allTables.forEach((element) => {
-            //     if (element != o) {
-            //         allTables.push(o)
-            //     }else {
-            //         alert('请勿重复选择')
-            //     }
-            // })
+        /**
+         * @description: 判断 obj 是否已经存在于 this.allTables当中（比较依据为名字）
+         * @param {*} tableName 被比较的表名
+         * @return {*} True：重复       False：不重复
+         */
+        isRepeat(tableName) {
+            if (this.allTables.length == 0) {
+                return false
+            }
+            for (let j = 0; j < this.allTables.length; j++) {
+                let item = this.allTables[j]
+                if (tableName == item.name) {
+                    return true
+                }
+            }
+        },
+
+        /**
+         * @description: 每个表名按钮的点击事件 => 选择表
+         * @param {*} o 被点击者对象
+         * @param {*} index 索引
+         * @return {*}
+         */
+        selectTable(obj, index) {
+            if (obj.isSelected) {
+                this.selectCount--
+            } else {
+                this.selectCount++
+            }
+            obj.isSelected = !obj.isSelected
         },
         /**
          * 连接名的点击事件
@@ -394,15 +403,30 @@ export default {
             // 请求接口 => 获取当前连接所有的表名
             // 当前连接默认为数组中的第一个
             await getConnTables(this.conn).then((res) => {
-                console.log('请求接口')
                 if (res.code === 200) {
-                    console.log('当前连接中所有的表：' + res.data)
-                    console.log('当前连接对象：' + this.conn)
-                    this.$store.commit('saveConnTables', res.data)
-                    // 取出每个连接中所有的表
-                    this.connTables = this.$store.state.connTables
-                } else {
-                    console.log('连接失败')
+                    const data = res.data
+                    // 构造connTable对象，push进connTables数组
+                    let connTableArr = []
+                    let id = 0
+                    for (let i = 0; i < data.length; i++) {
+                        /**
+                         * 去重操作
+                         */
+                        let item = data[i]
+                        if (!this.isRepeat(item)) {
+                            let connTable = {
+                                id: id,
+                                name: data[i],
+                                isSelected: false,
+                            }
+                            connTableArr.push(connTable)
+                            id++
+                        }
+                    }
+                    this.$store.commit('saveConnTables', connTableArr)
+                    this.connTables = connTableArr
+                    // console.log('当前连接中所有的表：')
+                    // console.log(this.connTables)
                 }
             })
         },
@@ -412,7 +436,6 @@ export default {
         toDatapage() {
             this.$router.push('/data')
         },
-
         /**
          * @description: 左侧部分，获取当前点击的表名
          * @param {*} o
@@ -432,5 +455,8 @@ export default {
 }
 .outline-right {
     border-right: 1px solid #25354d;
+}
+.bc-selected {
+    background-color: #bdbdbd;
 }
 </style>
