@@ -147,12 +147,19 @@ export default {
     created() {
         // store里面存的所有数据包文件
         this.folders = this.$store.state.folders
+        var i = 0
+        for (i; i < this.folders.length; i++) {
+            if (this.folders[i].name == this.folder.name) {
+                this.number = i
+            }
+        }
         if (this.folders.length == 0) {
             this.folder.name = '默认数据包'
-            this.folder.tables = null
+            this.folder.tables = []
             this.items.push(this.folder.name)
+            this.foldersFile.push(this.folder.tables)
             this.folders.push(this.folder)
-            this.$store.commit('saveFolders', this.folders)
+            // this.$store.commit('folder', this.folder)
         } else {
             this.folders.forEach((item) => {
                 // 当前点击的数据包
@@ -164,12 +171,7 @@ export default {
                 this.foldersFile.push(item.tables)
             })
         }
-        var i = 0
-        for (i; i < this.folders.length; i++) {
-            if (this.folders[i].name == this.folder.name) {
-                this.number = i
-            }
-        }
+
         if (this.folder.tables == null) {
             this.foldersFile[this.number] = []
         } else {
@@ -221,6 +223,7 @@ export default {
             }
             if (this.foldersFile[this.number].length != 0) {
                 this.files.forEach((file) => {
+                    // 判断是否含有重复的文件
                     let isExist = this.foldersFile[this.number].some((item) => item.name === file.name)
                     if (!isExist) {
                         let formData = new FormData()

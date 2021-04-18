@@ -262,7 +262,7 @@ export default {
         }
         // 取出选中的数据包名称
         this.folder = this.$store.state.folder
-
+        console.log(this.$store.state.folders)
         // 默认显示第一张表的预览
         if (this.allTables != null) {
             this.table = this.allTables[0]
