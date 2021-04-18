@@ -8,7 +8,7 @@
                         <!-- 按钮 -->
                         <v-card v-if="!disabledBtn" class="d-flex align-center" outlined v-borderBottom tile height="60">
                             <!-- 返回图标 -->
-                            <v-icon medium class="ml-1 mr-1" v-if="isShow" @click="previousPage()">mdi-chevron-left</v-icon>
+                            <v-icon medium class="ml-1 mr-1" v-if="!isShow" @click="previousPage()">mdi-chevron-left</v-icon>
 
                             <v-spacer></v-spacer>
                             <!-- 新建连接按钮 -->
@@ -49,18 +49,21 @@
         </div>
 
         <!-- 信息提示框 -->
-        <div class="alert-area">
-            <v-alert
-                v-show="alertArr.length !== 0"
-                v-ripple
-                :type="item.type"
-                dismissible
-                elevation="3"
-                v-for="(item, index) in alertArr"
-                :key="index"
-            >
-                {{ item.content }}
-            </v-alert>
+        <div class="alert-area" v-if="alertArr.length !== 0">
+            <div class="d-flex flex-column align-center" style="width: 100%">
+                <v-alert
+                    width="500"
+                    class="div-alert"
+                    v-ripple
+                    :type="item.type"
+                    dismissible
+                    elevation="3"
+                    v-for="(item, index) in alertArr"
+                    :key="index"
+                >
+                    {{ item.content }}
+                </v-alert>
+            </div>
         </div>
 
         <!-- 右侧部分-- -->
@@ -69,7 +72,7 @@
             <v-container fluid v-show="isSQLArea">
                 <span class="text-h6 indigo--text text--lighten-1">选择数据库类型</span>
                 <v-item-group>
-                    <v-container class="item-area mt-16">
+                    <v-container class="item-area mt-16" style="width: 85%">
                         <v-row>
                             <v-col v-for="(item, index) in options" md="4" lg="4" cols="4" :key="index">
                                 <v-item class="mt-12">
@@ -92,23 +95,31 @@
                     <v-col align-self="center">
                         <span>数据连接({{ connSQL.sqlType }})</span>
                     </v-col>
-                    <v-col align-self="center" v-show="!disabledTextField" sm="1">
+                    <v-col align-self="center" v-show="!disabledTextField" sm="2" class="mr-2">
                         <v-row justify="space-between">
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn icon color="deep-purple lighten-3" v-bind="attrs" v-on="on" @click="cancel()">
-                                        <v-icon>mdi-close-circle-outline</v-icon>
+                                    <v-btn color="#ECEFF1" elevation="0" fab x-small v-bind="attrs" v-on="on" @click="testConn()">
+                                        <v-icon color="#25354d">mdi-connection</v-icon>
                                     </v-btn>
                                 </template>
-                                <span>Cancel</span>
+                                <span>TestConn</span>
                             </v-tooltip>
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn v-bind="attrs" v-on="on" icon color="deep-purple lighten-3" @click="save()">
-                                        <v-icon>mdi-content-save</v-icon>
+                                    <v-btn color="#ECEFF1" elevation="0" fab x-small v-bind="attrs" v-on="on" @click="save()">
+                                        <v-icon color="#25354d">mdi-content-save</v-icon>
                                     </v-btn>
                                 </template>
                                 <span>Save</span>
+                            </v-tooltip>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn color="#ECEFF1" elevation="0" fab x-small v-bind="attrs" v-on="on" @click="cancel()">
+                                        <v-icon color="#25354d">mdi-close-thick</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Cancel</span>
                             </v-tooltip>
                         </v-row>
                     </v-col>
@@ -144,7 +155,6 @@
                                 type="password"
                                 v-model="connSQL.password"
                             ></v-text-field>
-                            <v-btn v-show="!disabledTextField" depressed color="light-green lighten-3" @click="testConn()">测试连接</v-btn>
                         </v-col>
 
                         <v-col align-self="center" cols="6">
@@ -163,7 +173,7 @@
                         <v-card flat tile class="pa-4 d-flex justify-space-between align-center">
                             <v-btn color="#e5dbff" @click="changeSQLArea()">新建连接</v-btn>
                             <div class="text-h5 indigo--text text--lighten-2">>></div>
-                            <v-btn color="#d0ebff" @click="goChangeTable()">去选择表</v-btn>
+                            <v-btn color="#d0ebff" @click="goChangeTable()">去选择{{ !isShow ? '表' : '包' }}</v-btn>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -171,7 +181,7 @@
         </div>
 
         <!-- 请先测试连接的 Dialog -->
-        <v-dialog v-model="saveDialog" persistent max-width="350">
+        <v-dialog v-model="saveDialog" persistent max-width="500">
             <v-card>
                 <v-card-title class="text-h5"> Please test the connection first </v-card-title>
                 <v-card-actions class="mt-3">
@@ -225,10 +235,11 @@ export default {
         }
         this.historyConnArr = this.$store.state.databaseConnObjArr
         // 接收添加表页面传来的数据 => 是否显示返回按钮
-        this.isShow = this.$route.params.isShow
-        // 从本地缓存中取出数据包对象
-        var param = localStorage.getItem('folder')
-        this.folder = JSON.parse(param)
+        if (this.$route.params.isShow == undefined) {
+            this.isShow = true
+        } else {
+            this.isShow = this.$route.params.isShow
+        }
     },
     data: () => ({
         // 展示历史连接对象详情的对象
@@ -314,7 +325,11 @@ export default {
          * “去选择表” 按钮的动作监听
          */
         goChangeTable() {
-            this.$router.push('/addtable')
+            if (this.isShow) {
+                this.$router.push('/data')
+            } else {
+                this.$router.push('/addtable')
+            }
         },
         /**
          * 测试连接 按钮的方法
@@ -478,14 +493,12 @@ export default {
 <style scoped>
 .alert-area {
     position: absolute;
-    top: 50px;
-    right: 0;
+    top: 0;
+    left: 0;
     z-index: 1000;
     height: 300px;
+    width: 100%;
     overflow: auto;
-}
-.item-area {
-    width: 85%;
 }
 .v-text-field {
     width: 200px;

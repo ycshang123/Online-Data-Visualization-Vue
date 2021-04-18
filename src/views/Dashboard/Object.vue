@@ -109,10 +109,7 @@ export default {
         }
     },
     mounted() {
-        this.settings = {
-            metrics: ['访问用户', '下单率'],
-            dimension: ['下单用户'],
-        }
+        this.settings = {}
     },
 }
 </script>
