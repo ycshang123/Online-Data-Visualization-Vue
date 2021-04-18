@@ -33,14 +33,12 @@
                 </v-card>
                 <v-card width="78%" height="100%" tile elevation="0" v-borderTB class="d-flex">
                     <v-card width="25%" height="100%" tile elevation="0" v-borderLR class="d-flex flex-column align-center justify-center">
-                        <input
-                            type="text"
-                            placeholder="搜索"
-                            style="border: 1px solid #e0e0e0; font-size: 10px; border-radius: 3px; height: 30px"
-                            class="pl-2 mt-1"
-                        />
-                        <div style="height: 93%; width: 100%; overflow-y: auto; white-space: nowrap">
-                            <div v-for="(item, index) in listContent" :key="index" class="ml-2">
+                        <div style="height: 8%" class="d-flex justify-center align-center">
+                            <v-text-field placeholder="搜索" class="pr-2 pl-2" />
+                        </div>
+
+                        <div style="height: 90%; width: 100%; overflow-y: auto; white-space: nowrap" class="mt-3">
+                            <div v-for="(item, index) in listContent" :key="index" v-cursor class="ml-2">
                                 <span style="color: #3f3f4c; font-size: 12px" @click="addColumnContent(index)"> {{ item.content }}</span>
                             </div>
                         </div>
@@ -96,11 +94,12 @@
                 <v-col class="d-flex align-center justify-space-around" cols="5">
                     <span>表名:</span>
                     <v-col cols="10">
-                        <v-text-field placeholder="请输入新增表名" />
+                        <v-text-field placeholder="请输入新增表名" v-model="newTableName" />
                     </v-col>
                 </v-col>
                 <v-col class="d-flex justify-space-between" cols="2">
-                    <v-btn color="indigo lighten-2">取消</v-btn><v-btn color="deep-purple lighten-2">保存</v-btn>
+                    <v-btn color="#3b4a5f" style="color: #ffffff" @click="returnPage()">取消</v-btn
+                    ><v-btn color="#3b4a5f" style="color: #ffffff" @click="addnewTable()">保存</v-btn>
                 </v-col>
             </v-card>
             <!-- 选择顺序 -->
@@ -157,15 +156,16 @@
                         <v-btn v-else @click="notChoose()">取消全选</v-btn>
                         <v-btn @click="joinColumnData()">确认</v-btn>
                     </v-card>
-                    <v-card width="100%" height="520px" class="pa-2 py-4 overflow-y-auto overflow-x-hidden" tile flat>
+                    <v-card width="100%" height="90%" class="pa-2 py-4 overflow-y-auto overflow-x-hidden" tile flat>
                         <div
                             v-for="(item, index) in listContent"
                             :key="index"
                             class="d-flex align-center justify-start"
-                            style="height: 25px"
+                            style="height: 20px"
+                            v-cursor
                         >
                             <v-checkbox dense @click.stop="chooseColumn(index)" v-model="item.checked"></v-checkbox>
-                            <span>{{ item.content.substring(0, 10) }}</span>
+                            <span>{{ item.content }}</span>
                         </div>
                     </v-card>
                 </v-card>
@@ -178,7 +178,7 @@
     </div>
 </template>
 <script>
-import { getConnTableColumn, getColumnData } from '../../common/api/select'
+import { getConnTableColumn, getColumnData, addNewColumn } from '../../common/api/select'
 export default {
     data() {
         return {
@@ -188,8 +188,6 @@ export default {
             newColArr: ['选字段'],
             // 数据库表名
             tableList: [],
-            // 全部数据表中的表头
-            listsContent: [],
             // 每个数据表对应的表头
             listContent: [],
             // 选择的表头
@@ -206,7 +204,7 @@ export default {
             operationList: ['+', '-', '*', '/'],
             textType: [{ name: '数值字段' }, { name: '文本字段' }, { name: '时间字段' }],
             // 新增列右侧进行运算的部分
-            newColumnContent: ['+', '-', '*', '/'],
+            newColumnContent: [],
             // 新增列的名称
             newColumn: null,
             //左括号的数量
@@ -235,13 +233,19 @@ export default {
             isDisplayTable: false,
             //选择表格中的第一个表
             number: 0,
+            // 选定表头对应的值
             numberList: [],
+            // 表头的值对应的空对象
+            obj: {},
+            //新增表名
+            newTableName: null,
+            // 表名
+            tableName: null,
         }
     },
     created() {
         this.folder = this.$store.state.folder.name
         this.tableList = this.$store.state.folder.tables
-        console.log(this.tableList)
         this.databaseConn = this.$store.state.databaseConnObjArr[0]
     },
     methods: {
@@ -285,6 +289,14 @@ export default {
                 }
             }
         },
+        //新增表名
+        addnewTable() {
+            var newName = { name: '' }
+            newName.name = this.newTableName
+            this.tableName = newName.name
+            this.tableList.push(newName)
+            this.newTableName = null
+        },
         //新增算数方法
         operation(index) {
             var length = this.newColumnContent.length
@@ -292,6 +304,8 @@ export default {
                 if (this.functionSign[index] == '(') {
                     this.LeftNumber = this.LeftNumber + 1
                     this.newColumnContent.push(this.functionSign[index])
+                } else {
+                    alert('请选择合适的列名进行运算')
                 }
             } else {
                 var position = length - 1
@@ -331,10 +345,6 @@ export default {
                     this.newColumnContent.push(this.functionSign[index])
                 }
             }
-        },
-        // 查询数据库中的表
-        selectListContent(index) {
-            this.listContent = this.listsContent[index]
         },
         // 选择表头
         chooseColumn(index) {
@@ -387,12 +397,14 @@ export default {
             console.log(this.RightNumber)
             if (this.LeftNumber != this.RightNumber) {
                 alert('左右括号不对称')
-            }
-            if (this.newColumn != null) {
+            } else if (this.newColumn != null) {
                 var column = { content: '', checked: false }
                 column.content = this.newColumn
                 this.listContent.push(column)
                 this.isPop = false
+                addNewColumn(this.newColumnContent).then((res) => {
+                    console.log(res)
+                })
             } else {
                 if (this.newColumnContent.length > 0) {
                     alert('请输入列名')
@@ -425,6 +437,17 @@ export default {
                         })
                     }
                 })
+            } else if (this.tableName == this.tableList[index].name) {
+                this.listContent = []
+                var columnName = []
+                this.chooseList.forEach((item) => {
+                    columnName.push(item.text)
+                })
+                columnName.forEach((item) => {
+                    var field = { content: null, checked: false }
+                    field.content = item
+                    this.listContent.push(field)
+                })
             } else {
                 this.columnArr = this.databaseConn
                 this.columnArr.tableName = this.tableList[index].name
@@ -444,22 +467,30 @@ export default {
         joinColumnData() {
             this.joinColumn = this.databaseConn
             this.joinColumn.tableName = this.tableList[this.number].name
-            this.joinColumn.limitCount = 2
+            this.joinColumn.limitCount = 100
             this.joinColumn.page = 1
-            this.joinColumn.columnName = this.listContent[0].content
-            var columnName = this.chooseList[0].text
-            console.log('fghjkl;' + JSON.stringify(this.chooseList[0]))
+            var columnName = []
+            this.chooseList.forEach((item) => {
+                columnName.push(item.text)
+            })
+            this.joinColumn.columnName = columnName
             console.log(this.joinColumn)
+
             getColumnData(this.joinColumn).then((res) => {
                 var columnList = res.data
-                columnList.forEach((item) => {
-                    var obj = {}
-                    obj[columnName] = item[0] + ','
-
-                    this.numberList.push(obj)
+                columnList.forEach((element) => {
+                    var i = 0
+                    this.obj = {}
+                    columnName.forEach((item) => {
+                        this.obj[item] = element[i]
+                        i = i + 1
+                    })
+                    this.numberList.push(this.obj)
                 })
-                console.log(this.numberList)
             })
+        },
+        returnPage() {
+            this.$router.go(-1)
         },
     },
 }
