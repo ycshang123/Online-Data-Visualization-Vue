@@ -150,8 +150,8 @@
             </v-col>
 
             <!-- 右 -->
-            <v-col cols="8  pa-0">
-                <v-card class="d-flex flex-column justify-space-between" tile flat height="100%">
+            <v-col cols="8 pa-0">
+                <v-card class="pb-0 d-flex flex-column justify-space-between" tile flat height="100%">
                     <v-card class="" flat height="20%">
                         <v-row no-gutters align="center" class="">
                             <v-col cols="1">
@@ -233,20 +233,8 @@
                         </v-row>
                     </v-card>
 
-                    <v-card height="75%" flat tile outlined class="d-flex justify-center align-center">
-                        <v-sparkline
-                            :value="value"
-                            :gradient="gradient"
-                            :smooth="radius || false"
-                            :padding="padding"
-                            :line-width="width"
-                            :stroke-linecap="lineCap"
-                            :gradient-type="gradienttype"
-                            :fill="fill"
-                            :type="type"
-                            :auto-line-width="autoLineWidth"
-                            auto-draw
-                        ></v-sparkline>
+                    <v-card height="75%" class="" flat tile outlined :class="dataStatus ? 'd-flex align-center' : ''">
+                        <ve-histogram class="overflow-x-auto" :data="chartData" :settings="chartSettings"></ve-histogram>
                     </v-card>
                 </v-card>
             </v-col>
@@ -254,18 +242,22 @@
     </div>
 </template>
 <script>
-const gradients = [
-    ['#222'],
-    ['#42b3f4'],
-    ['red', 'orange', 'yellow'],
-    ['purple', 'violet'],
-    ['#00c6ff', '#F0F', '#FF0'],
-    ['#f72047', '#ffd200', '#1feaea'],
-]
-
 export default {
     data() {
+        this.chartSettings = {
+            axisSite: { right: ['下单率'] },
+            yAxisType: ['KMB', 'percent'],
+            yAxisName: ['数值', '比率'],
+            showLine: ['下单率'],
+        }
         return {
+            // 图表所需的数据是否已经全部加载的状态
+            dataStatus: false,
+            // 图标的配置项 option
+            chartData: {
+                columns: [],
+                rows: [],
+            },
             // 图标类型图标数组
             chartArr: [
                 { id: 0, type: '柱状图', icon: require('../../assets/pic/chart/bar.png') },
@@ -278,19 +270,6 @@ export default {
                 { id: 7, type: '仪表盘', icon: require('../../assets/pic/chart/gauge.png') },
                 { id: 8, type: '地图', icon: require('../../assets/pic/chart/map.png') },
             ],
-            // -------------------图表------------------------
-            width: 2,
-            radius: 10,
-            padding: 8,
-            lineCap: 'round',
-            gradient: gradients[5],
-            value: [0, 2, 5, 9, 5, 10, 3, 5, 0, 0, 1, 8, 2, 9, 0],
-            gradienttype: 'top',
-            gradients,
-            fill: false,
-            type: 'trend',
-            autoLineWidth: false,
-            // ----------------------------------------------
             // 维度 内容数组
             dimensionalityArr: [
                 { id: 0, name: '承运日期' },
@@ -309,6 +288,21 @@ export default {
             // Y 轴数组
             yAxisArr: [],
         }
+    },
+    mounted() {
+        this.chartData.columns = ['日期', '访问用户', '下单用户', '下单率']
+        this.chartData.rows = [
+            { 日期: '1/1', 访问用户: 1393, 下单用户: 1093, 下单率: 0.32 },
+            { 日期: '1/2', 访问用户: 3530, 下单用户: 3230, 下单率: 0.26 },
+            { 日期: '1/3', 访问用户: 2923, 下单用户: 2623, 下单率: 0.76 },
+            { 日期: '1/4', 访问用户: 1723, 下单用户: 1423, 下单率: 0.49 },
+            { 日期: '1/5', 访问用户: 3792, 下单用户: 3492, 下单率: 0.323 },
+            { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
+            { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
+            { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
+            { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
+        ]
+        this.dataStatus = true
     },
     methods: {
         /**
