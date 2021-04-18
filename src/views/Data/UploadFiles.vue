@@ -23,27 +23,33 @@
             </v-list-item>
         </div>
 
-        <v-card width="81%" tile elevation="0">
+        <v-card width="81%" tile flat>
             <!-- 头部导航栏 -->
-            <v-card class="d-flex justify-space-between align-center" height="70px" tile elevation="0">
-                <v-card width="60%" class="d-flex justify-space-around" tile elevation="0" v-if="!isdisplay">
-                    <v-card width="30%" class="d-flex align-center ma-3" tile elevation="0"> 上传文件 </v-card>
-                    <v-card class="d-flex justify-center align-items-center" width="70%" tile elevation="0">
-                        <v-col class="d-flex align-center"> 上传数据包至： </v-col>
-                        <v-col cols="8" style="margin-top: 8%">
-                            <v-select :label="items[this.number]" solo :items="items" @change="changeNumber"> </v-select>
-                        </v-col>
-                    </v-card>
-                </v-card>
-                <v-col cols="3" v-if="this.foldersFile[this.number] != null">已选择{{ this.foldersFile[this.number].length }} 项</v-col>
-                <v-col cols="3" v-else>已选择0项</v-col>
+            <v-card outlined v-borderBottom class="pa-0 d-flex justify-center" height="8%" tile flat>
+                <v-row no-gutters align="center">
+                    <v-col cols="8">
+                        <v-card class="px-3 d-flex justify-space-around" tile elevation="0" v-if="!isdisplay">
+                            <v-col cols="2" align-self="center">上传文件</v-col>
+                            <v-col cols="10 pa-0" class="d-flex align-center justify-center">
+                                <span style="width: 25%" class="d-flex justify-end"> 上传数据包至： </span>
+                                <div style="height: 49px; width: 60%">
+                                    <v-select flat :label="items[this.number]" solo :items="items" @change="changeNumber"> </v-select>
+                                </div>
+                            </v-col>
+                        </v-card>
+                    </v-col>
 
-                <v-col cols="1">
-                    <v-btn @click="uploadFile()">确定</v-btn>
-                </v-col>
-                <v-col cols="1">
-                    <v-btn @click="returnPage()">上传完成</v-btn>
-                </v-col>
+                    <v-col cols="4" class="d-flex align-center">
+                        <v-col cols="4" v-if="this.foldersFile[this.number] != null">
+                            已选择{{ this.foldersFile[this.number].length }} 项
+                        </v-col>
+                        <v-col cols="4" v-else>已选择0项</v-col>
+                        <v-col cols="8" class="d-flex justify-space-around">
+                            <v-btn @click="uploadFile()">确定</v-btn>
+                            <v-btn @click="returnPage()">上传完成</v-btn>
+                        </v-col>
+                    </v-col>
+                </v-row>
             </v-card>
 
             <v-card width="92%" tile flat>
@@ -141,12 +147,19 @@ export default {
     created() {
         // store里面存的所有数据包文件
         this.folders = this.$store.state.folders
+        var i = 0
+        for (i; i < this.folders.length; i++) {
+            if (this.folders[i].name == this.folder.name) {
+                this.number = i
+            }
+        }
         if (this.folders.length == 0) {
             this.folder.name = '默认数据包'
-            this.folder.tables = null
+            this.folder.tables = []
             this.items.push(this.folder.name)
+            this.foldersFile.push(this.folder.tables)
             this.folders.push(this.folder)
-            this.$store.commit('folders', this.folders)
+            // this.$store.commit('folder', this.folder)
         } else {
             this.folders.forEach((item) => {
                 // 当前点击的数据包
@@ -158,12 +171,7 @@ export default {
                 this.foldersFile.push(item.tables)
             })
         }
-        var i = 0
-        for (i; i < this.folders.length; i++) {
-            if (this.folders[i].name == this.folder.name) {
-                this.number = i
-            }
-        }
+
         if (this.folder.tables == null) {
             this.foldersFile[this.number] = []
         } else {
@@ -215,6 +223,7 @@ export default {
             }
             if (this.foldersFile[this.number].length != 0) {
                 this.files.forEach((file) => {
+                    // 判断是否含有重复的文件
                     let isExist = this.foldersFile[this.number].some((item) => item.name === file.name)
                     if (!isExist) {
                         let formData = new FormData()

@@ -174,6 +174,7 @@
                                 color="#3d557c"
                                 @click="selectTable(item, index)"
                             >
+                            
                                 <v-icon class="ml-4" color="#3d557c" medium>mdi-table</v-icon>
                                 <v-card-title class="subtitle-1">{{ item.name }}</v-card-title>
                             </v-btn>

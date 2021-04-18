@@ -218,9 +218,7 @@ import postgresql_mini from '../../assets/pic/miniSqlLogo/Postgresql.png'
 export default {
     name: 'DatabaseConn',
     created() {
-        console.log(this.$route.params.isShow)
         if (this.$route.params.isShow == false) {
-            console.log('进入')
             this.isUploadCard = false
         } else {
             this.isUploadCard = true
@@ -403,9 +401,18 @@ export default {
          * @return {*} true: 重复       false: 不重复
          */
         isRepeat(connObj) {
-            let jsonConnArr = JSON.stringify(this.$store.state.databaseConnObjArr)
-            let jsonObj = JSON.stringify(connObj)
-            return jsonConnArr.indexOf(jsonObj) == -1 ? false : true
+            let dbArr = this.$store.state.databaseConnObjArr
+            for (let i = 0; i < dbArr.length; i++) {
+                let obj = dbArr[i]
+                // 如果连接名和类型都相同，则表示重复，反之
+                if (obj.connName == connObj.connName && obj.sqlType == connObj.sqlType) {
+                    return true
+                }
+            }
+            return false
+            // let jsonConnArr = JSON.stringify(this.$store.state.databaseConnObjArr)
+            // let jsonObj = JSON.stringify(connObj)
+            // return jsonConnArr.indexOf(jsonObj) == -1 ? false : true
         },
 
         /**
