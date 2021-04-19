@@ -1,12 +1,8 @@
 /*
- * @Description:
+ * @Description: 查询类相关接口 API 管理文件
  * @Author: ycshang
  * @Version: 1.0
  * @Date: 2021-04-05 09:52:43
- */
-
-/**
- * 查询类相关接口 API 管理文件
  */
 import { get, post } from '../request'
 

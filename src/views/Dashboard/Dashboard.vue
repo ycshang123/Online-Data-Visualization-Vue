@@ -243,6 +243,7 @@
 </template>
 <script>
 export default {
+    name: 'Dashboard',
     data() {
         this.chartSettings = {
             axisSite: { right: ['下单率'] },
@@ -251,6 +252,8 @@ export default {
             showLine: ['下单率'],
         }
         return {
+            //弹窗数组
+            alertArr: [],
             // 图表所需的数据是否已经全部加载的状态
             dataStatus: false,
             // 图标的配置项 option
@@ -303,7 +306,20 @@ export default {
             { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
         ]
         this.dataStatus = true
+        this.alertArr = this.$store.alertArr
     },
+    // watch: {
+    //     alertArr: {
+    //         handler() {
+    //             if (this.alertArr.length !== 0) {
+    //                 setTimeout(() => {
+    //                     this.alertArr.splice(0, 1)
+    //                 }, 2000)
+    //             }
+    //         },
+    //         deep: true,
+    //     },
+    // },
     methods: {
         /**
          * 删除按钮的监听器
@@ -353,26 +369,33 @@ export default {
          */
         drop(event) {
             let elId = event.target.id || event.srcElement.id
-            let item = JSON.parse(event.dataTransfer.getData('item'))
-            /**
-             * 1. 先删除被拖放元素
-             */
-            if (item.type == 'dimensionality') {
-                // 删除被拖拉的对象
-                this.dimensionalityArr.splice(item.index, 1)
+            if (elId == 'xAxis' && this.xAxisArr.length != 0) {
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'error',
+                    content: 'x轴上只能放一个数据！',
+                })
             } else {
-                // 删除被拖拉的对象
-                this.indicatorArr.splice(item.index, 1)
-            }
-            /**
-             * 2. 在目标区域内追加元素
-             */
-            if (elId == 'xAxis') {
-                // 在 x 轴 中追加一个数据
-                this.xAxisArr.push(item)
-            } else {
-                // 在 y 轴 中追加一个数据
-                this.yAxisArr.push(item)
+                let item = JSON.parse(event.dataTransfer.getData('item'))
+                /**
+                 * 1. 先删除被拖放元素
+                 */
+                if (item.type == 'dimensionality') {
+                    // 删除被拖拉的对象
+                    this.dimensionalityArr.splice(item.index, 1)
+                } else {
+                    // 删除被拖拉的对象
+                    this.indicatorArr.splice(item.index, 1)
+                }
+                /**
+                 * 2. 在目标区域内追加元素
+                 */
+                if (elId == 'xAxis') {
+                    // 在 x 轴 中追加一个数据
+                    this.xAxisArr.push(item)
+                } else {
+                    // 在 y 轴 中追加一个数据
+                    this.yAxisArr.push(item)
+                }
             }
         },
 
