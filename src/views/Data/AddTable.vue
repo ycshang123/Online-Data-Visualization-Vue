@@ -80,7 +80,7 @@
         </div>
 
         <!-- 右侧部分 -->
-        <v-main style="height: 100%; width:80%" class="pt-3">
+        <v-main style="height: 100%; width: 80%" class="pt-3">
             <!-- 数据表预览 -->
             <v-card v-if="!isShowOther && allTables.length !== 0" flat tile>
                 <!-- 工具栏 -->
@@ -109,7 +109,7 @@
                     <!-- 编辑和创建组件按钮 -->
                     <v-card flat class="d-flex px-2" width="20%">
                         <v-btn small dark class="mr-3" color="#25354d" style="opacity: 0.9">编辑</v-btn>
-                        <v-btn small dark color="#25354d" style="opacity: 0.9">创建组件</v-btn>
+                        <v-btn small dark color="#25354d" style="opacity: 0.9" @click="createCompBtn()">创建组件</v-btn>
                     </v-card>
                 </v-card-title>
 
@@ -192,11 +192,9 @@ export default {
     data() {
         return {
             selectCount: 0,
-            // 是否被选择的状态数组
-            // isSelectArr: [],
+            // 当前连接对象
             conn: {},
             isShowOther: false,
-            tips: '请添加表',
             // 选中的数据包名称
             folder: {},
             // 点击的表
@@ -215,9 +213,6 @@ export default {
             allTables: [],
             // 每个连接中所有的表
             connTables: [],
-            /**
-             * 静态表格
-             */
             // 表头
             headers: [
                 // { text: 'Dessert (100g serving)', align: 'start', sortable: false, value: 'name' },
@@ -251,9 +246,6 @@ export default {
         }
         // 取出每个连接中所有的表
         this.connTables = this.$store.state.connTables
-        // for (let i = 0; i < this.connTables.length; i++) {
-        //     this.isSelectArr.push(false)
-        // }
         // 取出选中的数据包名称
         this.folder = this.$store.state.folder
         // 默认显示第一张表的预览
@@ -262,6 +254,7 @@ export default {
         }
         // 当状态为数据库表时，右侧默认显示第一个连接的所有表
         this.conn = this.historyConnArr[0]
+        // 当数据包中有表时，执行数据表预览方法
         if (this.allTables.length !== 0) {
             this.showTablePre()
         }
@@ -295,7 +288,7 @@ export default {
                         const element = colData[i]
                         header = {
                             text: colData[i],
-                            value: colData[i]
+                            value: colData[i],
                         }
                         headers.push(header)
                     }
@@ -352,7 +345,7 @@ export default {
         pushAllTables() {
             // 是否显示“数据库连接部分”
             this.isShowOther = false
-            // 被选择的表
+            // 收集被选择的表
             const selectedTables = this.connTables.filter((item) => {
                 if (item.isSelected) {
                     return item
@@ -411,12 +404,12 @@ export default {
                                         id: id,
                                         name: data[i],
                                         isSelected: false,
+                                        conn: this.conn,
                                     }
                                     connTableArr.push(connTable)
                                     id++
                                 }
                             }
-                            // this.$store.commit('saveConnTables', connTableArr)
                             this.connTables = connTableArr
                             // console.log('当前连接中所有的表：')
                             // console.log(this.connTables)
@@ -470,7 +463,6 @@ export default {
         async showAllTable(o) {
             // 把被点击连接对象赋值给单独的变量conn，用作在右侧显示连接名和图标
             this.conn = o
-            console.log(this.conn)
             // 请求接口 => 获取当前连接所有的表名
             // 当前连接默认为数组中的第一个
             await getConnTables(this.conn).then((res) => {
@@ -489,6 +481,7 @@ export default {
                                 id: id,
                                 name: data[i],
                                 isSelected: false,
+                                conn: this.conn,
                             }
                             connTableArr.push(connTable)
                             id++
@@ -515,6 +508,24 @@ export default {
         getTable(o) {
             this.table = o
             this.showTablePre()
+        },
+
+        /**
+         * @description: 创建组件按钮的点击事件
+         * @param {*}
+         * @return {*}
+         */
+        createCompBtn() {
+            //界面跳转，传参 -> 当前连接对象、字段名
+            this.$router.push({
+                name: 'Dashboard',
+                params: {
+                    colNameArr: this.headers,
+                    table: this.table,
+                },
+            })
+            console.log(this.allTables)
+            console.log(this.folder)
         },
     },
 }
