@@ -109,7 +109,7 @@
                     <!-- 编辑和创建组件按钮 -->
                     <v-card flat class="d-flex px-2" width="20%">
                         <v-btn small dark class="mr-3" color="#25354d" style="opacity: 0.9">编辑</v-btn>
-                        <v-btn small dark color="#25354d" style="opacity: 0.9">创建组件</v-btn>
+                        <v-btn small dark color="#25354d" style="opacity: 0.9" @click="toDashboard()">创建组件</v-btn>
                     </v-card>
                 </v-card-title>
 
@@ -174,7 +174,6 @@
                                 color="#3d557c"
                                 @click="selectTable(item, index)"
                             >
-                            
                                 <v-icon class="ml-4" color="#3d557c" medium>mdi-table</v-icon>
                                 <v-card-title class="subtitle-1">{{ item.name }}</v-card-title>
                             </v-btn>
@@ -265,6 +264,17 @@ export default {
         this.conn = this.historyConnArr[0]
     },
     methods: {
+        /**
+         * @description: “创建组件”按钮的动作监听
+         * @param {*}
+         * @return {*}
+         */
+        toDashboard() {
+            this.$router.push({
+                name: 'Dashboard',
+                params: ''
+            })
+        },
         /**
          * @description: 添加表按钮的点击事件，判断是否显示“自助数据集选项”
          * @param {*}

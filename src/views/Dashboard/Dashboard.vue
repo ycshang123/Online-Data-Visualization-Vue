@@ -4,7 +4,7 @@
         <v-card style="height: 8%" flat tile outlined class="d-flex align-center">
             <v-row no-gutters justify="space-between">
                 <v-col cols="4" class="d-flex align-center">
-                    <div class="text-h6">一月座客率</div>
+                    <div class="text-h6">{{ obj.tableName }}</div>
 
                     <div class="ml-12 d-flex align-center justify-center">
                         <v-tooltip bottom>
@@ -34,7 +34,7 @@
         <!-- 下半区域 -->
         <div class="d-flex" style="height: 92%; width: 100%">
             <!-- 左 -->
-            <v-col cols="2 red pa-0">
+            <v-col cols="2 pa-0">
                 <v-card height="100%" class="pa-0" tile flat>
                     <!-- 顶部标题 -->
                     <v-card height="6%" tile flat class="d-flex align-center justify-space-between" v-borderBottom>
@@ -51,45 +51,42 @@
                     </v-card>
                     <!-- 维度 -->
                     <v-card height="47%" tile flat v-borderBottom>
-                        <div>维度</div>
-                        <div class="mt-4 overflow-y-auto overflow-x-hidden">
-                            <v-card
-                                v-for="(item, index) in dimensionalityArr"
-                                :key="item.id"
-                                draggable="true"
-                                @dragstart="dragstart($event, item, index)"
-                                @dragend="dragend($event)"
-                                class="pa-1 mb-2 d-flex align-center"
-                                color="#E8EAF6"
-                                style="cursor: pointer"
-                            >
-                                <v-icon> mdi-menu-right</v-icon> {{ item.name }}
-                            </v-card>
+                        <div style="height: 8%">维度</div>
+                        <div style="height: 90%" v-relative>
+                            <div class="overflow-y-auto overflow-x-hidden" v-absolute style="width: 98%">
+                                <v-card
+                                    v-for="(item, index) in dimensionalityArr"
+                                    :key="item.id"
+                                    draggable="true"
+                                    @dragstart="dragstart($event, item, index)"
+                                    @dragend="dragend($event)"
+                                    class="pa-1 mb-2 d-flex align-center"
+                                    color="#E8EAF6"
+                                    v-cursor
+                                >
+                                    <v-icon> mdi-menu-right</v-icon> {{ item.name }}
+                                </v-card>
+                            </div>
                         </div>
                     </v-card>
                     <!-- 指标 -->
-                    <v-card height="47%" tile flat>
-                        <div class="d-flex justify-space-between align-center">
-                            <div>指标</div>
-                            <v-col class="pa-0" cols="4">
-                                <v-btn icon>
-                                    <v-icon>mdi-plus </v-icon>
-                                </v-btn>
-                            </v-col>
-                        </div>
-                        <div class="mt-4 overflow-y-auto overflow-x-hidden">
-                            <v-card
-                                v-for="(item, index) in indicatorArr"
-                                :key="index"
-                                draggable="true"
-                                @dragstart="dragstart($event, item, index)"
-                                @dragend="dragend($event)"
-                                class="pa-1 mb-2 d-flex align-center"
-                                color="#EDE7F6"
-                                v-cursor
-                            >
-                                <v-icon> mdi-menu-right</v-icon> {{ item.name }}
-                            </v-card>
+                    <v-card height="47%" tile flat class="d-flex flex-column justify-space-between">
+                        <div style="height: 8%">指标</div>
+                        <div style="height: 90%; width: 100%" v-relative>
+                            <div class="overflow-y-auto overflow-x-hidden" v-absolute style="width: 98%">
+                                <v-card
+                                    v-for="(item, index) in indicatorArr"
+                                    :key="index"
+                                    draggable="true"
+                                    @dragstart="dragstart($event, item, index)"
+                                    @dragend="dragend($event)"
+                                    class="pa-1 mb-2 d-flex align-center"
+                                    color="#EDE7F6"
+                                    v-cursor
+                                >
+                                    <v-icon> mdi-menu-right</v-icon> {{ item.name }}
+                                </v-card>
+                            </div>
                         </div>
                     </v-card>
                 </v-card>
@@ -114,7 +111,7 @@
                                                 v-on="on"
                                                 v-bind="attrs"
                                             >
-                                                <img :src="item.icon" />
+                                                <img draggable="false" :src="item.icon" />
                                             </v-btn>
                                         </template>
                                         <span>{{ item.type }}</span>
@@ -164,7 +161,7 @@
                                     tile
                                     outlined
                                     class="d-flex align-center"
-                                    height="50"
+                                    height="60"
                                     @dragover.prevent
                                     @drop="drop($event)"
                                 >
@@ -202,13 +199,13 @@
                                     flat
                                     tile
                                     outlined
-                                    class="d-flex align-center"
-                                    height="50"
+                                    class="d-flex align-center overflow-x-auto overflow-y-hidden"
+                                    height="60"
                                     @dragover.prevent
                                     @drop="drop($event)"
                                 >
                                     <v-card
-                                        class="mr-4 py-1 px-3"
+                                        class="mr-4 py-1 px-1"
                                         style="cursor: pointer"
                                         rounded="lg"
                                         outlined
@@ -242,6 +239,7 @@
     </div>
 </template>
 <script>
+import { getDIData } from '../../common/api/select'
 export default {
     name: 'Dashboard',
     data() {
@@ -252,8 +250,17 @@ export default {
             showLine: ['下单率'],
         }
         return {
-            //弹窗数组
-            alertArr: [],
+            obj: {
+                tableName: 'sample_1k_flts',
+                sqlType: 'postgresql',
+                userName: 'postgres',
+                password: 'root',
+                host: 'localhost',
+                port: '5432',
+                database: 'postgres',
+            },
+            // 当前操作表对象（包含表名和所有的字段名）
+            tableObj: null,
             // 图表所需的数据是否已经全部加载的状态
             dataStatus: false,
             // 图标的配置项 option
@@ -274,23 +281,17 @@ export default {
                 { id: 8, type: '地图', icon: require('../../assets/pic/chart/map.png') },
             ],
             // 维度 内容数组
-            dimensionalityArr: [
-                { id: 0, name: '承运日期' },
-                { id: 1, name: '出发城市' },
-            ],
+            dimensionalityArr: [],
             // 指标 内容数组
-            indicatorArr: [
-                { id: 0, name: '航段距离' },
-                { id: 1, name: '可供座位' },
-                { id: 2, name: '座客率' },
-                { id: 3, name: '座公里' },
-                { id: 4, name: '客公里' },
-            ],
+            indicatorArr: [],
             // X 轴数组
             xAxisArr: [],
             // Y 轴数组
             yAxisArr: [],
         }
+    },
+    created() {
+        this.getDIData()
     },
     mounted() {
         this.chartData.columns = ['日期', '访问用户', '下单用户', '下单率']
@@ -306,21 +307,20 @@ export default {
             { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
         ]
         this.dataStatus = true
-        this.alertArr = this.$store.alertArr
     },
-    // watch: {
-    //     alertArr: {
-    //         handler() {
-    //             if (this.alertArr.length !== 0) {
-    //                 setTimeout(() => {
-    //                     this.alertArr.splice(0, 1)
-    //                 }, 2000)
-    //             }
-    //         },
-    //         deep: true,
-    //     },
-    // },
     methods: {
+        /**
+         * @description: 调用获取维度和指标数组数据的方法
+         * @param {*}
+         * @return {*}
+         */
+        getDIData() {
+            getDIData(this.obj).then((res) => {
+                this.dimensionalityArr = res.data.dimensionality
+                this.indicatorArr = res.data.indicator
+            })
+        },
+
         /**
          * 删除按钮的监听器
          * xy: 表示对哪个轴进行操作
@@ -372,7 +372,7 @@ export default {
             if (elId == 'xAxis' && this.xAxisArr.length != 0) {
                 this.GLOBAL.pushAlertArrObj({
                     type: 'error',
-                    content: 'x轴上只能放一个数据！',
+                    content: 'X 轴上只能放一个数据！',
                 })
             } else {
                 let item = JSON.parse(event.dataTransfer.getData('item'))
