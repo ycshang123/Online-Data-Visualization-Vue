@@ -2,7 +2,7 @@
     <!-- 先设置整体高度100%，撑满屏幕 -->
     <div style="height: 100%" class="d-flex">
         <!-- 左侧部分 -->
-        <div style="height: 100%; width: 19%; border-right: 0.5px solid #e0e0e0">
+        <div style="height: 100%; width: 17.5%; border-right: 0.5px solid #e0e0e0">
             <!-- 所选包名 -->
             <v-list-item>
                 <v-icon class="mr-4" @click="toDatapage()">mdi-chevron-left</v-icon>
@@ -80,7 +80,7 @@
         </div>
 
         <!-- 右侧部分 -->
-        <v-main style="height: 100%" class="pt-3">
+        <v-main style="height: 100%; width:80%" class="pt-3">
             <!-- 数据表预览 -->
             <v-card v-if="!isShowOther && allTables.length !== 0" flat tile>
                 <!-- 工具栏 -->
@@ -174,7 +174,6 @@
                                 color="#3d557c"
                                 @click="selectTable(item, index)"
                             >
-                            
                                 <v-icon class="ml-4" color="#3d557c" medium>mdi-table</v-icon>
                                 <v-card-title class="subtitle-1">{{ item.name }}</v-card-title>
                             </v-btn>
@@ -187,7 +186,7 @@
 </template>
 
 <script>
-import { getConnTables } from '../../common/api/select'
+import { getConnTables, getConnTableColumn, getColumnData } from '../../common/api/select'
 export default {
     name: 'AddTable',
     data() {
@@ -221,25 +220,25 @@ export default {
              */
             // 表头
             headers: [
-                { text: 'Dessert (100g serving)', align: 'start', sortable: false, value: 'name' },
-                { text: 'Calories', value: 'calories' },
-                { text: 'Fat (g)', value: 'fat' },
-                { text: 'Carbs (g)', value: 'carbs' },
-                { text: 'Protein (g)', value: 'protein' },
-                { text: 'Iron (%)', value: 'iron' },
+                // { text: 'Dessert (100g serving)', align: 'start', sortable: false, value: 'name' },
+                // { text: 'Calories', value: 'calories' },
+                // { text: 'Fat (g)', value: 'fat' },
+                // { text: 'Carbs (g)', value: 'carbs' },
+                // { text: 'Protein (g)', value: 'protein' },
+                // { text: 'Iron (%)', value: 'iron' },
             ],
             // 记录
             desserts: [
-                { name: 'Frozen Yogurt', calories: 200, fat: 6.0, carbs: 24, protein: 4.0, iron: '1%' },
-                { name: 'Ice cream sandwich', calories: 200, fat: 9.0, carbs: 37, protein: 4.3, iron: '1%' },
-                { name: 'Eclair', calories: 300, fat: 16.0, carbs: 23, protein: 6.0, iron: '7%' },
-                { name: 'Cupcake', calories: 300, fat: 3.7, carbs: 67, protein: 4.3, iron: '8%' },
-                { name: 'Gingerbread', calories: 400, fat: 16.0, carbs: 49, protein: 3.9, iron: '16%' },
-                { name: 'Jelly bean', calories: 400, fat: 0.0, carbs: 94, protein: 0.0, iron: '0%' },
-                { name: 'Lollipop', calories: 400, fat: 0.2, carbs: 98, protein: 0, iron: '2%' },
-                { name: 'Honeycomb', calories: 400, fat: 3.2, carbs: 87, protein: 6.5, iron: '45%' },
-                { name: 'Donut', calories: 500, fat: 25.0, carbs: 51, protein: 4.9, iron: '22%' },
-                { name: 'KitKat', calories: 500, fat: 26.0, carbs: 65, protein: 7, iron: '6%' },
+                // { name: 'Frozen Yogurt', calories: 200, fat: 6.0, carbs: 24, protein: 4.0, iron: '1%' },
+                // { name: 'Ice cream sandwich', calories: 200, fat: 9.0, carbs: 37, protein: 4.3, iron: '1%' },
+                // { name: 'Eclair', calories: 300, fat: 16.0, carbs: 23, protein: 6.0, iron: '7%' },
+                // { name: 'Cupcake', calories: 300, fat: 3.7, carbs: 67, protein: 4.3, iron: '8%' },
+                // { name: 'Gingerbread', calories: 400, fat: 16.0, carbs: 49, protein: 3.9, iron: '16%' },
+                // { name: 'Jelly bean', calories: 400, fat: 0.0, carbs: 94, protein: 0.0, iron: '0%' },
+                // { name: 'Lollipop', calories: 400, fat: 0.2, carbs: 98, protein: 0, iron: '2%' },
+                // { name: 'Honeycomb', calories: 400, fat: 3.2, carbs: 87, protein: 6.5, iron: '45%' },
+                // { name: 'Donut', calories: 500, fat: 25.0, carbs: 51, protein: 4.9, iron: '22%' },
+                // { name: 'KitKat', calories: 500, fat: 26.0, carbs: 65, protein: 7, iron: '6%' },
             ],
         }
     },
@@ -263,8 +262,78 @@ export default {
         }
         // 当状态为数据库表时，右侧默认显示第一个连接的所有表
         this.conn = this.historyConnArr[0]
+        if (this.allTables.length !== 0) {
+            this.showTablePre()
+        }
     },
     methods: {
+        /**
+         * @description: 数据表预览
+         * @param {*}
+         * @return {*}
+         */
+        async showTablePre() {
+            const conn = this.conn
+            let headers = []
+            let desserts = []
+            // 构造参数
+            const colParams = {
+                tableName: this.table.name,
+                sqlType: conn.sqlType,
+                userName: conn.userName,
+                password: conn.password,
+                host: conn.host,
+                port: conn.port,
+                database: conn.database,
+            }
+            // 请求接口，获取全部字段
+            await getConnTableColumn(colParams).then((res) => {
+                if (res.code === 200) {
+                    const colData = res.data
+                    let header = {}
+                    for (let i = 0; i < colData.length; i++) {
+                        const element = colData[i]
+                        header = {
+                            text: colData[i],
+                            value: colData[i]
+                        }
+                        headers.push(header)
+                    }
+                    this.headers = headers
+                }
+            })
+            // 构造参数
+            const dataParams = {
+                tableName: this.table.name,
+                columnName: [],
+                sqlType: conn.sqlType,
+                userName: conn.userName,
+                password: conn.password,
+                host: conn.host,
+                port: conn.port,
+                database: conn.database,
+                page: 1,
+                limitCount: 100,
+            }
+            // 请求接口，获取全部数据
+            await getColumnData(dataParams).then((res) => {
+                if (res.code == 200) {
+                    // console.log(res.data)
+                    const data = res.data
+                    data.forEach((element) => {
+                        let obj = {}
+                        let i = 0
+                        // console.log(element);
+                        headers.forEach((item) => {
+                            obj[item.text] = element[i]
+                            i++
+                        })
+                        desserts.push(obj)
+                    })
+                    this.desserts = desserts
+                }
+            })
+        },
         /**
          * @description: 添加表按钮的点击事件，判断是否显示“自助数据集选项”
          * @param {*}
@@ -302,6 +371,7 @@ export default {
             this.table = this.allTables[0]
             this.$store.commit('saveFolders', folders)
             this.selectCount = 0
+            this.showTablePre()
         },
         /**
          *  options的点击事件
@@ -444,7 +514,7 @@ export default {
          */
         getTable(o) {
             this.table = o
-            console.log(this.table)
+            this.showTablePre()
         },
     },
 }

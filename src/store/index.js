@@ -53,7 +53,6 @@ export default new Vuex.Store({
         },
         // 每个连接中所有的表
         connTables: [
-            // "一月数据", "二月数据"
         ],
         // 用户添加的所有的表
         allTables: [
