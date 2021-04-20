@@ -56,9 +56,25 @@ export default new Vuex.Store({
         ],
         // 用户添加的所有的表
         allTables: [
+        ],
+        // 提示框数组
+        alertArr: [
+            // {
+            //     type: '',
+            //     content: ''
+            // }
         ]
     },
     mutations: {
+        /**
+         * @description:   给提示框数组追加一个数据
+         * @param {*} state
+         * @param {*} obj   JSON 字符串类型 ---> 被添加的数据
+         * @return {*}
+         */
+        pushAlertArrObj (state, obj) {
+            state.alertArr.push(JSON.parse(obj))
+        },
         /**
          * 给 databaseConnObjArr数组追加元素
          * @param {*} state

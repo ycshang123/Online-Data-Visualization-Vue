@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex pa-0">
         <!-- 左侧部分 -->
-        <div class="" v-borderRight style="height: 100%; width: 19%">
+        <div v-borderRight style="height: 100%; width: 19%">
             <v-row no-gutters style="height: 100%">
                 <v-col style="padding: 0" class="d-flex flex-column justify-space-between">
                     <div style="height: 80%">
@@ -46,24 +46,6 @@
                     </v-card>
                 </v-col>
             </v-row>
-        </div>
-
-        <!-- 信息提示框 -->
-        <div class="alert-area" v-if="alertArr.length !== 0">
-            <div class="d-flex flex-column align-center" style="width: 100%">
-                <v-alert
-                    width="500"
-                    class="div-alert"
-                    v-ripple
-                    :type="item.type"
-                    dismissible
-                    elevation="3"
-                    v-for="(item, index) in alertArr"
-                    :key="index"
-                >
-                    {{ item.content }}
-                </v-alert>
-            </div>
         </div>
 
         <!-- 右侧部分-- -->
@@ -225,6 +207,7 @@
 import { changeDatabase } from '../../common/api/database'
 import mysql_mini from '../../assets/pic/miniSqlLogo/MySQL.png'
 import postgresql_mini from '../../assets/pic/miniSqlLogo/Postgresql.png'
+
 export default {
     name: 'DatabaseConn',
     created() {
@@ -293,24 +276,10 @@ export default {
             password: 'root',
         },
         rules: [(value) => !!value || 'Not blank'],
-        // 提示框数组
-        alertArr: [],
         // 测试连接的状态值
         testConnStatus: false,
         saveDialog: false,
     }),
-    watch: {
-        alertArr: {
-            handler() {
-                if (this.alertArr.length !== 0) {
-                    setTimeout(() => {
-                        this.alertArr.splice(0, 1)
-                    }, 2000)
-                }
-            },
-            deep: true,
-        },
-    },
     methods: {
         /**
          * @description: 显示历史数据库的详情
@@ -352,21 +321,21 @@ export default {
                             if (res.code === 200) {
                                 this.testConnStatus = true
                                 // 第三步，追加一个成功提示
-                                this.alertArr.push({
+                                this.GLOBAL.pushAlertArrObj({
                                     type: 'info',
                                     content: 'Successful connection!',
                                 })
                             } else {
                                 this.testConnStatus = false
                                 // 追加一个失败提示
-                                this.alertArr.push({
+                                this.GLOBAL.pushAlertArrObj({
                                     type: 'error',
                                     content: 'Connection fail!',
                                 })
                             }
                         })
                     } else {
-                        this.alertArr.push({
+                        this.GLOBAL.pushAlertArrObj({
                             type: 'error',
                             content: 'You must fill out the form data!',
                         })
@@ -391,14 +360,14 @@ export default {
             if (this.testConnStatus) {
                 if (this.isRepeat(this.connSQL)) {
                     // 添加一条提示信息
-                    this.alertArr.push({
+                    this.GLOBAL.pushAlertArrObj({
                         type: 'error',
                         content: 'Do not add twice',
                     })
                 } else {
                     this.$store.commit('pushDbObj', JSON.stringify(this.connSQL))
                     // 添加一条提示信息
-                    this.alertArr.push({
+                    this.GLOBAL.pushAlertArrObj({
                         type: 'success',
                         content: 'Successful save!',
                     })
@@ -493,10 +462,9 @@ export default {
 <style scoped>
 .alert-area {
     position: absolute;
-    top: 0;
+    top: -48px;
     left: 0;
     z-index: 1000;
-    height: 300px;
     width: 100%;
     overflow: auto;
 }

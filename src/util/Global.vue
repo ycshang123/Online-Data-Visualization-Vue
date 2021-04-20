@@ -1,6 +1,13 @@
+<!--
+ * @Description:
+ * @Author: xunmi
+ * @Version: 1.0
+ * @Date: 2021-04-10 16:23:40
+-->
 /** * 全局方法文件 */
 <script>
 import Vue from 'vue'
+import store from '../store'
 /**
  * 自定义指令----批量导入
  * v-cursor：修改绑定的元素样式为鼠标手
@@ -76,6 +83,15 @@ export default {
         Object.keys(obj).forEach((key) => {
             obj[key] = ''
         })
+    },
+
+    /**
+     * @description: 定义全局方法去给vuex中的alertArr数据追加数据
+     * @param {*} obj
+     * @return {*}
+     */
+    pushAlertArrObj(obj) {
+        store.commit('pushAlertArrObj', JSON.stringify(obj))
     },
 }
 </script>

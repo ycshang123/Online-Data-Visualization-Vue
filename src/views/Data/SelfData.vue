@@ -178,7 +178,8 @@
     </div>
 </template>
 <script>
-import { getConnTableColumn, getColumnData, addNewColumn } from '../../common/api/select'
+import { getConnTableColumn, getColumnData } from '../../common/api/select'
+import { addNewColumn } from '../../common/api/add'
 export default {
     data() {
         return {
@@ -400,7 +401,7 @@ export default {
             } else if (this.newColumn != null) {
                 var column = { content: '', checked: false }
                 column.content = this.newColumn
-                this.listContent.push(column)
+                this.listContent.unshift(column)
                 this.isPop = false
                 addNewColumn(this.newColumnContent).then((res) => {
                     console.log(res)
