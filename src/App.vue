@@ -1,8 +1,24 @@
+<!--
+ * @Description:
+ * @Author: xunmi
+ * @Version: 1.0
+ * @Date: 2021-04-10 16:23:40
+-->
 <template>
     <v-app>
+        <AlertDialog></AlertDialog>
         <router-view style="height: 100%" />
     </v-app>
 </template>
+<script>
+import AlertDialog from './components/AlertDialog'
+
+export default {
+    components: {
+        AlertDialog,
+    },
+}
+</script>
 <style>
 /* 所有文字都不允许被选择 */
 * {

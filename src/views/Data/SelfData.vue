@@ -425,7 +425,7 @@ export default {
             } else if (this.newColumn != null) {
                 var column = { content: '', checked: false }
                 column.content = this.newColumn
-                this.listContent.push(column)
+                this.listContent.unshift(column)
                 this.isPop = false
                 this.operationConn = this.databaseConn
                 var fieldList = []
