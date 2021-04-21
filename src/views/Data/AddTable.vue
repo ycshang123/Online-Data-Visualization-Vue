@@ -80,9 +80,9 @@
         </div>
 
         <!-- 右侧部分 -->
-        <v-main style="height: 100%; width: 80%" class="pt-3">
+        <v-main style="height: 100%; width: 80%" class="pt-1" >
             <!-- 数据表预览 -->
-            <v-card v-if="!isShowOther && allTables.length !== 0" flat tile>
+            <v-card v-if="!isShowOther && allTables.length !== 0" flat tile max-width="100%"  >
                 <!-- 工具栏 -->
                 <!-- 表名图标 -->
                 <v-card-title style="height: 10%" class="pt-2 subtitle-2">
@@ -120,7 +120,8 @@
                     :sort-by="['calories', 'fat']"
                     :sort-desc="[false, true]"
                     multi-sort
-                    class="elevation-1"
+                    class="elevation-1 overflow-x-auto overflow-y-hidden"
+                    max-width="100%"
                     :search="search"
                 ></v-data-table>
             </v-card>
