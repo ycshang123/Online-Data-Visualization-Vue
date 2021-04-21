@@ -73,6 +73,18 @@ let orderArr = {
             el.style.borderBottomStyle = 'solid'
         },
     },
+    relative: {
+        inserted: (el) => {
+            el.style.position = 'relative'
+        },
+    },
+    absolute: {
+        inserted: (el) => {
+            el.style.position = 'absolute'
+            el.style.top = 0
+            el.style.bottom = 0
+        },
+    },
 }
 Object.keys(orderArr).forEach((k) => {
     Vue.directive(k, orderArr[k])

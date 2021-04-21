@@ -27,6 +27,7 @@
 
 <script>
 export default {
+    name: 'AlertDialog',
     data() {
         return {
             alertArr: [],
