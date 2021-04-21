@@ -190,42 +190,44 @@
                             </v-col>
                         </v-row>
                         <v-row no-gutters align="center" class="mt-4">
-                            <v-col cols="1">
+                            <v-col cols="1 red">
                                 <div>纵轴</div>
                             </v-col>
-                            <v-col cols="11">
-                                <v-card
-                                    id="yAxis"
-                                    flat
-                                    tile
-                                    outlined
-                                    class="d-flex align-center overflow-x-auto overflow-y-hidden"
-                                    height="60"
-                                    @dragover.prevent
-                                    @drop="drop($event)"
-                                >
+                            <v-col cols="11" v-relative>
+                                <div class="blue" v-absolute>
                                     <v-card
-                                        class="mr-4 py-1 px-1"
-                                        style="cursor: pointer"
-                                        rounded="lg"
+                                        id="yAxis"
+                                        flat
+                                        tile
                                         outlined
-                                        v-for="(item, index) in yAxisArr"
-                                        :key="index"
-                                        @mouseenter="item.isShow = true"
-                                        @mouseleave="item.isShow = false"
+                                        class="red d-flex align-center overflow-x-auto overflow-y-hidden"
+                                        height="60"
+                                        @dragover.prevent
+                                        @drop="drop($event)"
                                     >
-                                        <v-badge
-                                            :value="item.isShow"
-                                            title="删除"
-                                            bordered
-                                            icon="mdi-close-circle-outline"
-                                            color="#bdbdbd"
-                                            @click.native="delXYAxisArr(item, index, 'yAxis')"
+                                        <v-card
+                                            class="mr-4 py-1 px-1"
+                                            style="cursor: pointer"
+                                            rounded="lg"
+                                            outlined
+                                            v-for="(item, index) in yAxisArr"
+                                            :key="index"
+                                            @mouseenter="item.isShow = true"
+                                            @mouseleave="item.isShow = false"
                                         >
-                                            {{ item.name }}
-                                        </v-badge>
+                                            <v-badge
+                                                :value="item.isShow"
+                                                title="删除"
+                                                bordered
+                                                icon="mdi-close-circle-outline"
+                                                color="#bdbdbd"
+                                                @click.native="delXYAxisArr(item, index, 'yAxis')"
+                                            >
+                                                {{ item.name }}
+                                            </v-badge>
+                                        </v-card>
                                     </v-card>
-                                </v-card>
+                                </div>
                             </v-col>
                         </v-row>
                     </v-card>
@@ -292,6 +294,10 @@ export default {
     },
     created() {
         this.getDIData()
+        console.log(this.$route.params.colNameArr)
+        console.log(this.$route.params.table)
+        let connObj = this.$route.params.table.conn
+        let tableName = this.$route.params.table.name
     },
     mounted() {
         this.chartData.columns = ['日期', '访问用户', '下单用户', '下单率']
