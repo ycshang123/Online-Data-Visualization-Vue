@@ -2,7 +2,7 @@
     <!-- 先设置整体高度100%，撑满屏幕 -->
     <div style="height: 100%" class="d-flex">
         <!-- 左侧部分 -->
-        <div style="height: 100%; width: 19%; border-right: 0.5px solid #e0e0e0">
+        <div style="height: 100%; width: 17.5%; border-right: 0.5px solid #e0e0e0">
             <!-- 所选包名 -->
             <v-list-item>
                 <v-icon class="mr-4" @click="toDatapage()">mdi-chevron-left</v-icon>
@@ -80,7 +80,7 @@
         </div>
 
         <!-- 右侧部分 -->
-        <v-main style="height: 100%" class="pt-3">
+        <v-main style="height: 100%; width: 80%" class="pt-3">
             <!-- 数据表预览 -->
             <v-card v-if="!isShowOther && allTables.length !== 0" flat tile>
                 <!-- 工具栏 -->
@@ -109,7 +109,7 @@
                     <!-- 编辑和创建组件按钮 -->
                     <v-card flat class="d-flex px-2" width="20%">
                         <v-btn small dark class="mr-3" color="#25354d" style="opacity: 0.9">编辑</v-btn>
-                        <v-btn small dark color="#25354d" style="opacity: 0.9" @click="toDashboard()">创建组件</v-btn>
+                        <v-btn small dark color="#25354d" style="opacity: 0.9" @click="createCompBtn()">创建组件</v-btn>
                     </v-card>
                 </v-card-title>
 
@@ -186,17 +186,15 @@
 </template>
 
 <script>
-import { getConnTables } from '../../common/api/select'
+import { getConnTables, getConnTableColumn, getColumnData } from '../../common/api/select'
 export default {
     name: 'AddTable',
     data() {
         return {
             selectCount: 0,
-            // 是否被选择的状态数组
-            // isSelectArr: [],
+            // 当前连接对象
             conn: {},
             isShowOther: false,
-            tips: '请添加表',
             // 选中的数据包名称
             folder: {},
             // 点击的表
@@ -215,30 +213,27 @@ export default {
             allTables: [],
             // 每个连接中所有的表
             connTables: [],
-            /**
-             * 静态表格
-             */
             // 表头
             headers: [
-                { text: 'Dessert (100g serving)', align: 'start', sortable: false, value: 'name' },
-                { text: 'Calories', value: 'calories' },
-                { text: 'Fat (g)', value: 'fat' },
-                { text: 'Carbs (g)', value: 'carbs' },
-                { text: 'Protein (g)', value: 'protein' },
-                { text: 'Iron (%)', value: 'iron' },
+                // { text: 'Dessert (100g serving)', align: 'start', sortable: false, value: 'name' },
+                // { text: 'Calories', value: 'calories' },
+                // { text: 'Fat (g)', value: 'fat' },
+                // { text: 'Carbs (g)', value: 'carbs' },
+                // { text: 'Protein (g)', value: 'protein' },
+                // { text: 'Iron (%)', value: 'iron' },
             ],
             // 记录
             desserts: [
-                { name: 'Frozen Yogurt', calories: 200, fat: 6.0, carbs: 24, protein: 4.0, iron: '1%' },
-                { name: 'Ice cream sandwich', calories: 200, fat: 9.0, carbs: 37, protein: 4.3, iron: '1%' },
-                { name: 'Eclair', calories: 300, fat: 16.0, carbs: 23, protein: 6.0, iron: '7%' },
-                { name: 'Cupcake', calories: 300, fat: 3.7, carbs: 67, protein: 4.3, iron: '8%' },
-                { name: 'Gingerbread', calories: 400, fat: 16.0, carbs: 49, protein: 3.9, iron: '16%' },
-                { name: 'Jelly bean', calories: 400, fat: 0.0, carbs: 94, protein: 0.0, iron: '0%' },
-                { name: 'Lollipop', calories: 400, fat: 0.2, carbs: 98, protein: 0, iron: '2%' },
-                { name: 'Honeycomb', calories: 400, fat: 3.2, carbs: 87, protein: 6.5, iron: '45%' },
-                { name: 'Donut', calories: 500, fat: 25.0, carbs: 51, protein: 4.9, iron: '22%' },
-                { name: 'KitKat', calories: 500, fat: 26.0, carbs: 65, protein: 7, iron: '6%' },
+                // { name: 'Frozen Yogurt', calories: 200, fat: 6.0, carbs: 24, protein: 4.0, iron: '1%' },
+                // { name: 'Ice cream sandwich', calories: 200, fat: 9.0, carbs: 37, protein: 4.3, iron: '1%' },
+                // { name: 'Eclair', calories: 300, fat: 16.0, carbs: 23, protein: 6.0, iron: '7%' },
+                // { name: 'Cupcake', calories: 300, fat: 3.7, carbs: 67, protein: 4.3, iron: '8%' },
+                // { name: 'Gingerbread', calories: 400, fat: 16.0, carbs: 49, protein: 3.9, iron: '16%' },
+                // { name: 'Jelly bean', calories: 400, fat: 0.0, carbs: 94, protein: 0.0, iron: '0%' },
+                // { name: 'Lollipop', calories: 400, fat: 0.2, carbs: 98, protein: 0, iron: '2%' },
+                // { name: 'Honeycomb', calories: 400, fat: 3.2, carbs: 87, protein: 6.5, iron: '45%' },
+                // { name: 'Donut', calories: 500, fat: 25.0, carbs: 51, protein: 4.9, iron: '22%' },
+                // { name: 'KitKat', calories: 500, fat: 26.0, carbs: 65, protein: 7, iron: '6%' },
             ],
         }
     },
@@ -251,9 +246,6 @@ export default {
         }
         // 取出每个连接中所有的表
         this.connTables = this.$store.state.connTables
-        // for (let i = 0; i < this.connTables.length; i++) {
-        //     this.isSelectArr.push(false)
-        // }
         // 取出选中的数据包名称
         this.folder = this.$store.state.folder
         // 默认显示第一张表的预览
@@ -262,17 +254,77 @@ export default {
         }
         // 当状态为数据库表时，右侧默认显示第一个连接的所有表
         this.conn = this.historyConnArr[0]
+        // 当数据包中有表时，执行数据表预览方法
+        if (this.allTables.length !== 0) {
+            this.showTablePre()
+        }
     },
     methods: {
-        /**
-         * @description: “创建组件”按钮的动作监听
+        /*
+         * @description: 数据表预览
          * @param {*}
          * @return {*}
          */
-        toDashboard() {
-            this.$router.push({
-                name: 'Dashboard',
-                params: ''
+        async showTablePre() {
+            const conn = this.conn
+            let headers = []
+            let desserts = []
+            // 构造参数
+            const colParams = {
+                tableName: this.table.name,
+                sqlType: conn.sqlType,
+                userName: conn.userName,
+                password: conn.password,
+                host: conn.host,
+                port: conn.port,
+                database: conn.database,
+            }
+            // 请求接口，获取全部字段
+            await getConnTableColumn(colParams).then((res) => {
+                if (res.code === 200) {
+                    const colData = res.data
+                    let header = {}
+                    for (let i = 0; i < colData.length; i++) {
+                        const element = colData[i]
+                        header = {
+                            text: colData[i],
+                            value: colData[i],
+                        }
+                        headers.push(header)
+                    }
+                    this.headers = headers
+                }
+            })
+            // 构造参数
+            const dataParams = {
+                tableName: this.table.name,
+                columnName: [],
+                sqlType: conn.sqlType,
+                userName: conn.userName,
+                password: conn.password,
+                host: conn.host,
+                port: conn.port,
+                database: conn.database,
+                page: 1,
+                limitCount: 100,
+            }
+            // 请求接口，获取全部数据
+            await getColumnData(dataParams).then((res) => {
+                if (res.code == 200) {
+                    // console.log(res.data)
+                    const data = res.data
+                    data.forEach((element) => {
+                        let obj = {}
+                        let i = 0
+                        // console.log(element);
+                        headers.forEach((item) => {
+                            obj[item.text] = element[i]
+                            i++
+                        })
+                        desserts.push(obj)
+                    })
+                    this.desserts = desserts
+                }
             })
         },
         /**
@@ -293,7 +345,7 @@ export default {
         pushAllTables() {
             // 是否显示“数据库连接部分”
             this.isShowOther = false
-            // 被选择的表
+            // 收集被选择的表
             const selectedTables = this.connTables.filter((item) => {
                 if (item.isSelected) {
                     return item
@@ -312,6 +364,7 @@ export default {
             this.table = this.allTables[0]
             this.$store.commit('saveFolders', folders)
             this.selectCount = 0
+            this.showTablePre()
         },
         /**
          *  options的点击事件
@@ -351,12 +404,12 @@ export default {
                                         id: id,
                                         name: data[i],
                                         isSelected: false,
+                                        conn: this.conn,
                                     }
                                     connTableArr.push(connTable)
                                     id++
                                 }
                             }
-                            // this.$store.commit('saveConnTables', connTableArr)
                             this.connTables = connTableArr
                             // console.log('当前连接中所有的表：')
                             // console.log(this.connTables)
@@ -410,7 +463,6 @@ export default {
         async showAllTable(o) {
             // 把被点击连接对象赋值给单独的变量conn，用作在右侧显示连接名和图标
             this.conn = o
-            console.log(this.conn)
             // 请求接口 => 获取当前连接所有的表名
             // 当前连接默认为数组中的第一个
             await getConnTables(this.conn).then((res) => {
@@ -429,6 +481,7 @@ export default {
                                 id: id,
                                 name: data[i],
                                 isSelected: false,
+                                conn: this.conn,
                             }
                             connTableArr.push(connTable)
                             id++
@@ -454,7 +507,22 @@ export default {
          */
         getTable(o) {
             this.table = o
-            console.log(this.table)
+            this.showTablePre()
+        },
+
+        /**
+         * @description: 创建组件按钮的点击事件
+         * @param {*}
+         * @return {*}
+         */
+        createCompBtn() {
+            //界面跳转，传参 -> 当前连接对象、字段名
+            this.$router.push({
+                name: 'Dashboard',
+                params: {
+                    table: this.table,
+                },
+            })
         },
     },
 }

@@ -39,24 +39,36 @@ export default new Vuex.Store({
         ],
         // 选中的数据包（添加表页面用）
         folder: {
-            // 每个数据包的名字
-            //     name: '二月数据',
-            //     // 每个数据包里的表数组
-            //     tables: [
-            //         {
-            //             title: 'airport',
-            //             column:['id', 'city', 'fly'],
-            //             data:[]
-            //         }
-            //     ]
-
+            // name: '',
+            // tables: [
+            //     {
+            //         conn: {},
+            //         id: 0,
+            //         isSelected: false,
+            //         name: ''
+            //     },
+            //     {
+            //         conn: {},
+            //         id: 1,
+            //         isSelected: false,
+            //         name: ''
+            //     },
+            // ]
         },
         // 每个连接中所有的表
         connTables: [
-            // "一月数据", "二月数据"
-        ],
-        // 用户添加的所有的表
-        allTables: [
+            // {
+            //     conn: {},
+            //     id: 0,
+            //     isSelected: false,
+            //     name: ''
+            // },
+            // {
+            //     conn: {},
+            //     id: 1,
+            //     isSelected: false,
+            //     name: ''
+            // },
         ],
         // 提示框数组
         alertArr: [
@@ -118,14 +130,7 @@ export default new Vuex.Store({
         saveConnTables (state, obj) {
             state.connTables = obj
         },
-        /**
-         * @description:存用户添加的所有的表名
-         * @param {*}
-         */
-        // saveAllTables (state, obj) {
-        //     state.allTables = JSON.parse(obj)
 
-        // }
     },
     actions: {},
     modules: {},
