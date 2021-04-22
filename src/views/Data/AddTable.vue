@@ -80,12 +80,12 @@
         </div>
 
         <!-- 右侧部分 -->
-        <v-main style="height: 100%; width: 80%" class="pt-1" >
+        <v-main style="height: 100%; width: 80%" class="pt-1" v-relative>
             <!-- 数据表预览 -->
-            <v-card v-if="!isShowOther && allTables.length !== 0" flat tile max-width="100%"  >
+            <v-card v-if="!isShowOther && allTables.length !== 0" flat tile max-width="99%" height="100%" v-absolute class="green">
                 <!-- 工具栏 -->
                 <!-- 表名图标 -->
-                <v-card-title style="height: 10%" class="pt-2 subtitle-2">
+                <v-card-title style="height: 10%" class="pt-2 subtitle-2 yellow">
                     <v-btn icon x-small class="mr-2">
                         <v-icon>mdi-table</v-icon>
                     </v-btn>
@@ -115,13 +115,15 @@
 
                 <!-- 表 -->
                 <v-data-table
+                    dense
                     :headers="headers"
                     :items="desserts"
                     :sort-by="['calories', 'fat']"
                     :sort-desc="[false, true]"
                     multi-sort
-                    class="elevation-1 overflow-x-auto overflow-y-hidden"
+                    class="elevation-1 overflow-x-auto overflow-y-hidden blue"
                     max-width="100%"
+                    max-height="89%"
                     :search="search"
                 ></v-data-table>
             </v-card>
@@ -317,7 +319,7 @@ export default {
                     data.forEach((element) => {
                         let obj = {}
                         let i = 0
-                        // console.log(element);
+                        console.log(element);
                         headers.forEach((item) => {
                             obj[item.text] = element[i]
                             i++
