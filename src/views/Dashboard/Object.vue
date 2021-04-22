@@ -15,7 +15,7 @@
                 </v-btn>
                 <v-menu offset-y>
                     <template v-slot:activator="{ on, attrs }">
-                        <v-btn outlined v-borderNone class="ml-10 black--text" v-bind="attrs" v-on="on">
+                        <v-btn outlined v-borderNone class="ml-2 black--text" v-bind="attrs" v-on="on">
                             <v-icon class="mr-2">mdi-export-variant</v-icon>
                             导出
                         </v-btn>
@@ -40,19 +40,19 @@
                 <!-- 左 -->
                 <v-col cols="1">
                     <v-card style="height: 100%" class="pa-2 d-flex flex-column align-center">
-                        <v-card v-cursor ripple flat width="50%" class="d-flex flex-column justify-center align-center pt-1 mb-4">
+                        <v-card v-cursor ripple flat class="pa-2 pb-0 d-flex flex-column justify-center align-center pt-1 mb-4">
                             <v-btn :ripple="false" x-small icon color="blue-grey lighten-1">
                                 <v-icon> mdi-plus-box </v-icon>
                             </v-btn>
                             <div class="text-caption">添加组件</div>
                         </v-card>
-                        <v-card v-cursor ripple flat width="50%" class="d-flex flex-column justify-center align-center pt-1 mb-4">
+                        <v-card v-cursor ripple flat class="pa-2 pb-0 d-flex flex-column justify-center align-center pt-1 mb-4">
                             <v-btn :ripple="false" x-small icon color="blue-grey lighten-1">
                                 <v-icon> mdi-filter-menu </v-icon>
                             </v-btn>
                             <div ripple="false" class="text-caption">过滤组件</div>
                         </v-card>
-                        <v-card v-cursor ripple flat width="50%" class="d-flex flex-column justify-center align-center pt-1 mb-4">
+                        <v-card v-cursor ripple flat class="pa-2 pb-0 d-flex flex-column justify-center align-center pt-1 mb-4">
                             <v-btn :ripple="false" x-small icon color="blue-grey lighten-1">
                                 <v-icon> mdi-view-dashboard </v-icon>
                             </v-btn>

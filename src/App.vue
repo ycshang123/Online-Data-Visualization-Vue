@@ -1,8 +1,24 @@
+<!--
+ * @Description:
+ * @Author: xunmi
+ * @Version: 1.0
+ * @Date: 2021-04-10 16:23:40
+-->
 <template>
     <v-app>
+        <AlertDialog></AlertDialog>
         <router-view style="height: 100%" />
     </v-app>
 </template>
+<script>
+import AlertDialog from './components/AlertDialog'
+
+export default {
+    components: {
+        AlertDialog,
+    },
+}
+</script>
 <style>
 /* 所有文字都不允许被选择 */
 * {
@@ -31,7 +47,7 @@
     /*滚动条整体样式*/
     width: 8px;
     /*高宽分别对应横竖滚动条的尺寸*/
-    height: 1px;
+    height: 5px;
 }
 
 *::-webkit-scrollbar-thumb {
