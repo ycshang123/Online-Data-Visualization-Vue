@@ -142,7 +142,13 @@
             </v-col>
             <!-- 字段添加区域 -->
             <v-col cols="2" class="pa-0 d-flex flex-column align-center" style="height: 100%">
-                <v-card class="pa-0 d-flex flex-column align-center" outlined flat tile style="height: 100%; width: 100%">
+                <v-card
+                    class="pa-0 d-flex flex-column align-center"
+                    outlined
+                    flat
+                    tile
+                    style="height: 100%; width: 100%; position: relative"
+                >
                     <v-card
                         width="100%"
                         height="10%"
@@ -156,7 +162,14 @@
                         <v-btn v-else @click="notChoose()">取消全选</v-btn>
                         <v-btn @click="joinColumnData()">确认</v-btn>
                     </v-card>
-                    <v-card width="100%" height="90%" class="pa-2 py-4 overflow-y-auto overflow-x-hidden" tile flat>
+                    <v-card
+                        width="100%"
+                        height="90%"
+                        class="pa-2 py-4 overflow-y-auto overflow-x-hidden"
+                        tile
+                        flat
+                        style="position: absolute"
+                    >
                         <div
                             v-for="(item, index) in listContent"
                             :key="index"
