@@ -193,39 +193,41 @@
                             <v-col cols="1">
                                 <div>纵轴</div>
                             </v-col>
-                            <v-col cols="11">
-                                <v-card
-                                    id="yAxis"
-                                    flat
-                                    tile
-                                    outlined
-                                    class="d-flex align-center overflow-x-auto overflow-y-hidden"
-                                    height="60"
-                                    @dragover.prevent
-                                    @drop="drop($event)"
-                                >
+                            <v-col cols="11" style="height: 60px" v-relative>
+                                <div style="height: 60px" v-absolute>
                                     <v-card
-                                        class="mr-4 py-1 px-1"
-                                        style="cursor: pointer"
-                                        rounded="lg"
+                                        id="yAxis"
+                                        flat
+                                        tile
                                         outlined
-                                        v-for="(item, index) in yAxisArr"
-                                        :key="index"
-                                        @mouseenter="item.isShow = true"
-                                        @mouseleave="item.isShow = false"
+                                        class="d-flex align-center overflow-x-auto overflow-y-hidden"
+                                        height="60"
+                                        @dragover.prevent
+                                        @drop="drop($event)"
                                     >
-                                        <v-badge
-                                            :value="item.isShow"
-                                            title="删除"
-                                            bordered
-                                            icon="mdi-close-circle-outline"
-                                            color="#bdbdbd"
-                                            @click.native="delXYAxisArr(item, index, 'yAxis')"
+                                        <v-card
+                                            class="mr-4 py-1 px-1"
+                                            style="cursor: pointer"
+                                            rounded="lg"
+                                            outlined
+                                            v-for="(item, index) in yAxisArr"
+                                            :key="index"
+                                            @mouseenter="item.isShow = true"
+                                            @mouseleave="item.isShow = false"
                                         >
-                                            {{ item.name }}
-                                        </v-badge>
+                                            <v-badge
+                                                :value="item.isShow"
+                                                title="删除"
+                                                bordered
+                                                icon="mdi-close-circle-outline"
+                                                color="#bdbdbd"
+                                                @click.native="delXYAxisArr(item, index, 'yAxis')"
+                                            >
+                                                {{ item.name }}
+                                            </v-badge>
+                                        </v-card>
                                     </v-card>
-                                </v-card>
+                                </div>
                             </v-col>
                         </v-row>
                     </v-card>
@@ -292,6 +294,10 @@ export default {
     },
     created() {
         this.getDIData()
+        console.log(this.$route.params.colNameArr)
+        console.log(this.$route.params.table)
+        let connObj = this.$route.params.table.conn
+        let tableName = this.$route.params.table.name
     },
     mounted() {
         this.chartData.columns = ['日期', '访问用户', '下单用户', '下单率']
@@ -387,7 +393,7 @@ export default {
                     this.indicatorArr.splice(item.index, 1)
                 }
                 /**
-                 * 2. 在目标区域内追加元素
+                 * 2. 再在目标区域内追加元素
                  */
                 if (elId == 'xAxis') {
                     // 在 x 轴 中追加一个数据
@@ -396,6 +402,10 @@ export default {
                     // 在 y 轴 中追加一个数据
                     this.yAxisArr.push(item)
                 }
+                /**
+                 * 3. 最后获取对应的数据
+                 */
+                this.getChartData()
             }
         },
 
@@ -415,6 +425,22 @@ export default {
                 let value1 = obj1[param]
                 let value2 = obj2[param]
                 return value1 - value2
+            }
+        },
+
+        /**
+         * @description: 获取图标所对应的数据的方法
+         * @param {*}
+         * @return {*}
+         */
+        getChartData() {
+            if (this.xAxisArr.length != 0 && this.yAxisArr.length != 0) {
+                let columns = [this.xAxisArr[0].name]
+                for (let i = 0; i < this.yAxisArr.length; i++) {
+                    columns.push(this.yAxisArr[i].name)
+                }
+                console.log('开始生成数据')
+                console.log(columns)
             }
         },
     },

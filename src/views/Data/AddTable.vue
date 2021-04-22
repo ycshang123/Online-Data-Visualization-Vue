@@ -523,12 +523,9 @@ export default {
             this.$router.push({
                 name: 'Dashboard',
                 params: {
-                    colNameArr: this.headers,
                     table: this.table,
                 },
             })
-            console.log(this.allTables)
-            console.log(this.folder)
         },
     },
 }

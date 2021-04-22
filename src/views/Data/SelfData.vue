@@ -106,7 +106,7 @@
             <div class="flow-btn-area mt-3 d-flex align-center">
                 <!-- 动态按钮 -->
                 <v-card v-for="(item, index) in newColArr" :key="index" width="150" tile flat>
-                    <v-card text outlined flat style="user-select: none; cursor: pointer">
+                    <v-card text outlined flat style="user-select: none; cursor: pointer" @click="isPop = true">
                         {{ item }}
                     </v-card>
                     <span>————</span>
@@ -231,7 +231,7 @@ export default {
             databaseConn: {},
             // 获取表中的字段
             columnArr: { tableName: '', sqlType: '', userName: '', password: '', host: '', port: '', database: '' },
-            // 拼接的数据
+            // 选择表中字段连接数据库需要的数据
             joinColumn: {
                 tableName: '',
                 sqlType: '',
@@ -255,6 +255,30 @@ export default {
             newTableName: null,
             // 表名
             tableName: null,
+            // 新增列运算需要的数据库信息
+            operationConn: {
+                // 表名
+                tableName: '',
+                // 数据库类型
+                sqlType: '',
+                // 用户名
+                userName: '',
+                // 密码
+                password: '',
+                // 端口号
+                host: '',
+                // 端口号
+                port: '',
+                //需要连接的的库
+                database: '',
+                // 限制条数
+                limitCount: 0,
+                // 表名
+                columnName: '',
+                //运算规则
+                operatecontent: [],
+                page: 1,
+            },
         }
     },
     created() {
@@ -416,7 +440,21 @@ export default {
                 column.content = this.newColumn
                 this.listContent.unshift(column)
                 this.isPop = false
-                addNewColumn(this.newColumnContent).then((res) => {
+                this.operationConn = this.databaseConn
+                var fieldList = []
+                this.newColumnContent.forEach((item) => {
+                    var isExist = this.listContent.some((name) => name.content === item)
+                    if (isExist) {
+                        fieldList.push(item)
+                    }
+                })
+                this.operationConn.columnName = fieldList
+                this.operationConn.operatecontent = this.newColumnContent
+                this.operationConn.tableName = this.tableList[this.number].name
+                this.operationConn.limitCount = 5
+                this.operationConn.page = 1
+                console.log(this.operationConn)
+                addNewColumn(this.operationConn).then((res) => {
                     console.log(res)
                 })
             } else {
@@ -489,7 +527,6 @@ export default {
             })
             this.joinColumn.columnName = columnName
             console.log(this.joinColumn)
-
             getColumnData(this.joinColumn).then((res) => {
                 var columnList = res.data
                 columnList.forEach((element) => {

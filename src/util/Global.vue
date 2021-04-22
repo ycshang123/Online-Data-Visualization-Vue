@@ -83,6 +83,7 @@ let orderArr = {
             el.style.position = 'absolute'
             el.style.top = 0
             el.style.bottom = 0
+            el.style.width = '100%'
         },
     },
 }
