@@ -82,10 +82,10 @@
         <!-- 右侧部分 -->
         <v-main style="height: 100%; width: 80%" class="pt-1" v-relative>
             <!-- 数据表预览 -->
-            <v-card v-if="!isShowOther && allTables.length !== 0" flat tile max-width="99%" height="100%" v-absolute class="green">
+            <v-card v-if="!isShowOther && allTables.length !== 0" flat tile max-width="99%" height="100%" v-absolute >
                 <!-- 工具栏 -->
                 <!-- 表名图标 -->
-                <v-card-title style="height: 10%" class="pt-2 subtitle-2 yellow">
+                <v-card-title style="height: 10%" class="pt-2 subtitle-2 ">
                     <v-btn icon x-small class="mr-2">
                         <v-icon>mdi-table</v-icon>
                     </v-btn>
