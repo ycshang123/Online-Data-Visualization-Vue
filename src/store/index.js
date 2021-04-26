@@ -76,9 +76,27 @@ export default new Vuex.Store({
             //     type: '',
             //     content: ''
             // }
+        ],
+        // 图表数据数组
+        chartData: [
+            // {
+            //     database: '',
+            //     tableName: '',
+            //     index: 0
+            // }
         ]
     },
     mutations: {
+        /**
+         * @description:    给图表数据数组追加数据
+         * @param {*} state
+         * @param {*} obj
+         * @return {*}
+         */
+        pushChartData (state, obj) {
+            state.chartData.push(JSON.parse(obj))
+        },
+
         /**
          * @description:   给提示框数组追加一个数据
          * @param {*} state
@@ -88,6 +106,7 @@ export default new Vuex.Store({
         pushAlertArrObj (state, obj) {
             state.alertArr.push(JSON.parse(obj))
         },
+
         /**
          * 给 databaseConnObjArr数组追加元素
          * @param {*} state
@@ -96,6 +115,7 @@ export default new Vuex.Store({
         pushDbObj (state, obj) {
             state.databaseConnObjArr.push(JSON.parse(obj))
         },
+
         /**
          * @description: 给folders数组追加元素
          * @param {*} state
@@ -114,6 +134,7 @@ export default new Vuex.Store({
         saveFolder (state, obj) {
             state.folder = obj
         },
+
         /**
          * @description:存储数据集
          * @param {*} state
@@ -122,6 +143,7 @@ export default new Vuex.Store({
         saveFolders (state, obj) {
             state.folders = obj
         },
+
         /**
          * @description:存每个连接所有的表名
          * @param {*} state

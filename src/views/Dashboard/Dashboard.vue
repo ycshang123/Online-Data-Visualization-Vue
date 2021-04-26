@@ -241,7 +241,7 @@
     </div>
 </template>
 <script>
-import { getDIData } from '../../common/api/select'
+import { getDIData, getChartAllData, getChartData } from '../../common/api/select'
 export default {
     name: 'Dashboard',
     data() {
@@ -254,11 +254,12 @@ export default {
         return {
             obj: {
                 tableName: 'sample_1k_flts',
+                columnName: [],
                 sqlType: 'postgresql',
                 userName: 'postgres',
                 password: 'root',
                 host: 'localhost',
-                port: '5432',
+                port: 5432,
                 database: 'postgres',
             },
             // 当前操作表对象（包含表名和所有的字段名）
@@ -290,14 +291,15 @@ export default {
             xAxisArr: [],
             // Y 轴数组
             yAxisArr: [],
+            // 谢晓茜接口所需参数
+            allDataListIndex: null,
+            colNameList: [],
         }
     },
     created() {
         this.getDIData()
-        console.log(this.$route.params.colNameArr)
-        console.log(this.$route.params.table)
-        let connObj = this.$route.params.table.conn
-        let tableName = this.$route.params.table.name
+        // let connObj = this.$route.params.table.conn
+        // let tableName = this.$route.params.table.name
     },
     mounted() {
         this.chartData.columns = ['日期', '访问用户', '下单用户', '下单率']
@@ -316,14 +318,67 @@ export default {
     },
     methods: {
         /**
+         * @description: 初始化数据方法
+         * @param {*}
+         * @return {*}
+         */
+        async initChartTableData() {
+            let arr = this.$store.state.chartData
+            if (arr.length == 0) {
+                await getChartAllData(this.obj).then((res) => {
+                    this.allDataListIndex = res.allDataListIndex
+                    console.log(res)
+                    this.$store.commit(
+                        'pushChartData',
+                        JSON.stringify({
+                            database: this.obj.database,
+                            tableName: this.obj.tableName,
+                            index: res.allDataListIndex,
+                        })
+                    )
+                })
+            } else {
+                for (let i = 0; i < arr; i++) {
+                    let item = arr[i]
+                    if (item.database != obj.database && item.tableName != obj.tableName) {
+                        await getChartAllData(this.obj).then((res) => {
+                            console.log(res)
+                            this.$store.commit(
+                                'pushChartData',
+                                JSON.stringify({
+                                    database: this.obj.database,
+                                    tableName: this.obj.tableName,
+                                    index: res.allDataListIndex,
+                                })
+                            )
+                        })
+                        break
+                    }
+                }
+            }
+        },
+
+        /**
          * @description: 调用获取维度和指标数组数据的方法
          * @param {*}
          * @return {*}
          */
-        getDIData() {
-            getDIData(this.obj).then((res) => {
+        async getDIData() {
+            await getDIData(this.obj).then((res) => {
+                console.log(res)
                 this.dimensionalityArr = res.data.dimensionality
                 this.indicatorArr = res.data.indicator
+                // 获取所有的指标和维度值，构造成一个数组，并且赋值给obj对象
+                for (let i = 0; i < this.dimensionalityArr.length; i++) {
+                    let item = this.dimensionalityArr[i]
+                    this.colNameList.push(item.name)
+                }
+                for (let i = 0; i < this.indicatorArr.length; i++) {
+                    let item = this.indicatorArr[i]
+                    this.colNameList.push(item.name)
+                }
+                this.obj.columnName = this.colNameList
+                this.initChartTableData()
             })
         },
 
@@ -429,11 +484,11 @@ export default {
         },
 
         /**
-         * @description: 获取图标所对应的数据的方法
+         * @description: 获取图表所对应的数据的方法
          * @param {*}
          * @return {*}
          */
-        getChartData() {
+        async getChartData() {
             if (this.xAxisArr.length != 0 && this.yAxisArr.length != 0) {
                 let columns = [this.xAxisArr[0].name]
                 for (let i = 0; i < this.yAxisArr.length; i++) {
@@ -441,6 +496,15 @@ export default {
                 }
                 console.log('开始生成数据')
                 console.log(columns)
+                // 谢晓茜接口所需参数
+                let param = {
+                    allColNameList: this.colNameList, // 单独的所有维度和指标数组
+                    allDataListIndex: this.allDataListIndex, // 全局变量的索引值
+                    colNameList: columns, // 所选择的字段
+                }
+                await getChartData(param).then((res) => {
+                    console.log(res)
+                })
             }
         },
     },
