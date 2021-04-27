@@ -31,7 +31,7 @@ export function getColumnData (obj) {
  * @param {*} obj   连接对象的基本信息和指定表名
  * @return {*}
  */
-export function getDIData (obj) {
+export function getDIDataApi (obj) {
     return post('/select/diData', obj)
 }
 

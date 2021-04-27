@@ -241,7 +241,7 @@
     </div>
 </template>
 <script>
-import { getDIData, getChartAllData, getChartData } from '../../common/api/select'
+import { getDIDataApi, getChartAllData, getChartData } from '../../common/api/select'
 export default {
     name: 'Dashboard',
     data() {
@@ -253,7 +253,7 @@ export default {
         }
         return {
             obj: {
-                tableName: 'sample_1k_flts',
+                tableName: 'tb_1',
                 columnName: [],
                 sqlType: 'postgresql',
                 userName: 'postgres',
@@ -292,12 +292,12 @@ export default {
             // Y 轴数组
             yAxisArr: [],
             // 谢晓茜接口所需参数
-            allDataListIndex: null,
+            index: 0,
             colNameList: [],
         }
     },
     created() {
-        this.getDIData()
+        this.initData()
         // let connObj = this.$route.params.table.conn
         // let tableName = this.$route.params.table.name
     },
@@ -317,17 +317,20 @@ export default {
         this.dataStatus = true
     },
     methods: {
+        initData() {
+            this.getDIData()
+            this.getChartAllData()
+        },
         /**
          * @description: 初始化数据方法
          * @param {*}
          * @return {*}
          */
-        async initChartTableData() {
+        async getChartAllData() {
             let arr = this.$store.state.chartData
             if (arr.length == 0) {
                 await getChartAllData(this.obj).then((res) => {
-                    this.allDataListIndex = res.allDataListIndex
-                    console.log(res)
+                    this.allDataIndex = res.data.allDataListIndex
                     this.$store.commit(
                         'pushChartData',
                         JSON.stringify({
@@ -342,7 +345,7 @@ export default {
                     let item = arr[i]
                     if (item.database != obj.database && item.tableName != obj.tableName) {
                         await getChartAllData(this.obj).then((res) => {
-                            console.log(res)
+                            this.allDataIndex = res.data.allDataListIndex
                             this.$store.commit(
                                 'pushChartData',
                                 JSON.stringify({
@@ -364,7 +367,7 @@ export default {
          * @return {*}
          */
         async getDIData() {
-            await getDIData(this.obj).then((res) => {
+            await getDIDataApi(this.obj).then((res) => {
                 console.log(res)
                 this.dimensionalityArr = res.data.dimensionality
                 this.indicatorArr = res.data.indicator
@@ -378,7 +381,6 @@ export default {
                     this.colNameList.push(item.name)
                 }
                 this.obj.columnName = this.colNameList
-                this.initChartTableData()
             })
         },
 
@@ -497,9 +499,10 @@ export default {
                 console.log('开始生成数据')
                 console.log(columns)
                 // 谢晓茜接口所需参数
+                console.log(this.allDataIndex)
                 let param = {
                     allColNameList: this.colNameList, // 单独的所有维度和指标数组
-                    allDataListIndex: this.allDataListIndex, // 全局变量的索引值
+                    allDataListIndex: this.allDataIndex, // 全局变量的索引值
                     colNameList: columns, // 所选择的字段
                 }
                 await getChartData(param).then((res) => {
