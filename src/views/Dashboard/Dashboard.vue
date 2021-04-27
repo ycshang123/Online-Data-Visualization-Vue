@@ -110,6 +110,7 @@
                                                 icon
                                                 v-on="on"
                                                 v-bind="attrs"
+                                                @click="changeType(index)"
                                             >
                                                 <img draggable="false" :src="item.icon" />
                                             </v-btn>
@@ -233,8 +234,14 @@
                     </v-card>
 
                     <v-card height="75%" flat tile outlined :class="dataStatus ? 'd-flex align-center' : ''">
-                        <ve-histogram class="overflow-x-auto" :data="chartData" :settings="chartSettings"></ve-histogram>
+                        <multiChart
+                            :chartType="chartType"
+                            :data="chartData"
+                            :settings="chartSettings"
+                            :dataStatus="dataStatus"
+                        ></multiChart>
                     </v-card>
+                    <!-- <ve-histogram class="overflow-x-auto" :data="chartData" :settings="chartSettings"></ve-histogram> -->
                 </v-card>
             </v-col>
         </div>
@@ -242,8 +249,10 @@
 </template>
 <script>
 import { getDIDataApi, getChartAllData, getChartData } from '../../common/api/select'
+import multiChart from '../../components/multi-chart'
 export default {
     name: 'Dashboard',
+    components: { multiChart },
     data() {
         this.chartSettings = {
             // axisSite: { right: ['下单率'] },
@@ -252,6 +261,8 @@ export default {
             // showLine: ['下单率'],s
         }
         return {
+            // 图表类型变量
+            chartType: 'histogram',
             obj: {
                 tableName: 'test',
                 columnName: [],
@@ -273,15 +284,15 @@ export default {
             },
             // 图标类型图标数组
             chartArr: [
-                { id: 0, type: '柱状图', icon: require('../../assets/pic/chart/bar.png') },
-                { id: 1, type: '饼图', icon: require('../../assets/pic/chart/pie.png') },
-                { id: 2, type: '折线图', icon: require('../../assets/pic/chart/line.png') },
-                { id: 3, type: '散点图', icon: require('../../assets/pic/chart/scatter.png') },
-                { id: 4, type: 'K 线图', icon: require('../../assets/pic/chart/candlestick.png') },
-                { id: 5, type: '雷达图', icon: require('../../assets/pic/chart/radar.png') },
-                { id: 6, type: '漏斗图', icon: require('../../assets/pic/chart/funnel.png') },
-                { id: 7, type: '仪表盘', icon: require('../../assets/pic/chart/gauge.png') },
-                { id: 8, type: '地图', icon: require('../../assets/pic/chart/map.png') },
+                { id: 0, chartType: 'histogram', type: '柱状图', icon: require('../../assets/pic/chart/bar.png') },
+                { id: 1, chartType: 'pie', type: '饼图', icon: require('../../assets/pic/chart/pie.png') },
+                { id: 2, chartType: 'line', type: '折线图', icon: require('../../assets/pic/chart/line.png') },
+                { id: 3, chartType: 'scatter', type: '散点图', icon: require('../../assets/pic/chart/scatter.png') },
+                { id: 4, chartType: 'candle', type: 'K线图', icon: require('../../assets/pic/chart/candlestick.png') },
+                { id: 5, chartType: 'radar', type: '雷达图', icon: require('../../assets/pic/chart/radar.png') },
+                { id: 6, chartType: 'funnel', type: '漏斗图', icon: require('../../assets/pic/chart/funnel.png') },
+                { id: 7, chartType: 'gauge', type: '仪表盘', icon: require('../../assets/pic/chart/gauge.png') },
+                { id: 8, chartType: 'map', type: '地图', icon: require('../../assets/pic/chart/map.png') },
             ],
             // 维度 内容数组
             dimensionalityArr: [],
@@ -303,6 +314,19 @@ export default {
     },
     mounted() {},
     methods: {
+        /**
+         * @description: 改变图表类型的方法
+         * @param {*} index
+         * @return {*}
+         */
+        changeType(index) {
+            this.dataStatus = false
+            this.chartType = this.chartArr[index].chartType
+            console.log(this.chartType)
+            setTimeout(() => {
+                this.dataStatus = true
+            }, 0.1)
+        },
         /**
          * @description: 初始化数据方法
          * @param {*}
