@@ -4,9 +4,22 @@
         <v-card style="height: 8%" flat tile outlined class="d-flex align-center">
             <v-row no-gutters justify="space-between">
                 <v-col cols="4" class="d-flex align-center">
-                    <div class="text-h6">{{ obj.tableName }}</div>
+                    <v-menu offset-y>
+                        <template v-slot:activator="{ on, attrs }">
+                            <!-- <div style="width: 20%" class="text-h6 red" v-bind="attrs" v-on="on">{{ obj.tableName }}</div> -->
+                            <v-card v-bind="attrs" outlined flat v-on="on" width="30%" class="d-flex justify-space-between">
+                                {{ packageName.substring(0, 8) }}...
+                                <v-icon right dark color="blue-grey lighten-1"> mdi-chevron-down </v-icon>
+                            </v-card>
+                        </template>
+                        <v-list>
+                            <v-list-item v-for="(item, index) in packageList" :key="index" v-cursor>
+                                <v-list-item-title @click="choicePackage(index)">{{ item.name }}</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
 
-                    <div class="ml-12 d-flex align-center justify-center">
+                    <div class="ml-8 d-flex align-center justify-center">
                         <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn icon class="mr-4" v-on="on" v-bind="attrs">
@@ -30,7 +43,6 @@
                 </v-col>
             </v-row>
         </v-card>
-
         <!-- 下半区域 -->
         <div class="d-flex" style="height: 92%; width: 100%">
             <!-- 左 -->
@@ -38,7 +50,27 @@
                 <v-card height="100%" class="pa-0" tile flat>
                     <!-- 顶部标题 -->
                     <v-card height="6%" tile flat class="d-flex align-center justify-space-between" v-borderBottom>
-                        <div>一月航空数据表</div>
+                        <!-- <div>一月航空数据表</div> -->
+                        <v-menu offset-y>
+                            <template v-slot:activator="{ on, attrs }">
+                                <!-- <div style="width: 20%" class="text-h6 red" v-bind="attrs" v-on="on">{{ obj.tableName }}</div> -->
+                                <div
+                                    v-ripple="{ class: 'primary--text' }"
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    style="width: 63%; border: 1px solid #e0e0e0"
+                                    class="d-flex justify-space-between px-2"
+                                >
+                                    {{ tableName.substring(0, 8) }}...
+                                    <v-icon right dark color="blue-grey lighten-1"> mdi-chevron-down </v-icon>
+                                </div>
+                            </template>
+                            <v-list>
+                                <v-list-item v-for="(item, index) in tableList" :key="index" v-cursor>
+                                    <v-list-item-title @click="choiceTable(index)">{{ item.name }}</v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
                         <!-- 按钮组 -->
                         <div>
                             <v-btn icon color="blue-grey lighten-1">
@@ -234,12 +266,7 @@
                     </v-card>
 
                     <v-card height="75%" flat tile outlined :class="dataStatus ? 'd-flex align-center' : ''">
-                        <multiChart
-                            :chartType="chartType"
-                            :data="chartData"
-                            :settings="chartSettings"
-                            :dataStatus="dataStatus"
-                        ></multiChart>
+                        <multiChart :chartType="chartType" :data="chartData" :dataStatus="dataStatus"></multiChart>
                     </v-card>
                     <!-- <ve-histogram class="overflow-x-auto" :data="chartData" :settings="chartSettings"></ve-histogram> -->
                 </v-card>
@@ -254,13 +281,15 @@ export default {
     name: 'Dashboard',
     components: { multiChart },
     data() {
-        this.chartSettings = {
-            // axisSite: { right: ['下单率'] },
-            // yAxisType: ['KMB', 'percent'],
-            // yAxisName: ['数值', '比率'],
-            // showLine: ['下单率'],s
-        }
         return {
+            // 包列表
+            packageList: [],
+            // 表列表
+            tableList: [],
+            // 当前表名
+            tableName: 'tableNamedsadasd',
+            // 当前报名
+            packageName: 'packageName',
             // 图表类型变量
             chartType: 'histogram',
             obj: {
@@ -308,12 +337,43 @@ export default {
         }
     },
     created() {
-        this.getDIData()
+        this.initData()
+        // this.initPackageTableData()
         // let connObj = this.$route.params.table.conn
         // let tableName = this.$route.params.table.name
     },
-    mounted() {},
     methods: {
+        /**
+         * @description: 初始化包和表基本信息方法
+         * @param {*}
+         * @return {*}
+         */
+        initPackageTableData() {
+            if (this.obj == null) {
+                this.tableName = this.obj.tableName
+                this.package = this.$store.state.folder.name
+            } else {
+                this.packageList = this.$store.state.folders[0]
+                this.tableList = this.packageList.tables.title
+            }
+        },
+        /**
+         * @description: 选择表名的方法
+         * @param {*} index
+         * @return {*}
+         */
+        choiceTable(index) {
+            this.tableName = this.tableList[index].name
+        },
+        /**
+         * @description: 选择包名的方法
+         * @param {*} index
+         * @return {*}
+         */
+        choicePackage(index) {
+            this.packageName = this.packageList[index].name
+            this.tableList = this.packageList[index].tables
+        },
         /**
          * @description: 改变图表类型的方法
          * @param {*} index
@@ -322,30 +382,21 @@ export default {
         changeType(index) {
             this.dataStatus = false
             this.chartType = this.chartArr[index].chartType
-            console.log(this.chartType)
             setTimeout(() => {
                 this.dataStatus = true
-            }, 0.1)
+            }, 0.01)
         },
+
         /**
          * @description: 初始化数据方法
          * @param {*}
          * @return {*}
          */
-        async getChartAllData() {
-            await getChartAllData(this.obj).then((res) => {
-                this.allDataIndex = res.data.allDataListIndex
-            })
-        },
-
-        /**
-         * @description: 调用获取维度和指标数组数据的方法
-         * @param {*}
-         * @return {*}
-         */
-        async getDIData() {
+        async initData() {
+            /**
+             * 1. 调用获取维度和指标数组数据的方法
+             */
             await getDIDataApi(this.obj).then((res) => {
-                console.log(res)
                 this.dimensionalityArr = res.data.dimensionality
                 this.indicatorArr = res.data.indicator
                 // 获取所有的指标和维度值，构造成一个数组，并且赋值给obj对象
@@ -358,7 +409,12 @@ export default {
                     this.colNameList.push(item.name)
                 }
                 this.obj.columnName = this.colNameList
-                this.getChartAllData()
+                /**
+                 * 2. 调用获取 所有 指标和维度数组数据的方法
+                 */
+                getChartAllData(this.obj).then((res) => {
+                    this.allDataIndex = res.data.allDataListIndex
+                })
             })
         },
 
@@ -475,7 +531,6 @@ export default {
                     columns.push(this.yAxisArr[i].name)
                 }
                 console.log('开始生成数据')
-                // 谢晓茜接口所需参数
                 let param = {
                     allColNameList: this.colNameList, // 单独的所有维度和指标数组
                     allDataListIndex: this.allDataIndex, // 全局变量的索引值
