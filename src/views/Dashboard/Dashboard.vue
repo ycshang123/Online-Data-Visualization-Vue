@@ -232,7 +232,7 @@
                         </v-row>
                     </v-card>
 
-                    <v-card height="75%" class="" flat tile outlined :class="dataStatus ? 'd-flex align-center' : ''">
+                    <v-card height="75%" flat tile outlined :class="dataStatus ? 'd-flex align-center' : ''">
                         <ve-histogram class="overflow-x-auto" :data="chartData" :settings="chartSettings"></ve-histogram>
                     </v-card>
                 </v-card>
@@ -246,14 +246,14 @@ export default {
     name: 'Dashboard',
     data() {
         this.chartSettings = {
-            axisSite: { right: ['下单率'] },
-            yAxisType: ['KMB', 'percent'],
-            yAxisName: ['数值', '比率'],
-            showLine: ['下单率'],
+            // axisSite: { right: ['下单率'] },
+            // yAxisType: ['KMB', 'percent'],
+            // yAxisName: ['数值', '比率'],
+            // showLine: ['下单率'],s
         }
         return {
             obj: {
-                tableName: 'tb_1',
+                tableName: 'test',
                 columnName: [],
                 sqlType: 'postgresql',
                 userName: 'postgres',
@@ -292,73 +292,26 @@ export default {
             // Y 轴数组
             yAxisArr: [],
             // 谢晓茜接口所需参数
-            index: 0,
+            index: Number,
             colNameList: [],
         }
     },
     created() {
-        this.initData()
+        this.getDIData()
         // let connObj = this.$route.params.table.conn
         // let tableName = this.$route.params.table.name
     },
-    mounted() {
-        this.chartData.columns = ['日期', '访问用户', '下单用户', '下单率']
-        this.chartData.rows = [
-            { 日期: '1/1', 访问用户: 1393, 下单用户: 1093, 下单率: 0.32 },
-            { 日期: '1/2', 访问用户: 3530, 下单用户: 3230, 下单率: 0.26 },
-            { 日期: '1/3', 访问用户: 2923, 下单用户: 2623, 下单率: 0.76 },
-            { 日期: '1/4', 访问用户: 1723, 下单用户: 1423, 下单率: 0.49 },
-            { 日期: '1/5', 访问用户: 3792, 下单用户: 3492, 下单率: 0.323 },
-            { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
-            { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
-            { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
-            { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
-        ]
-        this.dataStatus = true
-    },
+    mounted() {},
     methods: {
-        initData() {
-            this.getDIData()
-            this.getChartAllData()
-        },
         /**
          * @description: 初始化数据方法
          * @param {*}
          * @return {*}
          */
         async getChartAllData() {
-            let arr = this.$store.state.chartData
-            if (arr.length == 0) {
-                await getChartAllData(this.obj).then((res) => {
-                    this.allDataIndex = res.data.allDataListIndex
-                    this.$store.commit(
-                        'pushChartData',
-                        JSON.stringify({
-                            database: this.obj.database,
-                            tableName: this.obj.tableName,
-                            index: res.allDataListIndex,
-                        })
-                    )
-                })
-            } else {
-                for (let i = 0; i < arr; i++) {
-                    let item = arr[i]
-                    if (item.database != obj.database && item.tableName != obj.tableName) {
-                        await getChartAllData(this.obj).then((res) => {
-                            this.allDataIndex = res.data.allDataListIndex
-                            this.$store.commit(
-                                'pushChartData',
-                                JSON.stringify({
-                                    database: this.obj.database,
-                                    tableName: this.obj.tableName,
-                                    index: res.allDataListIndex,
-                                })
-                            )
-                        })
-                        break
-                    }
-                }
-            }
+            await getChartAllData(this.obj).then((res) => {
+                this.allDataIndex = res.data.allDataListIndex
+            })
         },
 
         /**
@@ -381,6 +334,7 @@ export default {
                     this.colNameList.push(item.name)
                 }
                 this.obj.columnName = this.colNameList
+                this.getChartAllData()
             })
         },
 
@@ -497,16 +451,16 @@ export default {
                     columns.push(this.yAxisArr[i].name)
                 }
                 console.log('开始生成数据')
-                console.log(columns)
                 // 谢晓茜接口所需参数
-                console.log(this.allDataIndex)
                 let param = {
                     allColNameList: this.colNameList, // 单独的所有维度和指标数组
                     allDataListIndex: this.allDataIndex, // 全局变量的索引值
                     colNameList: columns, // 所选择的字段
                 }
                 await getChartData(param).then((res) => {
-                    console.log(res)
+                    this.chartData.columns = columns
+                    this.chartData.rows = res.data
+                    this.dataStatus = true
                 })
             }
         },
