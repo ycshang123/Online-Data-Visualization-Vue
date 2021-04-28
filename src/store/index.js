@@ -76,7 +76,11 @@ export default new Vuex.Store({
             //     type: '',
             //     content: ''
             // }
-        ]
+        ],
+        //新增表
+        addNewTable:[],
+        //数据集
+        dataList:[]
     },
     mutations: {
         /**

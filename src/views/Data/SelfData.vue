@@ -98,7 +98,7 @@
                     </v-col>
                 </v-col>
                 <v-col class="d-flex justify-space-between" cols="2">
-                    <v-btn color="#3b4a5f" style="color: #ffffff" @click="returnPage()">取消</v-btn
+                    <v-btn color="#3b4a5f" style="color: #ffffff" @click="returnPage()">返回</v-btn
                     ><v-btn color="#3b4a5f" style="color: #ffffff" @click="addnewTable()">保存</v-btn>
                 </v-col>
             </v-card>
@@ -106,7 +106,7 @@
             <div class="flow-btn-area mt-3 d-flex align-center">
                 <!-- 动态按钮 -->
                 <v-card v-for="(item, index) in newColArr" :key="index" width="150" tile flat>
-                    <v-card text outlined flat style="user-select: none; cursor: pointer">
+                    <v-card text outlined flat style="user-select: none; cursor: pointer" @click="isPop = true">
                         {{ item }}
                     </v-card>
                     <span>————</span>
@@ -149,37 +149,31 @@
                     tile
                     style="height: 100%; width: 100%; position: relative"
                 >
-                    <v-card
-                        width="100%"
-                        height="10%"
-                        outlined
-                        v-borderBottom
-                        class="d-flex align-center justify-space-between pa-2"
-                        tile
-                        flat
-                    >
+                    <v-card width="100%" height="10%" v-borderBottom class="d-flex align-center justify-space-between pa-2" tile flat>
                         <v-btn @click="chooseAllColumn()" v-if="status" :disabled="listContent.length == 0">全选</v-btn>
                         <v-btn v-else @click="notChoose()">取消全选</v-btn>
                         <v-btn @click="joinColumnData()">确认</v-btn>
                     </v-card>
-                    <v-card
-                        width="100%"
-                        height="90%"
-                        class="pa-2 py-4 overflow-y-auto overflow-x-hidden"
-                        tile
-                        flat
-                        style="position: absolute"
-                    >
-                        <div
-                            v-for="(item, index) in listContent"
-                            :key="index"
-                            class="d-flex align-center justify-start"
-                            style="height: 20px"
-                            v-cursor
+                    <v-card width="100%" height="90%" tile flat style="position: relative">
+                        <v-card
+                            class="pa-2 py-4 overflow-y-auto overflow-x-hidden"
+                            tile
+                            flat
+                            style="position: absolute"
+                            width="100%"
+                            height="100%"
                         >
-                            <v-checkbox dense @click.stop="chooseColumn(index)" v-model="item.checked"></v-checkbox>
-                            <span>{{ item.content }}</span>
-                        </div>
+                            <div
+                                v-for="(item, index) in listContent"
+                                :key="index"
+                                class="d-flex align-center justify-start"
+                                style="height: 20px"
+                                v-cursor
+                            >
+                                <v-checkbox dense @click.stop="chooseColumn(index)" v-model="item.checked"></v-checkbox>
+                                <span>{{ item.content }}</span>
+                            </div>
+                        </v-card>
                     </v-card>
                 </v-card>
             </v-col>
@@ -191,7 +185,7 @@
     </div>
 </template>
 <script>
-import { getConnTableColumn, getColumnData } from '../../common/api/select'
+import { getConnTableColumn, getColumnData, getConnTables } from '../../common/api/select'
 import { addNewColumn } from '../../common/api/add'
 export default {
     data() {
@@ -255,12 +249,25 @@ export default {
             newTableName: null,
             // 表名
             tableName: null,
+            //数据集
+            datalist: null,
+            //数据库中所有的表
+            alltables: null,
+            //新增数据的数据集
+            rowList: [],
+            //表中的字段名
+            charrList: [],
         }
     },
     created() {
         this.folder = this.$store.state.folder.name
         this.tableList = this.$store.state.folder.tables
         this.databaseConn = this.$store.state.databaseConnObjArr[0]
+        this.datalist = this.$store.state.addNewTable
+        getConnTables(this.databaseConn).then((res) => {
+            this.alltables = res.data
+        })
+        this.rowList = this.$store.state.dataList
     },
     methods: {
         // 动态按钮的实现
@@ -282,7 +289,6 @@ export default {
                     }
                 }
             }
-
             console.log(this.newColArr)
         },
         // 新增列元素
@@ -308,7 +314,22 @@ export default {
             var newName = { name: '' }
             newName.name = this.newTableName
             this.tableName = newName.name
-            this.tableList.push(newName)
+            if (this.tableList.some((item) => item.name === newName.name)) {
+                alert('请勿输入重复表名')
+            } else if (this.newTableName == null) {
+                alert('请输入表名')
+            } else {
+                this.tableList.push(newName)
+                var tableInfo = { name: null, table: [] }
+                tableInfo.name = newName.name
+                this.chooseList.forEach((item) => {
+                    var filed = { content: null, checked: false }
+                    filed.content = item.text
+                    tableInfo.table.push(filed)
+                })
+                this.chooseList = []
+                this.datalist.push(tableInfo)
+            }
             this.newTableName = null
         },
         //新增算数方法
@@ -370,7 +391,6 @@ export default {
             } else {
                 this.chooseList.pop(header)
             }
-            console.log(this.chooseList)
         },
         // 全选
         chooseAllColumn() {
@@ -416,8 +436,25 @@ export default {
                 column.content = this.newColumn
                 this.listContent.unshift(column)
                 this.isPop = false
-                addNewColumn(this.newColumnContent).then((res) => {
-                    console.log(res)
+                this.operationConn = this.databaseConn
+                var fieldList = []
+                this.newColumnContent.forEach((item) => {
+                    var isExist = this.listContent.some((name) => name.content === item)
+                    if (isExist) {
+                        fieldList.push(item)
+                    }
+                })
+                this.operationConn.columnName = fieldList
+                this.operationConn.operatecontent = this.newColumnContent
+                this.operationConn.tableName = this.tableList[this.number].name
+                this.operationConn.limitCount = 100
+                this.operationConn.page = 1
+                console.log(this.operationConn)
+                addNewColumn(this.operationConn).then((res) => {
+                    var caldata = { name: '', data: [] }
+                    caldata.name = this.newColumn
+                    caldata.data = res.data
+                    this.rowList.push(caldata)
                 })
             } else {
                 if (this.newColumnContent.length > 0) {
@@ -451,16 +488,11 @@ export default {
                         })
                     }
                 })
-            } else if (this.tableName == this.tableList[index].name) {
-                this.listContent = []
-                var columnName = []
-                this.chooseList.forEach((item) => {
-                    columnName.push(item.text)
-                })
-                columnName.forEach((item) => {
-                    var field = { content: null, checked: false }
-                    field.content = item
-                    this.listContent.push(field)
+            } else if (this.alltables.indexOf(this.tableList[index].name) == -1) {
+                this.datalist.forEach((item) => {
+                    if (item.name == this.tableList[index].name) {
+                        this.listContent = item.table
+                    }
                 })
             } else {
                 this.columnArr = this.databaseConn
@@ -468,7 +500,7 @@ export default {
                 getConnTableColumn(this.columnArr).then((res) => {
                     this.listContent = []
                     var fieldsList = res.data
-                    console.log(fieldsList)
+                    this.charrList = res.data
                     fieldsList.forEach((item) => {
                         var field = { content: null, checked: false }
                         field.content = item
@@ -487,18 +519,39 @@ export default {
             this.chooseList.forEach((item) => {
                 columnName.push(item.text)
             })
-            this.joinColumn.columnName = columnName
-            console.log(this.joinColumn)
-
+            var colList = []
+            this.charrList.forEach((item) => {
+                if (columnName.some((colName) => colName === item)) {
+                    colList.push(item)
+                }
+            })
+            let index = []
+            columnName.forEach((value) => {
+                this.rowList.forEach((key) => {
+                    if (key.name == value) {
+                        index.push(key)
+                    }
+                })
+            })
+            this.joinColumn.columnName = colList
             getColumnData(this.joinColumn).then((res) => {
+                console.log(index)
                 var columnList = res.data
-                columnList.forEach((element) => {
-                    var i = 0
+                var k = 0
+                columnList.forEach((item) => {
                     this.obj = {}
-                    columnName.forEach((item) => {
-                        this.obj[item] = element[i]
-                        i = i + 1
+                    var i = 0
+                    var j = 0
+                    columnName.forEach((value) => {
+                        if (colList.some((key) => key === value)) {
+                            this.obj[value] = item[i]
+                            i++
+                        } else {
+                            this.obj[value] = index[j].data[k]
+                            j++
+                        }
                     })
+                    k++
                     this.numberList.push(this.obj)
                 })
             })
