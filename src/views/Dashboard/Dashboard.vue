@@ -8,12 +8,12 @@
                         <template v-slot:activator="{ on, attrs }">
                             <!-- <div style="width: 20%" class="text-h6 red" v-bind="attrs" v-on="on">{{ obj.tableName }}</div> -->
                             <v-card v-bind="attrs" outlined flat v-on="on" width="30%" class="d-flex justify-space-between">
-                                {{ packageName.substring(0, 8) }}...
+                                {{ packageName.length > 8 ? packageName.substring(0, 8) + '...' : packageName }}
                                 <v-icon right dark color="blue-grey lighten-1"> mdi-chevron-down </v-icon>
                             </v-card>
                         </template>
                         <v-list>
-                            <v-list-item v-for="(item, index) in packageList" :key="index" v-cursor>
+                            <v-list-item ripple v-for="(item, index) in packageList" :key="index" v-cursor>
                                 <v-list-item-title @click="choicePackage(index)">{{ item.name }}</v-list-item-title>
                             </v-list-item>
                         </v-list>
@@ -61,12 +61,12 @@
                                     style="width: 63%; border: 1px solid #e0e0e0"
                                     class="d-flex justify-space-between px-2"
                                 >
-                                    {{ tableName.substring(0, 8) }}...
+                                    {{ tableName.length > 8 ? tableName.substring(0, 8) + '...' : tableName }}
                                     <v-icon right dark color="blue-grey lighten-1"> mdi-chevron-down </v-icon>
                                 </div>
                             </template>
                             <v-list>
-                                <v-list-item v-for="(item, index) in tableList" :key="index" v-cursor>
+                                <v-list-item ripple v-for="(item, index) in tableList" :key="index" v-cursor>
                                     <v-list-item-title @click="choiceTable(index)">{{ item.name }}</v-list-item-title>
                                 </v-list-item>
                             </v-list>
@@ -85,7 +85,12 @@
                     <v-card height="47%" tile flat v-borderBottom>
                         <div style="height: 8%">维度</div>
                         <div style="height: 90%" v-relative>
-                            <div class="overflow-y-auto overflow-x-hidden" v-absolute style="width: 98%">
+                            <div
+                                v-if="dimensionalityArr.length !== 0"
+                                class="overflow-y-auto overflow-x-hidden"
+                                v-absolute
+                                style="width: 98%"
+                            >
                                 <v-card
                                     v-for="(item, index) in dimensionalityArr"
                                     :key="item.id"
@@ -105,7 +110,12 @@
                     <v-card height="47%" tile flat class="d-flex flex-column justify-space-between">
                         <div style="height: 8%">指标</div>
                         <div style="height: 90%; width: 100%" v-relative>
-                            <div class="overflow-y-auto overflow-x-hidden" v-absolute style="width: 98%">
+                            <div
+                                v-if="dimensionalityArr.length !== 0"
+                                class="overflow-y-auto overflow-x-hidden"
+                                v-absolute
+                                style="width: 98%"
+                            >
                                 <v-card
                                     v-for="(item, index) in indicatorArr"
                                     :key="index"
@@ -284,23 +294,27 @@ export default {
         return {
             // 包列表
             packageList: [],
+            // 当前选中包的 index
+            packageIndex: 0,
             // 表列表
             tableList: [],
+            // 当前选中表的 index
+            tableIndex: 0,
             // 当前表名
-            tableName: 'tableNamedsadasd',
-            // 当前报名
-            packageName: 'packageName',
+            tableName: '请选择表',
+            // 当前包名
+            packageName: '请选择包',
             // 图表类型变量
             chartType: 'histogram',
             obj: {
-                tableName: 'test',
-                columnName: [],
-                sqlType: 'postgresql',
-                userName: 'postgres',
-                password: 'root',
-                host: 'localhost',
-                port: 5432,
-                database: 'postgres',
+                // tableName: 'test',
+                // columnName: [],
+                // sqlType: 'postgresql',
+                // userName: 'postgres',
+                // password: 'root',
+                // host: 'localhost',
+                // port: 5432,
+                // database: 'postgres',
             },
             // 当前操作表对象（包含表名和所有的字段名）
             tableObj: null,
@@ -337,10 +351,7 @@ export default {
         }
     },
     created() {
-        this.initData()
-        // this.initPackageTableData()
-        // let connObj = this.$route.params.table.conn
-        // let tableName = this.$route.params.table.name
+        this.initPackageTableData()
     },
     methods: {
         /**
@@ -349,12 +360,27 @@ export default {
          * @return {*}
          */
         initPackageTableData() {
-            if (this.obj == null) {
-                this.tableName = this.obj.tableName
-                this.package = this.$store.state.folder.name
+            let routeParamTable = this.$route.params.table
+            /**
+             * 1. 直接点击侧边栏跳转的方式
+             */
+            if (routeParamTable == undefined) {
+                this.packageList = this.$store.state.folders
+                if (this.packageList.length != 0) {
+                    this.packageName = this.packageList[this.packageIndex].name
+                    if (this.packageList[this.packageIndex].tables) {
+                        this.tableList = this.packageList[this.tableIndex].tables
+                    }
+                }
             } else {
-                this.packageList = this.$store.state.folders[0]
-                this.tableList = this.packageList.tables.title
+                /**
+                 * 2. 从某一张表跳转过来的方式
+                 */
+                this.obj = routeParamTable.conn
+                this.obj.tableName = routeParamTable.name
+                this.tableName = this.obj.tableName
+                this.obj.columnName = []
+                this.packageName = this.$store.state.folder.name
             }
         },
         /**
@@ -363,7 +389,14 @@ export default {
          * @return {*}
          */
         choiceTable(index) {
-            this.tableName = this.tableList[index].name
+            this.clearData()
+            this.tableIndex = index
+            this.tableName = this.tableList[this.tableIndex].name
+            let currentTable = this.$store.state.folders[this.packageIndex].tables[this.tableIndex]
+            this.obj = currentTable.conn
+            this.obj.tableName = currentTable.name
+            this.initData()
+            console.log(this.obj)
         },
         /**
          * @description: 选择包名的方法
@@ -371,6 +404,7 @@ export default {
          * @return {*}
          */
         choicePackage(index) {
+            this.packageIndex = index
             this.packageName = this.packageList[index].name
             this.tableList = this.packageList[index].tables
         },
@@ -399,6 +433,7 @@ export default {
             await getDIDataApi(this.obj).then((res) => {
                 this.dimensionalityArr = res.data.dimensionality
                 this.indicatorArr = res.data.indicator
+                this.colNameList = []
                 // 获取所有的指标和维度值，构造成一个数组，并且赋值给obj对象
                 for (let i = 0; i < this.dimensionalityArr.length; i++) {
                     let item = this.dimensionalityArr[i]
@@ -414,6 +449,7 @@ export default {
                  */
                 getChartAllData(this.obj).then((res) => {
                     this.allDataIndex = res.data.allDataListIndex
+                    this.obj = {}
                 })
             })
         },
@@ -423,7 +459,7 @@ export default {
          * xy: 表示对哪个轴进行操作
          */
         delXYAxisArr(o, i, xy) {
-            let obj
+            let obj = {}
             if (xy == 'xAxis') {
                 obj = this.xAxisArr.splice(i, 1)
             } else {
@@ -438,6 +474,21 @@ export default {
                 this.indicatorArr.push(item)
                 this.indicatorArr.sort(this.compare('id'))
             }
+            this.getChartData()
+        },
+
+        /**
+         * @description: 参数清空方法
+         * @param {*}
+         * @return {*}
+         */
+        clearData() {
+            this.xAxisArr = []
+            this.yAxisArr = []
+            this.dimensionalityArr = []
+            this.indicatorArr = []
+            this.chartData.columns = []
+            this.chartData.rows = []
         },
 
         /**

@@ -92,6 +92,11 @@ Object.keys(orderArr).forEach((k) => {
 })
 
 export default {
+    /**
+     * @description:    将一个对象的各个值清空变为 ''
+     * @param {*} obj
+     * @return {*}
+     */
     clearObjAttribute(obj) {
         Object.keys(obj).forEach((key) => {
             obj[key] = ''
