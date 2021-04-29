@@ -121,7 +121,7 @@
                     :sort-by="['calories', 'fat']"
                     :sort-desc="[false, true]"
                     multi-sort
-                    class="elevation-1 overflow-x-auto overflow-y-hidden blue"
+                    class="elevation-1 overflow-x-auto overflow-y-hidden"
                     max-width="100%"
                     max-height="89%"
                     :search="search"

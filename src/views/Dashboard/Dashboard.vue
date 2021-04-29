@@ -253,7 +253,7 @@ export default {
         }
         return {
             obj: {
-                tableName: 'tb_1',
+                tableName: 'sample_1k_flts',
                 columnName: [],
                 sqlType: 'postgresql',
                 userName: 'postgres',
@@ -297,7 +297,7 @@ export default {
         }
     },
     created() {
-        this.initData()
+        this.getDIData()
         // let connObj = this.$route.params.table.conn
         // let tableName = this.$route.params.table.name
     },
@@ -317,10 +317,6 @@ export default {
         this.dataStatus = true
     },
     methods: {
-        initData() {
-            this.getDIData()
-            this.getChartAllData()
-        },
         /**
          * @description: 初始化数据方法
          * @param {*}
@@ -381,6 +377,7 @@ export default {
                     this.colNameList.push(item.name)
                 }
                 this.obj.columnName = this.colNameList
+                this.getChartAllData()
             })
         },
 
@@ -505,6 +502,7 @@ export default {
                     allDataListIndex: this.allDataIndex, // 全局变量的索引值
                     colNameList: columns, // 所选择的字段
                 }
+                console.log(param)
                 await getChartData(param).then((res) => {
                     console.log(res)
                 })
@@ -518,3 +516,6 @@ export default {
     padding: 8px 8px 8px 8px;
 }
 </style>
+
+
+
