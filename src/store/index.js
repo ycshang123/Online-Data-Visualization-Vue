@@ -80,7 +80,9 @@ export default new Vuex.Store({
         //新增表
         addNewTable:[],
         //数据集
-        dataList:[]
+        dataList:[],
+        //请求文件的所有数据
+        fileList:[]
     },
     mutations: {
         /**

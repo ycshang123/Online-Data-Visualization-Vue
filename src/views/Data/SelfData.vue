@@ -171,7 +171,7 @@
                                 v-cursor
                             >
                                 <v-checkbox dense @click.stop="chooseColumn(index)" v-model="item.checked"></v-checkbox>
-                                <span>{{ item.content }}</span>
+                                <span>{{ item.content.substring(0, 16) }}……</span>
                             </div>
                         </v-card>
                     </v-card>
@@ -257,6 +257,8 @@ export default {
             rowList: [],
             //表中的字段名
             charrList: [],
+            //上传文件所有的数据
+            fileList: [],
         }
     },
     created() {
@@ -268,6 +270,7 @@ export default {
             this.alltables = res.data
         })
         this.rowList = this.$store.state.dataList
+        this.fileList = this.$store.state.fileList
     },
     methods: {
         // 动态按钮的实现
@@ -511,50 +514,73 @@ export default {
         },
         // 获取表中的数据
         joinColumnData() {
-            this.joinColumn = this.databaseConn
-            this.joinColumn.tableName = this.tableList[this.number].name
-            this.joinColumn.limitCount = 100
-            this.joinColumn.page = 1
-            var columnName = []
-            this.chooseList.forEach((item) => {
-                columnName.push(item.text)
-            })
-            var colList = []
-            this.charrList.forEach((item) => {
-                if (columnName.some((colName) => colName === item)) {
-                    colList.push(item)
-                }
-            })
-            let index = []
-            columnName.forEach((value) => {
-                this.rowList.forEach((key) => {
-                    if (key.name == value) {
-                        index.push(key)
-                    }
-                })
-            })
-            this.joinColumn.columnName = colList
-            getColumnData(this.joinColumn).then((res) => {
-                console.log(index)
-                var columnList = res.data
-                var k = 0
-                columnList.forEach((item) => {
-                    this.obj = {}
-                    var i = 0
-                    var j = 0
-                    columnName.forEach((value) => {
-                        if (colList.some((key) => key === value)) {
-                            this.obj[value] = item[i]
-                            i++
-                        } else {
-                            this.obj[value] = index[j].data[k]
-                            j++
+            if (
+                this.tableList[this.number].name.endsWith('.csv') ||
+                this.tableList[this.number].name.endsWith('.xlsx') ||
+                this.tableList[this.number].name.endsWith('.xls')
+            ) {
+                this.fileList.forEach((item) => {
+                    item.forEach((file) => {
+                        if (file.name == this.tableList[this.number].name) {
+                            var col = file.file_list[0]
+                            for (var i = 1; i < file.file_list.length; i++) {
+                                this.obj = {}
+                                var j = 0
+                                col.forEach((colVale) => {
+                                    this.obj[colVale] = file.file_list[i][j]
+                                    j++
+                                })
+                                this.numberList.push(this.obj)
+                            }
                         }
                     })
-                    k++
-                    this.numberList.push(this.obj)
                 })
-            })
+            } else {
+                this.joinColumn = this.databaseConn
+                this.joinColumn.tableName = this.tableList[this.number].name
+                this.joinColumn.limitCount = 100
+                this.joinColumn.page = 1
+                var columnName = []
+                this.chooseList.forEach((item) => {
+                    columnName.push(item.text)
+                })
+                var colList = []
+                this.charrList.forEach((item) => {
+                    if (columnName.some((colName) => colName === item)) {
+                        colList.push(item)
+                    }
+                })
+                let index = []
+                columnName.forEach((value) => {
+                    this.rowList.forEach((key) => {
+                        if (key.name == value) {
+                            index.push(key)
+                        }
+                    })
+                })
+                this.joinColumn.columnName = colList
+                getColumnData(this.joinColumn).then((res) => {
+                    console.log(index)
+                    var columnList = res.data
+                    var k = 0
+                    columnList.forEach((item) => {
+                        this.obj = {}
+                        var i = 0
+                        var j = 0
+                        columnName.forEach((value) => {
+                            if (colList.some((key) => key === value)) {
+                                this.obj[value] = item[i]
+                                i++
+                            } else {
+                                this.obj[value] = index[j].data[k]
+                                j++
+                            }
+                        })
+                        k++
+                        this.numberList.push(this.obj)
+                    })
+                })
+            }
         },
         returnPage() {
             this.$router.go(-1)
