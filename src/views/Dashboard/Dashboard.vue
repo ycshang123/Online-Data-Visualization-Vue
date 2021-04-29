@@ -376,11 +376,19 @@ export default {
                 /**
                  * 2. 从某一张表跳转过来的方式
                  */
+                this.packageList = this.$store.state.folders
+                if (this.packageList.length != 0) {
+                    this.packageName = this.packageList[this.packageIndex].name
+                    if (this.packageList[this.packageIndex].tables) {
+                        this.tableList = this.packageList[this.tableIndex].tables
+                    }
+                }
                 this.obj = routeParamTable.conn
                 this.obj.tableName = routeParamTable.name
                 this.tableName = this.obj.tableName
                 this.obj.columnName = []
                 this.packageName = this.$store.state.folder.name
+                this.initData()
             }
         },
         /**
@@ -407,6 +415,8 @@ export default {
             this.packageIndex = index
             this.packageName = this.packageList[index].name
             this.tableList = this.packageList[index].tables
+            this.tableName = '请选择表'
+            this.clearData()
         },
         /**
          * @description: 改变图表类型的方法
