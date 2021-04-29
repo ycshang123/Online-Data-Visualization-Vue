@@ -10,10 +10,6 @@ import { get, post } from '../request'
  *  选择数据库连接的 API
  * @returns
  */
-export function test () {
-    return get('/select/test')
-}
-
 export function uloadFilesApi (arr) {
     return post('/select/uploadFile', arr)
 }
@@ -21,6 +17,7 @@ export function uloadFilesApi (arr) {
 export function getConnTables (obj) {
     return post('/select/allTable', obj)
 }
+
 export function getConnTableColumn (obj) {
     return post('/select/allColumn', obj)
 }
@@ -34,7 +31,25 @@ export function getColumnData (obj) {
  * @param {*} obj   连接对象的基本信息和指定表名
  * @return {*}
  */
-export function getDIData (obj) {
+export function getDIDataApi (obj) {
     return post('/select/diData', obj)
+}
+
+/**
+ * @description:    获取图表所有数据
+ * @param {*} obj   连接对象的基本信息和指定表名
+ * @return {*}
+ */
+export function getChartAllData (obj) {
+    return post('/select/getChartData', obj)
+}
+
+/**
+ * @description:    获取图表中指定字段的数据
+ * @param {*} obj
+ * @return {*}
+ */
+export function getChartData (obj) {
+    return post('/select/filterData', obj)
 }
 

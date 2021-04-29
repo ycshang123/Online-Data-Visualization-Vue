@@ -225,7 +225,7 @@ export default {
             databaseConn: {},
             // 获取表中的字段
             columnArr: { tableName: '', sqlType: '', userName: '', password: '', host: '', port: '', database: '' },
-            // 拼接的数据
+            // 选择表中字段连接数据库需要的数据
             joinColumn: {
                 tableName: '',
                 sqlType: '',
@@ -249,6 +249,7 @@ export default {
             newTableName: null,
             // 表名
             tableName: null,
+
             //数据集
             datalist: null,
             //数据库中所有的表
@@ -259,6 +260,30 @@ export default {
             charrList: [],
             //上传文件所有的数据
             fileList: [],
+            // 新增列运算需要的数据库信息
+            operationConn: {
+                // 表名
+                tableName: '',
+                // 数据库类型
+                sqlType: '',
+                // 用户名
+                userName: '',
+                // 密码
+                password: '',
+                // 端口号
+                host: '',
+                // 端口号
+                port: '',
+                //需要连接的的库
+                database: '',
+                // 限制条数
+                limitCount: 0,
+                // 表名
+                columnName: '',
+                //运算规则
+                operatecontent: [],
+                page: 1,
+            },
         }
     },
     created() {
