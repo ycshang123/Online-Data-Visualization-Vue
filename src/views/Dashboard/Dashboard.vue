@@ -597,6 +597,7 @@ export default {
                     allDataListIndex: this.allDataIndex, // 全局变量的索引值
                     colNameList: columns, // 所选择的字段
                 }
+                console.log(param)
                 await getChartData(param).then((res) => {
                     this.chartData.columns = columns
                     this.chartData.rows = res.data
@@ -612,3 +613,6 @@ export default {
     padding: 8px 8px 8px 8px;
 }
 </style>
+
+
+
