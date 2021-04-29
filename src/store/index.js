@@ -77,6 +77,13 @@ export default new Vuex.Store({
             //     content: ''
             // }
         ],
+        //新增表
+        addNewTable: [],
+        //数据集
+        dataList: [],
+        //请求文件的所有数据
+        fileList: [],
+
         // 图表数据数组
         chartData: [
             // {
@@ -85,6 +92,7 @@ export default new Vuex.Store({
             //     index: 0
             // }
         ]
+
     },
     mutations: {
         /**
