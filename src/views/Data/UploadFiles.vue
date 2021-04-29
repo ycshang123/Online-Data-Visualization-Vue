@@ -177,6 +177,7 @@ export default {
         } else {
             this.foldersFile[this.number] = this.folder.tables
         }
+        this.fileList = this.$store.state.fileList
     },
     data: () => {
         return {
@@ -202,6 +203,8 @@ export default {
             // 默认给第一个数据包传送数据
             number: 0,
             tips: '',
+            //上传文件返回的所有数据
+            fileList: [],
         }
     },
     methods: {
@@ -239,6 +242,9 @@ export default {
                                     this.contains = false
                                 }, 2000)
                                 this.files = []
+                                this.fileList.push(res.data)
+                            } else {
+                                alert('文件上传失败')
                             }
                             var filesData = res.data
                             filesData.forEach((item) => {
@@ -272,6 +278,9 @@ export default {
                             this.contains = false
                         }, 2000)
                         this.files = []
+                        this.fileList.push(res.data)
+                    } else {
+                        alert('文件上传失败')
                     }
                     var filesData = res.data
                     filesData.forEach((item) => {
