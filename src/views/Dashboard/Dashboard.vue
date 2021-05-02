@@ -6,7 +6,6 @@
                 <v-col cols="4" class="d-flex align-center">
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
-                            <!-- <div style="width: 20%" class="text-h6 red" v-bind="attrs" v-on="on">{{ obj.tableName }}</div> -->
                             <v-card v-bind="attrs" outlined flat v-on="on" width="30%" class="d-flex justify-space-between">
                                 {{ packageName.length > 8 ? packageName.substring(0, 8) + '...' : packageName }}
                                 <v-icon right dark color="blue-grey lighten-1"> mdi-chevron-down </v-icon>
@@ -108,8 +107,15 @@
                                             class="gray pl-2"
                                             placeholder="请输入修改后的名字"
                                             style="border: 1px solid red"
+                                            ref="xFocus"
+                                            @keyup.enter="$event.target.blur"
+                                            @blur="saveColName(index, 'x')"
+                                            v-model="colName"
                                         />
-                                        <div v-show="!item.isModify"><v-icon> mdi-menu-right</v-icon> {{ item.name }}</div>
+                                        <div v-show="!item.isModify">
+                                            <v-icon> mdi-menu-right</v-icon>
+                                            {{ item.alias == '' ? item.name : item.alias }}
+                                        </div>
                                     </v-card>
                                 </div>
                             </div>
@@ -141,8 +147,15 @@
                                             class="gray pl-2"
                                             placeholder="请输入修改后的名字"
                                             style="border: 1px solid red"
+                                            ref="yFocus"
+                                            @keyup.enter="$event.target.blur"
+                                            @blur="saveColName(index, 'y')"
+                                            v-model="colName"
                                         />
-                                        <div v-show="!item.isModify"><v-icon> mdi-menu-right</v-icon> {{ item.name }}</div>
+                                        <div v-show="!item.isModify">
+                                            <v-icon> mdi-menu-right</v-icon>
+                                            {{ item.alias == '' ? item.name : item.alias }}
+                                        </div>
                                     </v-card>
                                 </div>
                             </div>
@@ -243,7 +256,7 @@
                                             color="#bdbdbd"
                                             @click.native="delXYAxisArr(item, index, 'xAxis')"
                                         >
-                                            {{ item.name }}
+                                            {{ item.alias == '' ? item.name : item.alias }}
                                         </v-badge>
                                     </v-card>
                                 </v-card>
@@ -295,7 +308,7 @@
                                                 color="#bdbdbd"
                                                 @click.native="delXYAxisArr(item, index, 'yAxis')"
                                             >
-                                                {{ item.name }}
+                                                {{ item.alias == '' ? item.name : item.alias }}
                                             </v-badge>
                                         </v-card>
                                     </v-card>
@@ -307,7 +320,6 @@
                     <v-card height="75%" flat tile outlined :class="dataStatus ? 'd-flex align-center' : ''">
                         <multiChart :chartType="chartType" :data="chartData" :dataStatus="dataStatus"></multiChart>
                     </v-card>
-                    <!-- <ve-histogram class="overflow-x-auto" :data="chartData" :settings="chartSettings"></ve-histogram> -->
                 </v-card>
             </v-col>
         </div>
@@ -321,6 +333,9 @@ export default {
     components: { multiChart },
     data() {
         return {
+            // 修改列名时候的参数对象
+            colName: '',
+            // 数据处理的方式
             funType: 'SUM',
             // 操作选项
             funList: [
@@ -393,21 +408,36 @@ export default {
         this.initPackageTableData()
     },
     methods: {
+        saveColName(index, type) {
+            if (type == 'x') {
+                this.dimensionalityArr[index].alias = this.colName
+            } else {
+                this.indicatorArr[index].alias = this.colName
+            }
+            this.modifyColName(index, type, false)
+            this.colName = ''
+        },
         /**
          * @description: 字段修改别名的方法
          * @param {*} index 索引
          * @param {*} type x 和 y 轴数据区分的参数
          * @return {*}
          */
-        modifyColName(index, type) {
+        modifyColName(index, type, status = true) {
             if (type == 'x') {
                 let item = this.dimensionalityArr[index]
-                item.isModify = true
+                item.isModify = status
                 this.dimensionalityArr.splice(index, 1, item)
+                this.$nextTick(() => {
+                    this.$refs.xFocus[index].focus()
+                })
             } else {
                 let item = this.indicatorArr[index]
-                item.isModify = true
+                item.isModify = status
                 this.indicatorArr.splice(index, 1, item)
+                this.$nextTick(() => {
+                    this.$refs.yFocus[index].focus()
+                })
             }
         },
         /**
@@ -533,15 +563,16 @@ export default {
                 for (let i = 0; i < this.dimensionalityArr.length; i++) {
                     let item = this.dimensionalityArr[i]
                     item['isModify'] = false
+                    item['alias'] = ''
                     this.colNameList.push(item.name)
                 }
                 for (let i = 0; i < this.indicatorArr.length; i++) {
                     let item = this.indicatorArr[i]
                     item['isModify'] = false
+                    item['alias'] = ''
                     this.colNameList.push(item.name)
                 }
                 this.obj.columnName = this.colNameList
-                console.log(this.dimensionalityArr)
                 /**
                  * 2. 调用获取 所有 指标和维度数组数据的方法
                  */
@@ -685,7 +716,7 @@ export default {
                     allColNameList: this.colNameList, // 单独的所有维度和指标数组
                     allDataListIndex: this.allDataIndex, // 全局变量的索引值
                     colNameList: columns, // 所选择的字段
-                    type: this.funType,
+                    funType: this.funType,
                 }
                 console.log(param)
                 await getChartData(param).then((res) => {

@@ -317,7 +317,6 @@ export default {
          * @return {*}
          */
         addBtnClick() {
-            console.log(this.allTables)
             if (this.allTables.length != 0) {
                 this.options[2].isShow = true
             }

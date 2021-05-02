@@ -135,7 +135,7 @@ export default new Vuex.Store({
          * @param {*} obj
          */
         pushDataObj (state, obj) {
-            console.log("新建数据包：" + JSON.parse(obj))
+            // console.log("新建数据包：" + JSON.parse(obj))
             state.folders.push(JSON.parse(obj))
         },
 
