@@ -301,7 +301,6 @@ export default {
                     data.forEach((element) => {
                         let obj = {}
                         let i = 0
-                        console.log(element)
                         headers.forEach((item) => {
                             obj[item.text] = element[i]
                             i++

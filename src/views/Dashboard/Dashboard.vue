@@ -91,18 +91,27 @@
                                 v-absolute
                                 style="width: 98%"
                             >
-                                <v-card
-                                    v-for="(item, index) in dimensionalityArr"
-                                    :key="item.id"
-                                    draggable="true"
-                                    @dragstart="dragstart($event, item, index)"
-                                    @dragend="dragend($event)"
-                                    class="pa-1 mb-2 d-flex align-center"
-                                    color="#E8EAF6"
-                                    v-cursor
-                                >
-                                    <v-icon> mdi-menu-right</v-icon> {{ item.name }}
-                                </v-card>
+                                <div v-for="(item, index) in dimensionalityArr" :key="index">
+                                    <v-card
+                                        :key="item.id"
+                                        draggable="true"
+                                        @dragstart="dragstart($event, item, index)"
+                                        @dragend="dragend($event)"
+                                        @dblclick="modifyColName(index, 'x')"
+                                        class="pa-1 mb-2 d-flex align-center"
+                                        color="#E8EAF6"
+                                        v-cursor
+                                    >
+                                        <input
+                                            v-show="item.isModify"
+                                            type="text"
+                                            class="gray pl-2"
+                                            placeholder="请输入修改后的名字"
+                                            style="border: 1px solid red"
+                                        />
+                                        <div v-show="!item.isModify"><v-icon> mdi-menu-right</v-icon> {{ item.name }}</div>
+                                    </v-card>
+                                </div>
                             </div>
                         </div>
                     </v-card>
@@ -116,18 +125,26 @@
                                 v-absolute
                                 style="width: 98%"
                             >
-                                <v-card
-                                    v-for="(item, index) in indicatorArr"
-                                    :key="index"
-                                    draggable="true"
-                                    @dragstart="dragstart($event, item, index)"
-                                    @dragend="dragend($event)"
-                                    class="pa-1 mb-2 d-flex align-center"
-                                    color="#EDE7F6"
-                                    v-cursor
-                                >
-                                    <v-icon> mdi-menu-right</v-icon> {{ item.name }}
-                                </v-card>
+                                <div v-for="(item, index) in indicatorArr" :key="index">
+                                    <v-card
+                                        draggable="true"
+                                        @dragstart="dragstart($event, item, index)"
+                                        @dragend="dragend($event)"
+                                        @dblclick="modifyColName(index, 'y')"
+                                        class="pa-1 mb-2 d-flex align-center"
+                                        color="#EDE7F6"
+                                        v-cursor
+                                    >
+                                        <input
+                                            v-show="item.isModify"
+                                            type="text"
+                                            class="gray pl-2"
+                                            placeholder="请输入修改后的名字"
+                                            style="border: 1px solid red"
+                                        />
+                                        <div v-show="!item.isModify"><v-icon> mdi-menu-right</v-icon> {{ item.name }}</div>
+                                    </v-card>
+                                </div>
                             </div>
                         </div>
                     </v-card>
@@ -152,7 +169,7 @@
                                                 icon
                                                 v-on="on"
                                                 v-bind="attrs"
-                                                @click="changeType(index)"
+                                                @click="changeType(index, 'y')"
                                             >
                                                 <img draggable="false" :src="item.icon" />
                                             </v-btn>
@@ -233,8 +250,20 @@
                             </v-col>
                         </v-row>
                         <v-row no-gutters align="center" class="mt-4">
-                            <v-col cols="1">
+                            <v-col cols="1" class="d-flex">
                                 <div>纵轴</div>
+                                <v-menu offset-y>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <div class="ml-4" style="border-radius: 3px" v-bind="attrs" v-on="on" v-cursor>
+                                            <v-icon v-ripple small>mdi-chevron-down </v-icon>
+                                        </div>
+                                    </template>
+                                    <v-list>
+                                        <v-list-item ripple v-for="(item, index) in funList" :key="index" v-cursor>
+                                            <v-list-item-title @click="changeFun(index)">{{ item.text }}</v-list-item-title>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
                             </v-col>
                             <v-col cols="11" style="height: 60px" v-relative>
                                 <div style="height: 60px" v-absolute>
@@ -292,6 +321,16 @@ export default {
     components: { multiChart },
     data() {
         return {
+            funType: 'SUM',
+            // 操作选项
+            funList: [
+                { id: 0, text: '求和' },
+                { id: 1, text: '方差' },
+                { id: 2, text: '平均值' },
+                { id: 3, text: '最大值' },
+                { id: 4, text: '最小值' },
+                { id: 5, text: '标准差' },
+            ],
             // 包列表
             packageList: [],
             // 当前选中包的 index
@@ -355,6 +394,53 @@ export default {
     },
     methods: {
         /**
+         * @description: 字段修改别名的方法
+         * @param {*} index 索引
+         * @param {*} type x 和 y 轴数据区分的参数
+         * @return {*}
+         */
+        modifyColName(index, type) {
+            if (type == 'x') {
+                let item = this.dimensionalityArr[index]
+                item.isModify = true
+                this.dimensionalityArr.splice(index, 1, item)
+            } else {
+                let item = this.indicatorArr[index]
+                item.isModify = true
+                this.indicatorArr.splice(index, 1, item)
+            }
+        },
+        /**
+         * @description: 改变计算方式的方法
+         * @param {*} index 索引值
+         * @return {*}
+         */
+        changeFun(index) {
+            switch (this.funList[index].text) {
+                case '求和':
+                    this.funType = 'SUM'
+                    break
+                case '平均值':
+                    this.funType = 'MEAN'
+                    break
+                case '最大值':
+                    this.funType = 'MAX'
+                    break
+                case '最小值':
+                    this.funType = 'MIN'
+                    break
+                case '方差':
+                    this.funType = 'VAR'
+                    break
+                case '标准差':
+                    this.funType = 'STD'
+                    break
+                default:
+                    this.funType = 'SUM'
+            }
+            this.getChartData()
+        },
+        /**
          * @description: 初始化包和表基本信息方法
          * @param {*}
          * @return {*}
@@ -404,7 +490,6 @@ export default {
             this.obj = currentTable.conn
             this.obj.tableName = currentTable.name
             this.initData()
-            console.log(this.obj)
         },
         /**
          * @description: 选择包名的方法
@@ -444,16 +529,19 @@ export default {
                 this.dimensionalityArr = res.data.dimensionality
                 this.indicatorArr = res.data.indicator
                 this.colNameList = []
-                // 获取所有的指标和维度值，构造成一个数组，并且赋值给obj对象
+                // 获取所有的指标和维度值，构造成一个数组，并且赋值给 obj 对象
                 for (let i = 0; i < this.dimensionalityArr.length; i++) {
                     let item = this.dimensionalityArr[i]
+                    item['isModify'] = false
                     this.colNameList.push(item.name)
                 }
                 for (let i = 0; i < this.indicatorArr.length; i++) {
                     let item = this.indicatorArr[i]
+                    item['isModify'] = false
                     this.colNameList.push(item.name)
                 }
                 this.obj.columnName = this.colNameList
+                console.log(this.dimensionalityArr)
                 /**
                  * 2. 调用获取 所有 指标和维度数组数据的方法
                  */
@@ -537,22 +625,23 @@ export default {
                 /**
                  * 1. 先删除被拖放元素
                  */
-                if (item.type == 'dimensionality') {
+                if (item.type == 'dimensionality' && elId == 'xAxis') {
                     // 删除被拖拉的对象
                     this.dimensionalityArr.splice(item.index, 1)
-                } else {
-                    // 删除被拖拉的对象
-                    this.indicatorArr.splice(item.index, 1)
-                }
-                /**
-                 * 2. 再在目标区域内追加元素
-                 */
-                if (elId == 'xAxis') {
                     // 在 x 轴 中追加一个数据
                     this.xAxisArr.push(item)
-                } else {
+                } else if (item.type == 'indicator' && elId != 'xAxis') {
+                    // 删除被拖拉的对象
+                    this.indicatorArr.splice(item.index, 1)
                     // 在 y 轴 中追加一个数据
                     this.yAxisArr.push(item)
+                } else {
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'error',
+                        content: `请将 ${item.type == 'dimensionality' ? '“维度”' : '“指标”'} 内的字段放在 ${
+                            item.type == 'dimensionality' ? '“x”' : '“y”'
+                        } 轴上！`,
+                    })
                 }
                 /**
                  * 3. 最后获取对应的数据
@@ -596,6 +685,7 @@ export default {
                     allColNameList: this.colNameList, // 单独的所有维度和指标数组
                     allDataListIndex: this.allDataIndex, // 全局变量的索引值
                     colNameList: columns, // 所选择的字段
+                    type: this.funType,
                 }
                 console.log(param)
                 await getChartData(param).then((res) => {
@@ -613,6 +703,3 @@ export default {
     padding: 8px 8px 8px 8px;
 }
 </style>
-
-
-

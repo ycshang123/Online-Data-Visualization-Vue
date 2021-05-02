@@ -52,7 +52,10 @@
         <div style="width: 91%">
             <!-- 众多数据库选择界面 -->
             <v-container fluid v-show="isSQLArea">
-                <span class="text-h6 indigo--text text--lighten-1">选择数据库类型</span>
+                <v-col cols="11" class="pa-0 d-flex justify-space-between">
+                    <span class="text-h6 indigo--text text--lighten-1">选择数据库类型</span>
+                    <v-btn @click="cancleConn()" color="primary">返回</v-btn>
+                </v-col>
                 <v-item-group>
                     <v-container class="item-area mt-16" style="width: 85%">
                         <v-row>
@@ -281,6 +284,17 @@ export default {
         saveDialog: false,
     }),
     methods: {
+        /**
+         * @description: 取消新建连接按钮的方法
+         * @param {*}
+         * @return {*}
+         */
+        cancleConn() {
+            this.disabledBtn = false
+            this.isUploadCard = true
+            this.isSQLArea = false
+            console.log(this.isSQLArea)
+        },
         /**
          * @description: 显示历史数据库的详情
          * @param {*} item 特定历史连接对象

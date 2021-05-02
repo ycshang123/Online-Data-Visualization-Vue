@@ -82,7 +82,12 @@ export default new Vuex.Store({
         //数据集
         dataList: [],
         //请求文件的所有数据
-        fileList: [],
+        fileList: [
+            // {
+            //     name: 'test',
+            //     file_list: []    // 数据
+            // }
+        ],
 
         // 图表数据数组
         chartData: [
