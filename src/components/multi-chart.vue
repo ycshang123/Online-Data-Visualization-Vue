@@ -37,7 +37,10 @@ export default {
         settings: {
             type: Object,
             default() {
-                return {}
+                return {
+                    metrics: [],
+                    dimension: [],
+                }
             },
         },
     },

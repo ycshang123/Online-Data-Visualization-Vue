@@ -38,7 +38,7 @@
                     </div>
                 </v-col>
                 <v-col cols="1 d-flex justify-end">
-                    <v-btn to="/object" class="blue-grey lighten-1 white--text">进入仪表板</v-btn>
+                    <v-btn @click="toObjectPage()" class="blue-grey lighten-1 white--text">进入仪表板</v-btn>
                 </v-col>
             </v-row>
         </v-card>
@@ -175,6 +175,7 @@
                                     <v-tooltip nudge-top="10" bottom>
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-btn
+                                                :class="chartArr[index].isSelect ? 'select' : ''"
                                                 class="d-flex align-center justify-center"
                                                 elevation="1"
                                                 width="25"
@@ -182,7 +183,7 @@
                                                 icon
                                                 v-on="on"
                                                 v-bind="attrs"
-                                                @click="changeType(index, 'y')"
+                                                @click="changeType(index)"
                                             >
                                                 <img draggable="false" :src="item.icon" />
                                             </v-btn>
@@ -264,7 +265,10 @@
                         </v-row>
                         <v-row no-gutters align="center" class="mt-4">
                             <v-col cols="1" class="d-flex">
-                                <div>纵轴</div>
+                                <div>
+                                    <div>纵轴</div>
+                                    <div style="sheight: 15px; font-size: 5px; color: gray">{{ funName }}</div>
+                                </div>
                                 <v-menu offset-y>
                                     <template v-slot:activator="{ on, attrs }">
                                         <div class="ml-4" style="border-radius: 3px" v-bind="attrs" v-on="on" v-cursor>
@@ -318,7 +322,7 @@
                     </v-card>
 
                     <v-card height="75%" flat tile outlined :class="dataStatus ? 'd-flex align-center' : ''">
-                        <multiChart :chartType="chartType" :data="chartData" :dataStatus="dataStatus"></multiChart>
+                        <multiChart :settings="settings" :chartType="chartType" :data="chartData" :dataStatus="dataStatus"></multiChart>
                     </v-card>
                 </v-card>
             </v-col>
@@ -335,6 +339,8 @@ export default {
         return {
             // 修改列名时候的参数对象
             colName: '',
+            // 操作类型的名称
+            funName: '求和',
             // 数据处理的方式
             funType: 'SUM',
             // 操作选项
@@ -379,17 +385,18 @@ export default {
                 columns: [],
                 rows: [],
             },
+            settings: {},
             // 图标类型图标数组
             chartArr: [
-                { id: 0, chartType: 'histogram', type: '柱状图', icon: require('../../assets/pic/chart/bar.png') },
-                { id: 1, chartType: 'pie', type: '饼图', icon: require('../../assets/pic/chart/pie.png') },
-                { id: 2, chartType: 'line', type: '折线图', icon: require('../../assets/pic/chart/line.png') },
-                { id: 3, chartType: 'scatter', type: '散点图', icon: require('../../assets/pic/chart/scatter.png') },
-                { id: 4, chartType: 'candle', type: 'K线图', icon: require('../../assets/pic/chart/candlestick.png') },
-                { id: 5, chartType: 'radar', type: '雷达图', icon: require('../../assets/pic/chart/radar.png') },
-                { id: 6, chartType: 'funnel', type: '漏斗图', icon: require('../../assets/pic/chart/funnel.png') },
-                { id: 7, chartType: 'gauge', type: '仪表盘', icon: require('../../assets/pic/chart/gauge.png') },
-                { id: 8, chartType: 'map', type: '地图', icon: require('../../assets/pic/chart/map.png') },
+                { id: 0, isSelect: true, chartType: 'histogram', type: '柱状图', icon: require('../../assets/pic/chart/bar.png') },
+                { id: 1, isSelect: false, chartType: 'pie', type: '饼图', icon: require('../../assets/pic/chart/pie.png') },
+                { id: 2, isSelect: false, chartType: 'line', type: '折线图', icon: require('../../assets/pic/chart/line.png') },
+                { id: 3, isSelect: false, chartType: 'scatter', type: '散点图', icon: require('../../assets/pic/chart/scatter.png') },
+                { id: 4, isSelect: false, chartType: 'candle', type: 'K线图', icon: require('../../assets/pic/chart/candlestick.png') },
+                { id: 5, isSelect: false, chartType: 'radar', type: '雷达图', icon: require('../../assets/pic/chart/radar.png') },
+                { id: 6, isSelect: false, chartType: 'funnel', type: '漏斗图', icon: require('../../assets/pic/chart/funnel.png') },
+                { id: 7, isSelect: false, chartType: 'gauge', type: '仪表盘', icon: require('../../assets/pic/chart/gauge.png') },
+                { id: 8, isSelect: false, chartType: 'map', type: '地图', icon: require('../../assets/pic/chart/map.png') },
             ],
             // 维度 内容数组
             dimensionalityArr: [],
@@ -402,12 +409,30 @@ export default {
             // 谢晓茜接口所需参数
             index: Number,
             colNameList: [],
+            // 图表类型选项中的上一项 index
+            chartArrIndex: 0,
         }
     },
     created() {
         this.initPackageTableData()
     },
     methods: {
+        toObjectPage() {
+            this.$router.push({
+                name: 'Object',
+                params: {
+                    chartData: this.chartData,
+                    settings: this.settings,
+                    chartType: this.chartType,
+                },
+            })
+        },
+        /**
+         * @description: 保存修改后的列名
+         * @param {*} index
+         * @param {*} type
+         * @return {*}
+         */
         saveColName(index, type) {
             if (type == 'x') {
                 this.dimensionalityArr[index].alias = this.colName
@@ -446,6 +471,7 @@ export default {
          * @return {*}
          */
         changeFun(index) {
+            this.funName = this.funList[index].text
             switch (this.funList[index].text) {
                 case '求和':
                     this.funType = 'SUM'
@@ -539,13 +565,15 @@ export default {
          * @return {*}
          */
         changeType(index) {
+            this.chartArr[this.chartArrIndex].isSelect = false
+            this.chartArrIndex = index
             this.dataStatus = false
             this.chartType = this.chartArr[index].chartType
+            this.chartArr[index].isSelect = !this.chartArr[index].isSelect
             setTimeout(() => {
                 this.dataStatus = true
             }, 0.01)
         },
-
         /**
          * @description: 初始化数据方法
          * @param {*}
@@ -708,21 +736,31 @@ export default {
         async getChartData() {
             if (this.xAxisArr.length != 0 && this.yAxisArr.length != 0) {
                 let columns = [this.xAxisArr[0].name]
+                let aliasList = [this.xAxisArr[0].alias == '' ? this.xAxisArr[0].name : this.xAxisArr[0].alias]
                 for (let i = 0; i < this.yAxisArr.length; i++) {
-                    columns.push(this.yAxisArr[i].name)
+                    let item = this.yAxisArr[i]
+                    columns.push(item.name)
+                    aliasList.push(item.alias == '' ? item.name : item.alias)
                 }
                 console.log('开始生成数据')
                 let param = {
                     allColNameList: this.colNameList, // 单独的所有维度和指标数组
                     allDataListIndex: this.allDataIndex, // 全局变量的索引值
                     colNameList: columns, // 所选择的字段
+                    aliasList: aliasList,
                     funType: this.funType,
                 }
-                console.log(param)
                 await getChartData(param).then((res) => {
                     this.chartData.columns = columns
                     this.chartData.rows = res.data
                     this.dataStatus = true
+                    // 设置图例
+                    this.settings.dimension = [aliasList[0]]
+                    let metrics = []
+                    for (let i = 1; i < aliasList.length; i++) {
+                        metrics.push(aliasList[i])
+                    }
+                    this.settings.metrics = metrics
                 })
             }
         },
@@ -732,5 +770,8 @@ export default {
 <style lang="scss" scoped>
 .v-card {
     padding: 8px 8px 8px 8px;
+}
+.select {
+    border: 1px solid red;
 }
 </style>
