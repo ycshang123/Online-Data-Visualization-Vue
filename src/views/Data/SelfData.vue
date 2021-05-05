@@ -284,6 +284,8 @@ export default {
                 page: 1,
             },
             formDataList: null,
+            chooseTableList: [],
+            oldTaleName: '',
         }
     },
     created() {
@@ -370,8 +372,9 @@ export default {
                 })
             } else {
                 this.tableList.push(newName)
-                var tableInfo = { name: null, table: [] }
+                var tableInfo = { name: null, table: [], oldname: null }
                 tableInfo.name = newName.name
+                tableInfo.oldname = this.oldTaleName
                 this.chooseList.forEach((item) => {
                     var filed = { content: null, checked: false }
                     filed.content = item.text
@@ -379,6 +382,7 @@ export default {
                 })
                 this.chooseList = []
                 this.datalist.push(tableInfo)
+                this.oldTaleName = ''
             }
             this.newTableName = null
         },
@@ -449,12 +453,16 @@ export default {
         // 选择表头
         chooseColumn(index) {
             var header = { text: '', value: '' }
-            if (this.listContent[index].checked == true) {
+            if (this.chooseList.some((item) => item.text === this.listContent[index].content)) {
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'info',
+                    content: '请勿选择重复的列名',
+                })
+                this.listContent[index].checked == false
+            } else if (this.listContent[index].checked == true) {
                 header.text = this.listContent[index].content
                 header.value = this.listContent[index].content
                 this.chooseList.push(header)
-            } else {
-                this.chooseList.pop(header)
             }
         },
         // 全选
@@ -492,8 +500,6 @@ export default {
         },
         //确认添加
         confirmColumn() {
-            console.log(this.LeftNumber)
-            console.log(this.RightNumber)
             if (this.LeftNumber != this.RightNumber) {
                 this.GLOBAL.pushAlertArrObj({
                     type: 'info',
@@ -544,6 +550,8 @@ export default {
         },
         // 获取表中的字段
         ColumnArr(index) {
+            this.chooseList = []
+            this.oldTaleName = this.tableList[index].name
             this.number = index
             if (
                 this.tableList[index].name.endsWith('.csv') ||
@@ -562,9 +570,13 @@ export default {
                     }
                 })
             } else if (this.alltables.indexOf(this.tableList[index].name) == -1) {
+                this.listContent = []
                 this.datalist.forEach((item) => {
                     if (item.name == this.tableList[index].name) {
                         this.listContent = item.table
+                        item.table.forEach((tableitem) => {
+                            tableitem.checked = false
+                        })
                     }
                 })
             } else {
@@ -606,6 +618,58 @@ export default {
                             }
                         })
                     }
+                })
+            } else if (this.datalist.some((item) => item.name === this.tableList[this.number].name)) {
+                this.numberList = []
+                for (var i = 0; i < this.datalist.length; i++) {
+                    var j = 0
+                    if (this.datalist[i].name == this.tableList[this.number].name) {
+                        j = i
+                    }
+                }
+                this.joinColumn = this.databaseConn
+                this.joinColumn.tableName = this.datalist[j].oldname
+                this.joinColumn.limitCount = 100
+                this.joinColumn.page = 1
+                var columnName = []
+                this.chooseList.forEach((item) => {
+                    columnName.push(item.text)
+                })
+                var colList = []
+                this.charrList.forEach((item) => {
+                    if (columnName.some((colName) => colName === item)) {
+                        colList.push(item)
+                    }
+                })
+                let index = []
+                columnName.forEach((value) => {
+                    this.rowList.forEach((key) => {
+                        if (key.name == value) {
+                            index.push(key)
+                        }
+                    })
+                })
+                this.joinColumn.columnName = colList
+                getColumnData(this.joinColumn).then((res) => {
+                    console.log(index)
+                    var columnList = res.data
+                    var k = 0
+                    columnList.forEach((item) => {
+                        this.obj = {}
+                        var i = 0
+                        var j = 0
+                        columnName.forEach((value) => {
+                            if (colList.some((key) => key === value)) {
+                                this.obj[value] = item[i]
+                                i++
+                            } else {
+                                this.obj[value] = index[j].data[k]
+                                j++
+                            }
+                        })
+                        k++
+                        this.numberList.push(this.obj)
+                    })
                 })
             } else {
                 this.joinColumn = this.databaseConn
