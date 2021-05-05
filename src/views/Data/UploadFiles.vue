@@ -46,7 +46,7 @@
                         <v-col cols="4" v-else>已选择0项</v-col>
                         <v-col cols="8" class="d-flex justify-space-around">
                             <v-btn @click="uploadFile()">确定</v-btn>
-                            <v-btn @click="returnPage()">上传完成</v-btn>
+                            <v-btn @click="returnPage()">返回</v-btn>
                         </v-col>
                     </v-col>
                 </v-row>
@@ -232,7 +232,8 @@ export default {
                         let formData = new FormData()
                         this.files.forEach((file) => {
                             formData.append('file', file)
-                            console.log(formData)
+                            formData.append('readLine', 30)
+                            formData.append('skipLine', 0)
                         })
                         uloadFilesApi(formData).then((res) => {
                             if (res.code == 200) {
@@ -244,7 +245,10 @@ export default {
                                 this.files = []
                                 this.fileList.push(res.data)
                             } else {
-                                alert('文件上传失败')
+                                this.GLOBAL.pushAlertArrObj({
+                                    type: 'info',
+                                    content: '文件上传失败',
+                                })
                             }
                             var filesData = res.data
                             filesData.forEach((item) => {
@@ -267,20 +271,24 @@ export default {
                 let formData = new FormData()
                 this.files.forEach((file) => {
                     formData.append('file', file)
-                    console.log(formData)
+                    formData.append('readLine', 1)
+                    formData.append('skipLine', 0)
                 })
-                console.log(formData)
                 uloadFilesApi(formData).then((res) => {
                     if (res.code == 200) {
                         this.contains = true
                         this.tips = '文件上传成功'
+                        console.log(formData.getAll('readLine'))
                         setTimeout(() => {
                             this.contains = false
                         }, 2000)
                         this.files = []
                         this.fileList.push(res.data)
                     } else {
-                        alert('文件上传失败')
+                        this.GLOBAL.pushAlertArrObj({
+                            type: 'info',
+                            content: '文件上传失败',
+                        })
                     }
                     var filesData = res.data
                     filesData.forEach((item) => {
