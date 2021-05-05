@@ -108,7 +108,6 @@ export default {
                 } else {
                     alert('包名不能重复！')
                 }
-                console.log(this.folders)
             }
         },
         // 添加数据包按钮点击事件 => 清除文本

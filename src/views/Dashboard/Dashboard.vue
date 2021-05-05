@@ -6,7 +6,6 @@
                 <v-col cols="4" class="d-flex align-center">
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
-                            <!-- <div style="width: 20%" class="text-h6 red" v-bind="attrs" v-on="on">{{ obj.tableName }}</div> -->
                             <v-card v-bind="attrs" outlined flat v-on="on" width="30%" class="d-flex justify-space-between">
                                 {{ packageName.length > 8 ? packageName.substring(0, 8) + '...' : packageName }}
                                 <v-icon right dark color="blue-grey lighten-1"> mdi-chevron-down </v-icon>
@@ -39,7 +38,7 @@
                     </div>
                 </v-col>
                 <v-col cols="1 d-flex justify-end">
-                    <v-btn to="/object" class="blue-grey lighten-1 white--text">进入仪表板</v-btn>
+                    <v-btn @click="toObjectPage()" class="blue-grey lighten-1 white--text">进入仪表板</v-btn>
                 </v-col>
             </v-row>
         </v-card>
@@ -91,18 +90,34 @@
                                 v-absolute
                                 style="width: 98%"
                             >
-                                <v-card
-                                    v-for="(item, index) in dimensionalityArr"
-                                    :key="item.id"
-                                    draggable="true"
-                                    @dragstart="dragstart($event, item, index)"
-                                    @dragend="dragend($event)"
-                                    class="pa-1 mb-2 d-flex align-center"
-                                    color="#E8EAF6"
-                                    v-cursor
-                                >
-                                    <v-icon> mdi-menu-right</v-icon> {{ item.name }}
-                                </v-card>
+                                <div v-for="(item, index) in dimensionalityArr" :key="index">
+                                    <v-card
+                                        :key="item.id"
+                                        draggable="true"
+                                        @dragstart="dragstart($event, item, index)"
+                                        @dragend="dragend($event)"
+                                        @dblclick="modifyColName(index, 'x')"
+                                        class="pa-1 mb-2 d-flex align-center"
+                                        color="#E8EAF6"
+                                        v-cursor
+                                    >
+                                        <input
+                                            v-show="item.isModify"
+                                            type="text"
+                                            class="gray pl-2"
+                                            placeholder="请输入修改后的名字"
+                                            style="border: 1px solid red"
+                                            ref="xFocus"
+                                            @keyup.enter="$event.target.blur"
+                                            @blur="saveColName(index, 'x')"
+                                            v-model="colName"
+                                        />
+                                        <div v-show="!item.isModify">
+                                            <v-icon> mdi-menu-right</v-icon>
+                                            {{ item.alias == '' ? item.name : item.alias }}
+                                        </div>
+                                    </v-card>
+                                </div>
                             </div>
                         </div>
                     </v-card>
@@ -116,18 +131,33 @@
                                 v-absolute
                                 style="width: 98%"
                             >
-                                <v-card
-                                    v-for="(item, index) in indicatorArr"
-                                    :key="index"
-                                    draggable="true"
-                                    @dragstart="dragstart($event, item, index)"
-                                    @dragend="dragend($event)"
-                                    class="pa-1 mb-2 d-flex align-center"
-                                    color="#EDE7F6"
-                                    v-cursor
-                                >
-                                    <v-icon> mdi-menu-right</v-icon> {{ item.name }}
-                                </v-card>
+                                <div v-for="(item, index) in indicatorArr" :key="index">
+                                    <v-card
+                                        draggable="true"
+                                        @dragstart="dragstart($event, item, index)"
+                                        @dragend="dragend($event)"
+                                        @dblclick="modifyColName(index, 'y')"
+                                        class="pa-1 mb-2 d-flex align-center"
+                                        color="#EDE7F6"
+                                        v-cursor
+                                    >
+                                        <input
+                                            v-show="item.isModify"
+                                            type="text"
+                                            class="gray pl-2"
+                                            placeholder="请输入修改后的名字"
+                                            style="border: 1px solid red"
+                                            ref="yFocus"
+                                            @keyup.enter="$event.target.blur"
+                                            @blur="saveColName(index, 'y')"
+                                            v-model="colName"
+                                        />
+                                        <div v-show="!item.isModify">
+                                            <v-icon> mdi-menu-right</v-icon>
+                                            {{ item.alias == '' ? item.name : item.alias }}
+                                        </div>
+                                    </v-card>
+                                </div>
                             </div>
                         </div>
                     </v-card>
@@ -145,6 +175,7 @@
                                     <v-tooltip nudge-top="10" bottom>
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-btn
+                                                :class="chartArr[index].isSelect ? 'select' : ''"
                                                 class="d-flex align-center justify-center"
                                                 elevation="1"
                                                 width="25"
@@ -226,15 +257,30 @@
                                             color="#bdbdbd"
                                             @click.native="delXYAxisArr(item, index, 'xAxis')"
                                         >
-                                            {{ item.name }}
+                                            {{ item.alias == '' ? item.name : item.alias }}
                                         </v-badge>
                                     </v-card>
                                 </v-card>
                             </v-col>
                         </v-row>
                         <v-row no-gutters align="center" class="mt-4">
-                            <v-col cols="1">
-                                <div>纵轴</div>
+                            <v-col cols="1" class="d-flex">
+                                <div>
+                                    <div>纵轴</div>
+                                    <div style="sheight: 15px; font-size: 5px; color: gray">{{ funName }}</div>
+                                </div>
+                                <v-menu offset-y>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <div class="ml-4" style="border-radius: 3px" v-bind="attrs" v-on="on" v-cursor>
+                                            <v-icon v-ripple small>mdi-chevron-down </v-icon>
+                                        </div>
+                                    </template>
+                                    <v-list>
+                                        <v-list-item ripple v-for="(item, index) in funList" :key="index" v-cursor>
+                                            <v-list-item-title @click="changeFun(index)">{{ item.text }}</v-list-item-title>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
                             </v-col>
                             <v-col cols="11" style="height: 60px" v-relative>
                                 <div style="height: 60px" v-absolute>
@@ -266,7 +312,7 @@
                                                 color="#bdbdbd"
                                                 @click.native="delXYAxisArr(item, index, 'yAxis')"
                                             >
-                                                {{ item.name }}
+                                                {{ item.alias == '' ? item.name : item.alias }}
                                             </v-badge>
                                         </v-card>
                                     </v-card>
@@ -276,9 +322,8 @@
                     </v-card>
 
                     <v-card height="75%" flat tile outlined :class="dataStatus ? 'd-flex align-center' : ''">
-                        <multiChart :chartType="chartType" :data="chartData" :dataStatus="dataStatus"></multiChart>
+                        <multiChart :settings="settings" :chartType="chartType" :data="chartData" :dataStatus="dataStatus"></multiChart>
                     </v-card>
-                    <!-- <ve-histogram class="overflow-x-auto" :data="chartData" :settings="chartSettings"></ve-histogram> -->
                 </v-card>
             </v-col>
         </div>
@@ -292,6 +337,21 @@ export default {
     components: { multiChart },
     data() {
         return {
+            // 修改列名时候的参数对象
+            colName: '',
+            // 操作类型的名称
+            funName: '求和',
+            // 数据处理的方式
+            funType: 'SUM',
+            // 操作选项
+            funList: [
+                { id: 0, text: '求和' },
+                { id: 1, text: '方差' },
+                { id: 2, text: '平均值' },
+                { id: 3, text: '最大值' },
+                { id: 4, text: '最小值' },
+                { id: 5, text: '标准差' },
+            ],
             // 包列表
             packageList: [],
             // 当前选中包的 index
@@ -325,17 +385,18 @@ export default {
                 columns: [],
                 rows: [],
             },
+            settings: {},
             // 图标类型图标数组
             chartArr: [
-                { id: 0, chartType: 'histogram', type: '柱状图', icon: require('../../assets/pic/chart/bar.png') },
-                { id: 1, chartType: 'pie', type: '饼图', icon: require('../../assets/pic/chart/pie.png') },
-                { id: 2, chartType: 'line', type: '折线图', icon: require('../../assets/pic/chart/line.png') },
-                { id: 3, chartType: 'scatter', type: '散点图', icon: require('../../assets/pic/chart/scatter.png') },
-                { id: 4, chartType: 'candle', type: 'K线图', icon: require('../../assets/pic/chart/candlestick.png') },
-                { id: 5, chartType: 'radar', type: '雷达图', icon: require('../../assets/pic/chart/radar.png') },
-                { id: 6, chartType: 'funnel', type: '漏斗图', icon: require('../../assets/pic/chart/funnel.png') },
-                { id: 7, chartType: 'gauge', type: '仪表盘', icon: require('../../assets/pic/chart/gauge.png') },
-                { id: 8, chartType: 'map', type: '地图', icon: require('../../assets/pic/chart/map.png') },
+                { id: 0, isSelect: true, chartType: 'histogram', type: '柱状图', icon: require('../../assets/pic/chart/bar.png') },
+                { id: 1, isSelect: false, chartType: 'pie', type: '饼图', icon: require('../../assets/pic/chart/pie.png') },
+                { id: 2, isSelect: false, chartType: 'line', type: '折线图', icon: require('../../assets/pic/chart/line.png') },
+                { id: 3, isSelect: false, chartType: 'scatter', type: '散点图', icon: require('../../assets/pic/chart/scatter.png') },
+                { id: 4, isSelect: false, chartType: 'candle', type: 'K线图', icon: require('../../assets/pic/chart/candlestick.png') },
+                { id: 5, isSelect: false, chartType: 'radar', type: '雷达图', icon: require('../../assets/pic/chart/radar.png') },
+                { id: 6, isSelect: false, chartType: 'funnel', type: '漏斗图', icon: require('../../assets/pic/chart/funnel.png') },
+                { id: 7, isSelect: false, chartType: 'gauge', type: '仪表盘', icon: require('../../assets/pic/chart/gauge.png') },
+                { id: 8, isSelect: false, chartType: 'map', type: '地图', icon: require('../../assets/pic/chart/map.png') },
             ],
             // 维度 内容数组
             dimensionalityArr: [],
@@ -348,12 +409,93 @@ export default {
             // 谢晓茜接口所需参数
             index: Number,
             colNameList: [],
+            // 图表类型选项中的上一项 index
+            chartArrIndex: 0,
         }
     },
     created() {
         this.initPackageTableData()
     },
     methods: {
+        toObjectPage() {
+            this.$router.push({
+                name: 'Object',
+                params: {
+                    chartData: this.chartData,
+                    settings: this.settings,
+                    chartType: this.chartType,
+                },
+            })
+        },
+        /**
+         * @description: 保存修改后的列名
+         * @param {*} index
+         * @param {*} type
+         * @return {*}
+         */
+        saveColName(index, type) {
+            if (type == 'x') {
+                this.dimensionalityArr[index].alias = this.colName
+            } else {
+                this.indicatorArr[index].alias = this.colName
+            }
+            this.modifyColName(index, type, false)
+            this.colName = ''
+        },
+        /**
+         * @description: 字段修改别名的方法
+         * @param {*} index 索引
+         * @param {*} type x 和 y 轴数据区分的参数
+         * @return {*}
+         */
+        modifyColName(index, type, status = true) {
+            if (type == 'x') {
+                let item = this.dimensionalityArr[index]
+                item.isModify = status
+                this.dimensionalityArr.splice(index, 1, item)
+                this.$nextTick(() => {
+                    this.$refs.xFocus[index].focus()
+                })
+            } else {
+                let item = this.indicatorArr[index]
+                item.isModify = status
+                this.indicatorArr.splice(index, 1, item)
+                this.$nextTick(() => {
+                    this.$refs.yFocus[index].focus()
+                })
+            }
+        },
+        /**
+         * @description: 改变计算方式的方法
+         * @param {*} index 索引值
+         * @return {*}
+         */
+        changeFun(index) {
+            this.funName = this.funList[index].text
+            switch (this.funList[index].text) {
+                case '求和':
+                    this.funType = 'SUM'
+                    break
+                case '平均值':
+                    this.funType = 'MEAN'
+                    break
+                case '最大值':
+                    this.funType = 'MAX'
+                    break
+                case '最小值':
+                    this.funType = 'MIN'
+                    break
+                case '方差':
+                    this.funType = 'VAR'
+                    break
+                case '标准差':
+                    this.funType = 'STD'
+                    break
+                default:
+                    this.funType = 'SUM'
+            }
+            this.getChartData()
+        },
         /**
          * @description: 初始化包和表基本信息方法
          * @param {*}
@@ -404,7 +546,6 @@ export default {
             this.obj = currentTable.conn
             this.obj.tableName = currentTable.name
             this.initData()
-            console.log(this.obj)
         },
         /**
          * @description: 选择包名的方法
@@ -424,13 +565,15 @@ export default {
          * @return {*}
          */
         changeType(index) {
+            this.chartArr[this.chartArrIndex].isSelect = false
+            this.chartArrIndex = index
             this.dataStatus = false
             this.chartType = this.chartArr[index].chartType
+            this.chartArr[index].isSelect = !this.chartArr[index].isSelect
             setTimeout(() => {
                 this.dataStatus = true
             }, 0.01)
         },
-
         /**
          * @description: 初始化数据方法
          * @param {*}
@@ -444,13 +587,17 @@ export default {
                 this.dimensionalityArr = res.data.dimensionality
                 this.indicatorArr = res.data.indicator
                 this.colNameList = []
-                // 获取所有的指标和维度值，构造成一个数组，并且赋值给obj对象
+                // 获取所有的指标和维度值，构造成一个数组，并且赋值给 obj 对象
                 for (let i = 0; i < this.dimensionalityArr.length; i++) {
                     let item = this.dimensionalityArr[i]
+                    item['isModify'] = false
+                    item['alias'] = ''
                     this.colNameList.push(item.name)
                 }
                 for (let i = 0; i < this.indicatorArr.length; i++) {
                     let item = this.indicatorArr[i]
+                    item['isModify'] = false
+                    item['alias'] = ''
                     this.colNameList.push(item.name)
                 }
                 this.obj.columnName = this.colNameList
@@ -537,22 +684,23 @@ export default {
                 /**
                  * 1. 先删除被拖放元素
                  */
-                if (item.type == 'dimensionality') {
+                if (item.type == 'dimensionality' && elId == 'xAxis') {
                     // 删除被拖拉的对象
                     this.dimensionalityArr.splice(item.index, 1)
-                } else {
-                    // 删除被拖拉的对象
-                    this.indicatorArr.splice(item.index, 1)
-                }
-                /**
-                 * 2. 再在目标区域内追加元素
-                 */
-                if (elId == 'xAxis') {
                     // 在 x 轴 中追加一个数据
                     this.xAxisArr.push(item)
-                } else {
+                } else if (item.type == 'indicator' && elId != 'xAxis') {
+                    // 删除被拖拉的对象
+                    this.indicatorArr.splice(item.index, 1)
                     // 在 y 轴 中追加一个数据
                     this.yAxisArr.push(item)
+                } else {
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'error',
+                        content: `请将 ${item.type == 'dimensionality' ? '“维度”' : '“指标”'} 内的字段放在 ${
+                            item.type == 'dimensionality' ? '“x”' : '“y”'
+                        } 轴上！`,
+                    })
                 }
                 /**
                  * 3. 最后获取对应的数据
@@ -588,20 +736,31 @@ export default {
         async getChartData() {
             if (this.xAxisArr.length != 0 && this.yAxisArr.length != 0) {
                 let columns = [this.xAxisArr[0].name]
+                let aliasList = [this.xAxisArr[0].alias == '' ? this.xAxisArr[0].name : this.xAxisArr[0].alias]
                 for (let i = 0; i < this.yAxisArr.length; i++) {
-                    columns.push(this.yAxisArr[i].name)
+                    let item = this.yAxisArr[i]
+                    columns.push(item.name)
+                    aliasList.push(item.alias == '' ? item.name : item.alias)
                 }
                 console.log('开始生成数据')
                 let param = {
                     allColNameList: this.colNameList, // 单独的所有维度和指标数组
                     allDataListIndex: this.allDataIndex, // 全局变量的索引值
                     colNameList: columns, // 所选择的字段
+                    aliasList: aliasList,
+                    funType: this.funType,
                 }
-                console.log(param)
                 await getChartData(param).then((res) => {
                     this.chartData.columns = columns
                     this.chartData.rows = res.data
                     this.dataStatus = true
+                    // 设置图例
+                    this.settings.dimension = [aliasList[0]]
+                    let metrics = []
+                    for (let i = 1; i < aliasList.length; i++) {
+                        metrics.push(aliasList[i])
+                    }
+                    this.settings.metrics = metrics
                 })
             }
         },
@@ -612,7 +771,7 @@ export default {
 .v-card {
     padding: 8px 8px 8px 8px;
 }
+.select {
+    border: 1px solid red;
+}
 </style>
-
-
-

@@ -21,11 +21,11 @@
                         </v-btn>
                     </template>
                     <v-list>
-                        <v-list-item v-cursor v-ripple>
-                            <v-list-item-title>PDF</v-list-item-title>
+                        <v-list-item @click="download('png')" v-cursor v-ripple>
+                            <v-list-item-title>png</v-list-item-title>
                         </v-list-item>
-                        <v-list-item v-cursor v-ripple>
-                            <v-list-item-title>web</v-list-item-title>
+                        <v-list-item @click="download('jpeg')" v-cursor v-ripple>
+                            <v-list-item-title>jpeg</v-list-item-title>
                         </v-list-item>
                     </v-list>
                 </v-menu>
@@ -81,8 +81,15 @@
 
                 <!-- 右 -->
                 <v-col cols="10">
-                    <v-card class="px-2" height="100%" flat tile>
-                        <ve-line :data="chartData" :settings="settings"></ve-line>
+                    <v-card class="px-2" height="60%" width="100%" flat tile :class="dataStatus ? 'd-flex align-center' : ''">
+                        <multiChart
+                            id="charts"
+                            ref="charts"
+                            :settings="settings"
+                            :chartType="chartType"
+                            :data="chartData"
+                            :dataStatus="dataStatus"
+                        ></multiChart>
                     </v-card>
                 </v-col>
             </v-row>
@@ -91,25 +98,46 @@
 </template>
 
 <script>
+import multiChart from '../../components/multi-chart'
 export default {
+    name: 'Object',
+    components: { multiChart },
     data() {
         return {
+            dataStatus: false,
             chartData: {
-                columns: ['日期', '访问用户', '下单用户', '下单率'],
-                rows: [
-                    { 日期: '1/1', 访问用户: 1393, 下单用户: 1093, 下单率: 0.32 },
-                    { 日期: '1/2', 访问用户: 3530, 下单用户: 3230, 下单率: 0.26 },
-                    { 日期: '1/3', 访问用户: 2923, 下单用户: 2623, 下单率: 0.76 },
-                    { 日期: '1/4', 访问用户: 1723, 下单用户: 1423, 下单率: 0.49 },
-                    { 日期: '1/5', 访问用户: 3792, 下单用户: 3492, 下单率: 0.323 },
-                    { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
-                ],
+                columns: [],
+                rows: [],
             },
             settings: {},
+            chartType: 'histogram',
         }
     },
-    mounted() {
-        this.settings = {}
+    methods: {
+        download(type) {
+            // 通过ref找到其下级的canvas
+            const charts = document.getElementById('charts').getElementsByTagName('canvas')
+            // 创建标签
+            const element = document.createElement('a')
+            // 设置下载名称
+            element.download = 'pic' + `.${type}`
+            // 设置地址以及文件类型
+            element.href = charts[0].toDataURL(`image/${type}`)
+            document.body.appendChild(element)
+            // 触发下载事件
+            element.click()
+            // 移除标签
+            element.remove()
+        },
+    },
+    mounted() {},
+    created() {
+        this.chartData = this.$route.params.chartData
+        this.settings = this.$route.params.settings
+        this.chartType = this.$route.params.chartType
+        setTimeout(() => {
+            this.dataStatus = true
+        }, 0.01)
     },
 }
 </script>
