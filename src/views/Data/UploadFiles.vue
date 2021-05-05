@@ -46,7 +46,7 @@
                         <v-col cols="4" v-else>已选择0项</v-col>
                         <v-col cols="8" class="d-flex justify-space-around">
                             <v-btn @click="uploadFile()">确定</v-btn>
-                            <v-btn @click="returnPage()">上传完成</v-btn>
+                            <v-btn @click="returnPage()">返回</v-btn>
                         </v-col>
                     </v-col>
                 </v-row>
@@ -147,8 +147,8 @@ export default {
     created() {
         // store里面存的所有数据包文件
         this.folders = this.$store.state.folders
-        var i = 0
-        for (i; i < this.folders.length; i++) {
+        this.folder = this.$store.state.folder
+        for (var i = 0; i < this.folders.length; i++) {
             if (this.folders[i].name == this.folder.name) {
                 this.number = i
             }
@@ -178,6 +178,8 @@ export default {
             this.foldersFile[this.number] = this.folder.tables
         }
         this.fileList = this.$store.state.fileList
+
+        this.formDateList = this.$store.state.formDataList
     },
     data: () => {
         return {
@@ -205,6 +207,7 @@ export default {
             tips: '',
             //上传文件返回的所有数据
             fileList: [],
+            formDateList: null,
         }
     },
     methods: {
@@ -232,19 +235,25 @@ export default {
                         let formData = new FormData()
                         this.files.forEach((file) => {
                             formData.append('file', file)
-                            console.log(formData)
+                            formData.append('readLine', 99)
+                            formData.append('skipLine', 0)
                         })
                         uloadFilesApi(formData).then((res) => {
                             if (res.code == 200) {
                                 this.contains = true
                                 this.tips = '文件上传成功'
+                                this.formDateList.push(formData)
                                 setTimeout(() => {
                                     this.contains = false
                                 }, 2000)
+                                this.formDateList.push(formData)
                                 this.files = []
-                                this.fileList.push(res.data)
+                                // this.fileList.push(res.data)
                             } else {
-                                alert('文件上传失败')
+                                this.GLOBAL.pushAlertArrObj({
+                                    type: 'info',
+                                    content: '文件上传失败',
+                                })
                             }
                             var filesData = res.data
                             filesData.forEach((item) => {
@@ -267,20 +276,23 @@ export default {
                 let formData = new FormData()
                 this.files.forEach((file) => {
                     formData.append('file', file)
-                    console.log(formData)
+                    formData.append('readLine', 99)
+                    formData.append('skipLine', 0)
                 })
-                console.log(formData)
                 uloadFilesApi(formData).then((res) => {
                     if (res.code == 200) {
                         this.contains = true
                         this.tips = '文件上传成功'
+                        this.formDateList.push(formData)
                         setTimeout(() => {
                             this.contains = false
                         }, 2000)
                         this.files = []
-                        this.fileList.push(res.data)
                     } else {
-                        alert('文件上传失败')
+                        this.GLOBAL.pushAlertArrObj({
+                            type: 'info',
+                            content: '文件上传失败',
+                        })
                     }
                     var filesData = res.data
                     filesData.forEach((item) => {
