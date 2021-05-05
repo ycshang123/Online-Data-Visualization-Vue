@@ -525,15 +525,19 @@ export default {
                  * 2. 从某一张表跳转过来的方式
                  */
                 this.packageList = this.$store.state.folders
-                console.log(this.packageList.length)
                 // 设置包名
                 this.packageName = this.packageList[this.packageIndex].name
                 // 设置表列表
                 this.tableList = this.packageList[this.tableIndex].tables
                 // 判断传过来的是一个数据库表对象还是一个文件对象（csv文件）
-
-                this.obj = routeParamTable.conn
-                this.obj.tableName = routeParamTable.name
+                if (routeParamTable.formData == undefined) {
+                    this.obj = routeParamTable.conn
+                    this.obj.tableName = routeParamTable.name
+                } else {
+                    let formData = routeParamTable.formData
+                    this.obj = formData
+                    this.obj.name = formData.get('file').name
+                }
                 this.tableName = this.obj.tableName
                 this.obj.columnName = []
                 this.packageName = this.$store.state.folder.name
