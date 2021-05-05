@@ -46,22 +46,21 @@
                     <v-card width="75%" height="100%" tile elevation="0" v-borderRight>
                         <v-card height="8%" v-borderBottom tile elevation="0" class="d-flex justify-space-around align-center">
                             <div style="width: 70%; height: 100%" class="d-flex justify-space-around align-center">
-                                <span
-                                    style="color: #b1b1b1"
+                                <div
+                                    style="color: #b1b1b1; width: 16%; height: 100%"
                                     v-for="(item, index) in functionSign"
                                     :key="index"
                                     @click="operation(index)"
                                     v-cursor
                                 >
-                                    {{ item }}</span
-                                >
+                                    {{ item }}
+                                </div>
                             </div>
                         </v-card>
                         <v-card height="92%" width="100%" tile elevation="0">
                             <v-card v-if="newColumnContent.length == 0" width="100%" height="90%" tile elevation="0">
                                 <span style="font-size: 12px; color: #d5dbe0" class="pa-2">示例：销售额/计划销售额</span></v-card
                             >
-
                             <v-card width="100%" height="90%" v-else>
                                 <span
                                     style="font-size: 12px; color: #616161"
@@ -171,7 +170,7 @@
                                 v-cursor
                             >
                                 <v-checkbox dense @click.stop="chooseColumn(index)" v-model="item.checked"></v-checkbox>
-                                <span>{{ item.content.substring(0, 16) }}……</span>
+                                <span>{{ item.content.substring(0, 16) }}</span>
                             </div>
                         </v-card>
                     </v-card>
@@ -185,7 +184,7 @@
     </div>
 </template>
 <script>
-import { getConnTableColumn, getColumnData, getConnTables } from '../../common/api/select'
+import { getConnTableColumn, getColumnData, getConnTables, uloadFilesApi } from '../../common/api/select'
 import { addNewColumn } from '../../common/api/add'
 export default {
     data() {
@@ -284,6 +283,7 @@ export default {
                 operatecontent: [],
                 page: 1,
             },
+            formDataList: null,
         }
     },
     created() {
@@ -296,6 +296,7 @@ export default {
         })
         this.rowList = this.$store.state.dataList
         this.fileList = this.$store.state.fileList
+        this.formDataList = this.$store.state.formDataList
     },
     methods: {
         // 动态按钮的实现
@@ -304,16 +305,25 @@ export default {
             console.log('数组长度' + this.newColArr.length)
             this.content = this.addColArr[index]
             if (index > this.newColArr.length - 1) {
-                alert('请按照顺序操作')
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'info',
+                    content: '请按照顺序操作',
+                })
             } else {
                 if (this.listContent.length == 0) {
-                    alert('请选择需要新增列的表')
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'info',
+                        content: '请选择需要新增列的表',
+                    })
                 } else {
                     if (this.newColArr.indexOf(this.content) == -1) {
                         this.newColArr.push(this.content)
                         this.popWindow()
                     } else {
-                        alert('不可以重复添加')
+                        this.GLOBAL.pushAlertArrObj({
+                            type: 'info',
+                            content: '不可以重复添加',
+                        })
                     }
                 }
             }
@@ -329,9 +339,15 @@ export default {
                 var sign = this.newColumnContent[position]
                 //没有找到运算符号
                 if (this.functionSign.indexOf(sign) == -1) {
-                    alert('请选择合适的运算符号')
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'info',
+                        content: '请选择合适的运算符号',
+                    })
                 } else if (sign === ')') {
-                    alert('请选择合适的运算符号')
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'info',
+                        content: '请选择合适的运算符号',
+                    })
                 } else {
                     this.newColumnContent.push(this.listContent[index].content)
                 }
@@ -343,9 +359,15 @@ export default {
             newName.name = this.newTableName
             this.tableName = newName.name
             if (this.tableList.some((item) => item.name === newName.name)) {
-                alert('请勿输入重复表名')
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'info',
+                    content: '请勿输入重复表名',
+                })
             } else if (this.newTableName == null) {
-                alert('请输入表名')
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'info',
+                    content: '请输入表名',
+                })
             } else {
                 this.tableList.push(newName)
                 var tableInfo = { name: null, table: [] }
@@ -368,7 +390,10 @@ export default {
                     this.LeftNumber = this.LeftNumber + 1
                     this.newColumnContent.push(this.functionSign[index])
                 } else {
-                    alert('请选择合适的列名进行运算')
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'info',
+                        content: '请选择合适的列名进行运算',
+                    })
                 }
             } else {
                 var position = length - 1
@@ -381,18 +406,30 @@ export default {
                 // 获取的元素是左括号
                 if (this.functionSign[index] == '(') {
                     if (sign === ')') {
-                        alert('请选择合适的运算符号')
+                        this.GLOBAL.pushAlertArrObj({
+                            type: 'info',
+                            content: '请选择合适的运算符号',
+                        })
                     } else if (isExist) {
-                        alert('请选择合适的运算符号')
+                        this.GLOBAL.pushAlertArrObj({
+                            type: 'info',
+                            content: '请选择合适的运算符号',
+                        })
                     } else {
                         this.LeftNumber = this.LeftNumber + 1
                         this.newColumnContent.push(this.functionSign[index])
                     }
                 } else if (this.functionSign[index] == ')') {
                     if (this.newColumnContent.indexOf('(') == -1) {
-                        alert('请先选择左括号')
+                        this.GLOBAL.pushAlertArrObj({
+                            type: 'info',
+                            content: '请先选择左括号',
+                        })
                     } else if (isOperation) {
-                        alert('请选择合适的字段进行运算')
+                        this.GLOBAL.pushAlertArrObj({
+                            type: 'info',
+                            content: '请选择合适的字段进行运算',
+                        })
                     } else {
                         this.RightNumber = this.RightNumber + 1
                         this.newColumnContent.push(this.functionSign[index])
@@ -458,7 +495,12 @@ export default {
             console.log(this.LeftNumber)
             console.log(this.RightNumber)
             if (this.LeftNumber != this.RightNumber) {
-                alert('左右括号不对称')
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'info',
+                    content: '左右括号不对称',
+                })
+                this.LeftNumber = 0
+                this.RightNumber = 0
             } else if (this.newColumn != null) {
                 var column = { content: '', checked: false }
                 column.content = this.newColumn
@@ -486,7 +528,10 @@ export default {
                 })
             } else {
                 if (this.newColumnContent.length > 0) {
-                    alert('请输入列名')
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'info',
+                        content: '请输入列名',
+                    })
                 } else {
                     this.isPop = false
                 }
@@ -539,26 +584,28 @@ export default {
         },
         // 获取表中的数据
         joinColumnData() {
+            this.numberList = []
             if (
                 this.tableList[this.number].name.endsWith('.csv') ||
                 this.tableList[this.number].name.endsWith('.xlsx') ||
                 this.tableList[this.number].name.endsWith('.xls')
             ) {
-                this.fileList.forEach((item) => {
-                    item.forEach((file) => {
-                        if (file.name == this.tableList[this.number].name) {
-                            var col = file.file_list[0]
-                            for (var i = 1; i < file.file_list.length; i++) {
+                this.formDataList.forEach((formDate) => {
+                    if (formDate.getAll('file')[0].name == this.tableList[this.number].name) {
+                        uloadFilesApi(formDate).then((res) => {
+                            console.log(res.data[0].file_list)
+                            var col = res.data[0].file_list[0]
+                            for (var i = 1; i < res.data[0].file_list.length; i++) {
                                 this.obj = {}
                                 var j = 0
                                 col.forEach((colVale) => {
-                                    this.obj[colVale] = file.file_list[i][j]
+                                    this.obj[colVale] = res.data[0].file_list[i][j]
                                     j++
                                 })
                                 this.numberList.push(this.obj)
                             }
-                        }
-                    })
+                        })
+                    }
                 })
             } else {
                 this.joinColumn = this.databaseConn
