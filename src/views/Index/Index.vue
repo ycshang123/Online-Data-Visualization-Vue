@@ -42,6 +42,12 @@ export default {
                 { title: '仪表盘', icon: 'mdi-view-dashboard', path: '/dashboard' },
             ],
             clipped: false,
+            userInfo: {}
+        }
+    },
+    methods: {
+        getUserInfo(){
+            
         }
     },
 }

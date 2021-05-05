@@ -18,25 +18,32 @@
             <!-- 登录卡片 -->
             <div class="login-card d-flex flex-column justify-center align-center card-bg">
                 <v-card-title class="white--text">第三方登录</v-card-title>
-                <v-btn
-                    class="transparent white--text"
-                    :href=codeUrl
-                    >GITHUB LOGIN</v-btn
-                >
+                <v-btn class="transparent white--text" :href="codeUrl">GITHUB LOGIN</v-btn>
+                <v-btn class="transparent white--text" @click="loginRedirect()">TEST</v-btn>
             </div>
         </v-card>
     </div>
 </template>
 
 <script>
-import { loginByGithub } from '../../common/api/login'
+import { loginByGithub, test1 } from '../../common/api/login'
 export default {
     data() {
         return {
-            codeUrl: 'https://github.com/login/oauth/authorize?client_id=75bfbb55511431752d68&redirect_uri=http://localhost:5000/login/oauth/redirect'
+            codeUrl:
+                'https://github.com/login/oauth/authorize?client_id=75bfbb55511431752d68&redirect_uri=http://localhost:5000/login/oauth/redirect',
         }
     },
-    methods: {},
+    methods: {
+        async loginRedirect() {
+            // axios.get('localhost:5000/login/redi').then((res) => console.log('sdf'))
+            await test1().then((res) => {
+                console.log(res)
+                console.log('djlf')
+            })
+            console.log('joahg')
+        },
+    },
 }
 </script>
 
@@ -62,12 +69,12 @@ export default {
     // border-color: transparent !important;
 }
 .card-bg {
-    background: rgba( 33, 58, 90, 0.25 );
-box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-backdrop-filter: blur( 4px );
--webkit-backdrop-filter: blur( 4px );
-border-radius: 10px;
-border: 1px solid rgba( 255, 255, 255, 0.18 );
+    background: rgba(33, 58, 90, 0.25);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .login-card {
