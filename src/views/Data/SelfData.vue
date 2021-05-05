@@ -105,7 +105,7 @@
             <div class="flow-btn-area mt-3 d-flex align-center">
                 <!-- 动态按钮 -->
                 <v-card v-for="(item, index) in newColArr" :key="index" width="150" tile flat>
-                    <v-card text outlined flat style="user-select: none; cursor: pointer" @click="isPop = true">
+                    <v-card text outlined flat style="user-select: none; cursor: pointer" @click="popWindow()">
                         {{ item }}
                     </v-card>
                     <span>————</span>
@@ -248,7 +248,6 @@ export default {
             newTableName: null,
             // 表名
             tableName: null,
-
             //数据集
             datalist: null,
             //数据库中所有的表
@@ -420,8 +419,8 @@ export default {
                             content: '请选择合适的运算符号',
                         })
                     } else {
-                        this.LeftNumber = this.LeftNumber + 1
                         this.newColumnContent.push(this.functionSign[index])
+                        this.LeftNumber = this.LeftNumber + 1
                     }
                 } else if (this.functionSign[index] == ')') {
                     if (this.newColumnContent.indexOf('(') == -1) {
@@ -497,6 +496,7 @@ export default {
         popWindow() {
             this.newColumnContent = []
             this.isPop = true
+            this.newColumn = null
         },
         //确认添加
         confirmColumn() {
@@ -510,7 +510,16 @@ export default {
             } else if (this.newColumn != null) {
                 var column = { content: '', checked: false }
                 column.content = this.newColumn
-                this.listContent.unshift(column)
+                if (this.listContent.some((item) => item.content === this.newColumn)) {
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'info',
+                        content: '列名重复请重新填写列名',
+                    })
+                    this.newColumn = null
+                    return
+                } else {
+                    this.listContent.unshift(column)
+                }
                 this.isPop = false
                 this.operationConn = this.databaseConn
                 var fieldList = []
@@ -533,16 +542,20 @@ export default {
                     this.rowList.push(caldata)
                 })
             } else {
-                if (this.newColumnContent.length > 0) {
+                if ((this.newColumn = null)) {
                     this.GLOBAL.pushAlertArrObj({
                         type: 'info',
                         content: '请输入列名',
+                    })
+                } else if (this.newColumnContent.length == 0) {
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'info',
+                        content: '请选择需要计算的字段',
                     })
                 } else {
                     this.isPop = false
                 }
             }
-            console.log(this.listContent)
         },
         // 清空新增列的内容
         clearContent() {
