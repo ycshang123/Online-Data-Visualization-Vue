@@ -266,6 +266,7 @@ export default {
             if (obj.name.endsWith('.csv') || obj.name.endsWith('.xlsx') || obj.name.endsWith('.xls')) {
                 this.formDataList.forEach((formDate) => {
                     if (formDate.getAll('file')[0].name == obj.name) {
+                        this.table = formDate.getAll('file')[0]
                         // 请求表中数据及字段
                         uloadFilesApi(formDate).then((res) => {
                             let data = res.data[0].file_list
@@ -593,6 +594,7 @@ export default {
          * @return {*}
          */
         createCompBtn() {
+            console.log(this.table);
             //界面跳转，传参 -> 当前连接对象、字段名
             this.$router.push({
                 name: 'Dashboard',
