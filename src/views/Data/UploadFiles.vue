@@ -178,6 +178,8 @@ export default {
             this.foldersFile[this.number] = this.folder.tables
         }
         this.fileList = this.$store.state.fileList
+
+        this.formDateList = this.$store.state.formDataList
     },
     data: () => {
         return {
@@ -205,6 +207,7 @@ export default {
             tips: '',
             //上传文件返回的所有数据
             fileList: [],
+            formDateList: null,
         }
     },
     methods: {
@@ -232,18 +235,20 @@ export default {
                         let formData = new FormData()
                         this.files.forEach((file) => {
                             formData.append('file', file)
-                            formData.append('readLine', 30)
+                            formData.append('readLine', 99)
                             formData.append('skipLine', 0)
                         })
                         uloadFilesApi(formData).then((res) => {
                             if (res.code == 200) {
                                 this.contains = true
                                 this.tips = '文件上传成功'
+                                this.formDateList.push(formData)
                                 setTimeout(() => {
                                     this.contains = false
                                 }, 2000)
+                                this.formDateList.push(formData)
                                 this.files = []
-                                this.fileList.push(res.data)
+                                // this.fileList.push(res.data)
                             } else {
                                 this.GLOBAL.pushAlertArrObj({
                                     type: 'info',
@@ -271,19 +276,19 @@ export default {
                 let formData = new FormData()
                 this.files.forEach((file) => {
                     formData.append('file', file)
-                    formData.append('readLine', 1)
+                    formData.append('readLine', 99)
                     formData.append('skipLine', 0)
                 })
                 uloadFilesApi(formData).then((res) => {
                     if (res.code == 200) {
                         this.contains = true
                         this.tips = '文件上传成功'
-                        console.log(formData.getAll('readLine'))
+                        this.formDateList.push(formData)
+                       
                         setTimeout(() => {
                             this.contains = false
                         }, 2000)
                         this.files = []
-                        this.fileList.push(res.data)
                     } else {
                         this.GLOBAL.pushAlertArrObj({
                             type: 'info',

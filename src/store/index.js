@@ -88,6 +88,8 @@ export default new Vuex.Store({
             //     file_list: []    // 数据
             // }
         ],
+        //所有上传过的文件对象
+        formDataList:[],
 
         // 图表数据数组
         chartData: [

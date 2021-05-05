@@ -184,7 +184,7 @@
     </div>
 </template>
 <script>
-import { getConnTableColumn, getColumnData, getConnTables } from '../../common/api/select'
+import { getConnTableColumn, getColumnData, getConnTables, uloadFilesApi } from '../../common/api/select'
 import { addNewColumn } from '../../common/api/add'
 export default {
     data() {
@@ -283,6 +283,7 @@ export default {
                 operatecontent: [],
                 page: 1,
             },
+            formDataList: null,
         }
     },
     created() {
@@ -295,6 +296,7 @@ export default {
         })
         this.rowList = this.$store.state.dataList
         this.fileList = this.$store.state.fileList
+        this.formDataList = this.$store.state.formDataList
     },
     methods: {
         // 动态按钮的实现
@@ -588,21 +590,22 @@ export default {
                 this.tableList[this.number].name.endsWith('.xlsx') ||
                 this.tableList[this.number].name.endsWith('.xls')
             ) {
-                this.fileList.forEach((item) => {
-                    item.forEach((file) => {
-                        if (file.name == this.tableList[this.number].name) {
-                            var col = file.file_list[0]
-                            for (var i = 1; i < file.file_list.length; i++) {
+                this.formDataList.forEach((formDate) => {
+                    if (formDate.getAll('file')[0].name == this.tableList[this.number].name) {
+                        uloadFilesApi(formDate).then((res) => {
+                            console.log(res.data[0].file_list)
+                            var col = res.data[0].file_list[0]
+                            for (var i = 1; i < res.data[0].file_list.length; i++) {
                                 this.obj = {}
                                 var j = 0
                                 col.forEach((colVale) => {
-                                    this.obj[colVale] = file.file_list[i][j]
+                                    this.obj[colVale] = res.data[0].file_list[i][j]
                                     j++
                                 })
                                 this.numberList.push(this.obj)
                             }
-                        }
-                    })
+                        })
+                    }
                 })
             } else {
                 this.joinColumn = this.databaseConn
