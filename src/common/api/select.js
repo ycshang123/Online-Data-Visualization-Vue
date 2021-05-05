@@ -4,7 +4,9 @@
  * @Version: 1.0
  * @Date: 2021-04-05 09:52:43
  */
+import { func } from 'prop-types'
 import { get, post } from '../request'
+
 
 /**
  *  选择数据库连接的 API

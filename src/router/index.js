@@ -1,8 +1,15 @@
+/*
+ * @Description:
+ * @Author: xxq
+ * @Version: 1.0
+ * @Date: 2021-04-12 21:47:30
+ */
 import Vue from "vue"
 import VueRouter from "vue-router"
 import Index from "../views/Index/Index.vue"
 import Data from "../views/Data/Data.vue"
 import Dashboard from "../views/Dashboard/Dashboard.vue"
+import Login from "../views/Login/login.vue"
 
 Vue.use(VueRouter)
 
@@ -53,10 +60,15 @@ const routes = [
                 path: "/object",
                 name: "Object",
                 component: () => import('../views/Dashboard/Object.vue')
-            },
+            }
 
         ]
-    }
+    },
+    {
+        path: "/login",
+        name: "Login",
+        component: Login
+    },
 ]
 
 const router = new VueRouter({

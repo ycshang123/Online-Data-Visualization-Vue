@@ -156,7 +156,7 @@
                             style="opacity: 0.9"
                             @click="
                                 isShowOther = false
-                                selectedTables = []
+                                selectCount = 0
                             "
                             >取消</v-btn
                         >
@@ -296,12 +296,11 @@ export default {
             // 请求接口，获取全部数据
             await getColumnData(dataParams).then((res) => {
                 if (res.code == 200) {
-                    // console.log(res.data)
+                    console.log(res.data)
                     const data = res.data
                     data.forEach((element) => {
                         let obj = {}
                         let i = 0
-                        console.log(element)
                         headers.forEach((item) => {
                             obj[item.text] = element[i]
                             i++
@@ -318,7 +317,6 @@ export default {
          * @return {*}
          */
         addBtnClick() {
-            console.log(this.allTables)
             if (this.allTables.length != 0) {
                 this.options[2].isShow = true
             }
