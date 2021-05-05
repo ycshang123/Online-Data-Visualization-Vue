@@ -147,8 +147,8 @@ export default {
     created() {
         // store里面存的所有数据包文件
         this.folders = this.$store.state.folders
-        var i = 0
-        for (i; i < this.folders.length; i++) {
+        this.folder = this.$store.state.folder
+        for (var i = 0; i < this.folders.length; i++) {
             if (this.folders[i].name == this.folder.name) {
                 this.number = i
             }
@@ -284,7 +284,6 @@ export default {
                         this.contains = true
                         this.tips = '文件上传成功'
                         this.formDateList.push(formData)
-                       
                         setTimeout(() => {
                             this.contains = false
                         }, 2000)

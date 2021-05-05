@@ -10,3 +10,8 @@ import { get, post } from '../request'
 export function loginByGithub () {
     return post('/login/ByGithub')
 }
+
+export function test1 () {
+    return get('/login/redi')
+}
+

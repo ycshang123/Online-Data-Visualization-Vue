@@ -189,7 +189,7 @@
 </template>
 
 <script>
-import { getConnTables, getConnTableColumn, getColumnData } from '../../common/api/select'
+import { getConnTables, getConnTableColumn, getColumnData, uloadFilesApi } from '../../common/api/select'
 export default {
     name: 'AddTable',
     data() {
@@ -206,12 +206,6 @@ export default {
             search: '',
             // 历史数据库连接数组
             historyConnArr: [],
-            // 添加表的三种选项
-            options: [
-                { id: 1, name: '数据库表', show: 'DatabaseConn', isShow: true },
-                { id: 2, name: '上传文件', show: 'UpLoadFiles', isShow: true },
-                { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
-            ],
             // 左侧表名,用户添加的所有的表
             allTables: [],
             // 每个连接中所有的表
@@ -220,9 +214,20 @@ export default {
             headers: [],
             // 记录
             desserts: [],
+            formDataList: [],
+            numberList: [],
+            dataList: [],
+            newColNameList: [],
+            // 添加表的三种选项
+            options: [
+                { id: 1, name: '数据库表', show: 'DatabaseConn', isShow: true },
+                { id: 2, name: '上传文件', show: 'UpLoadFiles', isShow: true },
+                { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
+            ],
         }
     },
     created() {
+        this.dataList = this.$store.state.addNewTable
         // 从vuex中取出历史连接
         this.historyConnArr = this.$store.state.databaseConnObjArr
         // 取出用户添加的所有的表
@@ -241,8 +246,9 @@ export default {
         this.conn = this.historyConnArr[0]
         // 当数据包中有表时，执行数据表预览方法
         if (this.allTables.length !== 0) {
-            this.showTablePre()
+            this.showTablePre(this.table)
         }
+        this.formDataList = this.$store.state.formDataList
     },
     methods: {
         /**
@@ -250,66 +256,154 @@ export default {
          * @param {*}
          * @return {*}
          */
-        async showTablePre() {
-            const conn = this.conn
+        async showTablePre(obj) {
+            this.formDataList = this.$store.state.formDataList
             let headers = []
             let desserts = []
-            // 构造参数
-            const colParams = {
-                tableName: this.table.name,
-                sqlType: conn.sqlType,
-                userName: conn.userName,
-                password: conn.password,
-                host: conn.host,
-                port: conn.port,
-                database: conn.database,
-            }
-            // 请求接口，获取全部字段
-            await getConnTableColumn(colParams).then((res) => {
-                if (res.code === 200) {
-                    const colData = res.data
-                    let header = {}
-                    for (let i = 0; i < colData.length; i++) {
-                        const element = colData[i]
-                        header = {
-                            text: colData[i],
-                            value: colData[i],
-                        }
-                        headers.push(header)
-                    }
-                    this.headers = headers
-                }
-            })
-            // 构造参数
-            const dataParams = {
-                tableName: this.table.name,
-                columnName: [],
-                sqlType: conn.sqlType,
-                userName: conn.userName,
-                password: conn.password,
-                host: conn.host,
-                port: conn.port,
-                database: conn.database,
-                page: 1,
-                limitCount: 100,
-            }
-            // 请求接口，获取全部数据
-            await getColumnData(dataParams).then((res) => {
-                if (res.code == 200) {
-                    console.log(res.data)
-                    const data = res.data
-                    data.forEach((element) => {
-                        let obj = {}
-                        let i = 0
-                        headers.forEach((item) => {
-                            obj[item.text] = element[i]
-                            i++
+            let header = {}
+            const conn = this.conn
+
+            if (obj.name.endsWith('.csv') || obj.name.endsWith('.xlsx') || obj.name.endsWith('.xls')) {
+                this.formDataList.forEach((formDate) => {
+                    if (formDate.getAll('file')[0].name == obj.name) {
+                        this.table = formDate.getAll('file')[0]
+                        // 请求表中数据及字段
+                        uloadFilesApi(formDate).then((res) => {
+                            let data = res.data[0].file_list
+                            var col = res.data[0].file_list[0]
+                            // 构造字段
+                            col.forEach((item) => {
+                                header = {
+                                    text: item,
+                                    value: item,
+                                }
+                                headers.push(header)
+                            })
+                            this.headers = headers
+                            console.log(this.headers)
+                            // 构造数据
+                            for (var i = 1; i < data.length; i++) {
+                                obj = {}
+                                var j = 0
+                                col.forEach((colVale) => {
+                                    obj[colVale] = data[i][j]
+                                    j++
+                                })
+                                this.desserts.push(obj)
+                            }
+                            console.log(this.desserts)
                         })
-                        desserts.push(obj)
-                    })
-                    this.desserts = desserts
+                    }
+                })
+            } else if (this.dataList.some((item) => item.name === obj.name)) {
+                // 如果是新增表
+                for (var m = 0; m < this.dataList.length; m++) {
+                    var n = 0
+                    if (this.dataList[m].name == obj.name) {
+                        n = m
+                    }
                 }
-            })
+                var colNameList = []
+                this.dataList[n].table.forEach((item) => {
+                    colNameList.push(item.content)
+                    header = {
+                        text: item.content,
+                        value: item.content
+                    }
+                    headers.push(header)
+                })
+                this.headers = headers
+                this.newColNameList = colNameList
+
+                // 构造参数
+                const dataParams = {
+                    tableName: this.dataList[n].oldname,
+                    colName: this.newColNameList,
+                    sqlType: conn.sqlType,
+                    userName: conn.userName,
+                    password: conn.password,
+                    host: conn.host,
+                    port: conn.port,
+                    database: conn.database,
+                    page: 1,
+                    limitCount: 100,
+                }
+                // 请求接口，获取全部数据
+                await getColumnData(dataParams).then((res) => {
+                    if (res.code == 200) {
+                        const data = res.data
+                        data.forEach((element) => {
+                            let obj = {}
+                            let i = 0
+                            headers.forEach((item) => {
+                                obj[item.text] = element[i]
+                                i++
+                            })
+                            desserts.push(obj)
+                        })
+                        this.desserts = desserts
+                    }
+                })
+            } else {
+                // 如果是数据库文件
+
+                // 构造参数
+                const colParams = {
+                    tableName: this.table.name,
+                    sqlType: conn.sqlType,
+                    userName: conn.userName,
+                    password: conn.password,
+                    host: conn.host,
+                    port: conn.port,
+                    database: conn.database,
+                }
+                // 请求接口，获取全部字段
+                await getConnTableColumn(colParams).then((res) => {
+                    if (res.code === 200) {
+                        const colData = res.data
+                        let header = {}
+                        for (let i = 0; i < colData.length; i++) {
+                            const element = colData[i]
+                            header = {
+                                text: colData[i],
+                                value: colData[i],
+                            }
+                            headers.push(header)
+                        }
+                        this.headers = headers
+                    }
+                })
+                // 构造参数
+                const dataParams = {
+                    tableName: this.table.name,
+                    columnName: [],
+                    sqlType: conn.sqlType,
+                    userName: conn.userName,
+                    password: conn.password,
+                    host: conn.host,
+                    port: conn.port,
+                    database: conn.database,
+                    page: 1,
+                    limitCount: 100,
+                }
+                // 请求接口，获取全部数据
+                await getColumnData(dataParams).then((res) => {
+                    if (res.code == 200) {
+                        // console.log(res.data)
+                        const data = res.data
+                        data.forEach((element) => {
+                            let obj = {}
+                            let i = 0
+                            headers.forEach((item) => {
+                                obj[item.text] = element[i]
+                                i++
+                            })
+                            desserts.push(obj)
+                        })
+                        this.desserts = desserts
+                    }
+                })
+            }
         },
         /**
          * @description: 添加表按钮的点击事件，判断是否显示“自助数据集选项”
@@ -348,7 +442,7 @@ export default {
             this.table = this.allTables[0]
             this.$store.commit('saveFolders', folders)
             this.selectCount = 0
-            this.showTablePre()
+            this.showTablePre(this.table)
         },
         /**
          *  options的点击事件
@@ -491,7 +585,7 @@ export default {
          */
         getTable(o) {
             this.table = o
-            this.showTablePre()
+            this.showTablePre(this.table)
         },
 
         /**
@@ -500,6 +594,7 @@ export default {
          * @return {*}
          */
         createCompBtn() {
+            console.log(this.table);
             //界面跳转，传参 -> 当前连接对象、字段名
             this.$router.push({
                 name: 'Dashboard',

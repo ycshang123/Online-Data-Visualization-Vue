@@ -1,3 +1,9 @@
+<!--
+ * @Description: 
+ * @Author: xxq
+ * @Version: 1.0
+ * @Date: 2021-04-09 17:15:20
+-->
 <template>
     <div>
         <v-app-bar app>
@@ -42,6 +48,7 @@ export default {
                 { title: '仪表盘', icon: 'mdi-view-dashboard', path: '/dashboard' },
             ],
             clipped: false,
+
         }
     },
 }
