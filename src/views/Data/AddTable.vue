@@ -206,12 +206,6 @@ export default {
             search: '',
             // 历史数据库连接数组
             historyConnArr: [],
-            // 添加表的三种选项
-            options: [
-                { id: 1, name: '数据库表', show: 'DatabaseConn', isShow: true },
-                { id: 2, name: '上传文件', show: 'UpLoadFiles', isShow: true },
-                { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
-            ],
             // 左侧表名,用户添加的所有的表
             allTables: [],
             // 每个连接中所有的表
@@ -222,9 +216,18 @@ export default {
             desserts: [],
             formDataList: [],
             numberList: [],
+            dataList: [],
+            newColNameList: [],
+            // 添加表的三种选项
+            options: [
+                { id: 1, name: '数据库表', show: 'DatabaseConn', isShow: true },
+                { id: 2, name: '上传文件', show: 'UpLoadFiles', isShow: true },
+                { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
+            ],
         }
     },
     created() {
+        this.dataList = this.$store.state.addNewTable
         // 从vuex中取出历史连接
         this.historyConnArr = this.$store.state.databaseConnObjArr
         // 取出用户添加的所有的表
@@ -255,16 +258,16 @@ export default {
          */
         async showTablePre(obj) {
             this.formDataList = this.$store.state.formDataList
-            if (obj.name.endsWith('.csv') || obj.name.endsWith('.xlsx') || obj.name.endsWith('.xls')) {
-                let headers = []
-                let desserts = []
-                let header = {}
+            let headers = []
+            let desserts = []
+            let header = {}
+            const conn = this.conn
 
+            if (obj.name.endsWith('.csv') || obj.name.endsWith('.xlsx') || obj.name.endsWith('.xls')) {
                 this.formDataList.forEach((formDate) => {
                     if (formDate.getAll('file')[0].name == obj.name) {
                         // 请求表中数据及字段
                         uloadFilesApi(formDate).then((res) => {
-                            // console.log(res.data[0].file_list)
                             let data = res.data[0].file_list
                             var col = res.data[0].file_list[0]
                             // 构造字段
@@ -287,15 +290,62 @@ export default {
                                 })
                                 this.desserts.push(obj)
                             }
-                            console.log(this.desserts);
+                            console.log(this.desserts)
                         })
+                    }
+                })
+            } else if (this.dataList.some((item) => item.name === obj.name)) {
+                // 如果是新增表
+                for (var m = 0; m < this.dataList.length; m++) {
+                    var n = 0
+                    if (this.dataList[m].name == obj.name) {
+                        n = m
+                    }
+                }
+                var colNameList = []
+                this.dataList[n].table.forEach((item) => {
+                    colNameList.push(item.content)
+                    header = {
+                        text: item.content,
+                        value: item.content
+                    }
+                    headers.push(header)
+                })
+                this.headers = headers
+                this.newColNameList = colNameList
+
+                // 构造参数
+                const dataParams = {
+                    tableName: this.dataList[n].oldname,
+                    colName: this.newColNameList,
+                    sqlType: conn.sqlType,
+                    userName: conn.userName,
+                    password: conn.password,
+                    host: conn.host,
+                    port: conn.port,
+                    database: conn.database,
+                    page: 1,
+                    limitCount: 100,
+                }
+                // 请求接口，获取全部数据
+                await getColumnData(dataParams).then((res) => {
+                    if (res.code == 200) {
+                        const data = res.data
+                        data.forEach((element) => {
+                            let obj = {}
+                            let i = 0
+                            headers.forEach((item) => {
+                                obj[item.text] = element[i]
+                                i++
+                            })
+                            desserts.push(obj)
+                        })
+                        this.desserts = desserts
                     }
                 })
             } else {
                 // 如果是数据库文件
-                const conn = this.conn
-                let headers = []
-                let desserts = []
+
                 // 构造参数
                 const colParams = {
                     tableName: this.table.name,
