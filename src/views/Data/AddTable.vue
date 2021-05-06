@@ -258,6 +258,8 @@ export default {
          */
         async showTablePre(obj) {
             this.formDataList = this.$store.state.formDataList
+            this.headers = []
+            this.desserts = []
             let headers = []
             let desserts = []
             let header = {}

@@ -57,33 +57,8 @@ export default {
             pcolor: '#25354d',
             folder: null,
             nameRules: [(v) => !!v || 'Name must be full', (v) => v.length <= 10 || 'Name must be less than 10 characters'],
-            folders: [
-                // {
-                //     id: '0',
-                //     name: '2020年航空数据',
-                // },
-                // {
-                //     id: '1',
-                //     name: '2021年航空数据',
-                // },
-                // {
-                //     id: '2',
-                //     name: '2019年航空数据',
-                // },
-                // {
-                //     id: '3',
-                //     name: '2018年航空数据',
-                // },
-                // {
-                //     id: '4',
-                //     name: '2017年航空数据',
-                // },
-                // {
-                //     id: '5',
-                //     name: '2090年航空数据',
-                // },
-            ],
-         
+            folders: [            ],
+
         }
     },
     watch: {},
