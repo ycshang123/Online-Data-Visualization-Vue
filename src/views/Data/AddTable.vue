@@ -262,13 +262,14 @@ export default {
             let desserts = []
             let header = {}
             const conn = this.conn
-
             if (obj.name.endsWith('.csv') || obj.name.endsWith('.xlsx') || obj.name.endsWith('.xls')) {
-                this.formDataList.forEach((formDate) => {
-                    if (formDate.getAll('file')[0].name == obj.name) {
-                        this.table = formDate.getAll('file')[0]
+                this.formDataList.forEach((formData) => {
+                    if (formData.getAll('file')[0].name == obj.name) {
+                        this.table = {
+                            formData: formData,
+                        }
                         // 请求表中数据及字段
-                        uloadFilesApi(formDate).then((res) => {
+                        uloadFilesApi(formData).then((res) => {
                             let data = res.data[0].file_list
                             var col = res.data[0].file_list[0]
                             // 构造字段
@@ -280,7 +281,6 @@ export default {
                                 headers.push(header)
                             })
                             this.headers = headers
-                            console.log(this.headers)
                             // 构造数据
                             for (var i = 1; i < data.length; i++) {
                                 obj = {}
@@ -291,7 +291,6 @@ export default {
                                 })
                                 this.desserts.push(obj)
                             }
-                            console.log(this.desserts)
                         })
                     }
                 })
@@ -308,7 +307,7 @@ export default {
                     colNameList.push(item.content)
                     header = {
                         text: item.content,
-                        value: item.content
+                        value: item.content,
                     }
                     headers.push(header)
                 })
@@ -594,7 +593,6 @@ export default {
          * @return {*}
          */
         createCompBtn() {
-            console.log(this.table);
             //界面跳转，传参 -> 当前连接对象、字段名
             this.$router.push({
                 name: 'Dashboard',

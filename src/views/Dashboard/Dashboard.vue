@@ -536,7 +536,7 @@ export default {
                 } else {
                     let formData = routeParamTable.formData
                     this.obj = formData
-                    this.obj.name = formData.get('file').name
+                    this.obj.tableName = formData.get('file').name
                 }
                 this.tableName = this.obj.tableName
                 this.obj.columnName = []
@@ -553,6 +553,7 @@ export default {
             this.clearData()
             this.tableIndex = index
             this.tableName = this.tableList[this.tableIndex].name
+            console.log(this.tableName)
             let currentTable = this.$store.state.folders[this.packageIndex].tables[this.tableIndex]
             this.obj = currentTable.conn
             this.obj.tableName = currentTable.name
