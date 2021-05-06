@@ -70,7 +70,6 @@ export default {
         let query = window.location.href
         let begin = query.lastIndexOf('=') + 1
         this.userInfo.userId = query.substring(begin)
-        console.log(this.userInfo.userId)
         this.getUser()
     },
     methods: {
@@ -80,11 +79,11 @@ export default {
                 if (res.code === 200) {
                     const data = res.data
                     this.userInfo = data
-                    console.log(this.$store.state.userInfo)
                 }
             })
+            localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
             this.$store.state.userInfo = this.userInfo
-            console.log(this.userInfo)
+            console.log(this.$store.state.userInfo)
         },
         // 确定按钮点击事件
         addFolder() {
@@ -121,6 +120,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

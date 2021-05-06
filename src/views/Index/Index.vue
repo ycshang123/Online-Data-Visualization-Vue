@@ -14,7 +14,7 @@
             <div v-if="userInfo" class="d-flex align-center">
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
-                        <v-avatar v-bind="attrs" v-on="on" size="42">
+                        <v-avatar v-bind="attrs" v-on="on" size="38">
                             <img :src="userInfo.avatar" alt="avatar" />
                         </v-avatar>
                     </template>
@@ -22,12 +22,14 @@
                 </v-tooltip>
             </div>
             <div v-else class="d-flex align-center">
-                <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                        <span v-bind="attrs" v-on="on" class="mdi mdi-github mdi-24px ml-4"></span>
-                    </template>
-                    <span>login</span>
-                </v-tooltip>
+                <router-link to="/login">
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <span v-bind="attrs" v-on="on" class="mdi mdi-github mdi-24px pcolor-lighten1"></span>
+                        </template>
+                        <span>login</span>
+                    </v-tooltip>
+                </router-link>
             </div>
             <span class="mdi mdi-chevron-down mdi-18px ml-4"></span>
         </v-app-bar>
@@ -68,7 +70,8 @@ export default {
         }
     },
     created() {
-        this.userInfo = this.$store.state.userInfo
+        this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+        console.log(this.userInfo)
     },
 }
 </script>
