@@ -224,6 +224,9 @@ export default {
                 { id: 2, name: '上传文件', show: 'UpLoadFiles', isShow: true },
                 { id: 3, name: '自助数据集', show: 'SelfData', isShow: false },
             ],
+            //自主数据集
+            customizeList: [],
+            status: false,
         }
     },
     created() {
@@ -249,6 +252,8 @@ export default {
             this.showTablePre(this.table)
         }
         this.formDataList = this.$store.state.formDataList
+        this.customizeList = this.$store.state.dataList
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + this.customizeList)
     },
     methods: {
         /**
@@ -359,7 +364,13 @@ export default {
                 // 请求接口，获取全部字段
                 await getConnTableColumn(colParams).then((res) => {
                     if (res.code === 200) {
-                        const colData = res.data
+                        var colData = []
+                        colData = res.data
+                        this.customizeList.forEach((item) => {
+                            if (item.tablename == this.table.name) {
+                                colData.unshift(item.name)
+                            }
+                        })
                         let header = {}
                         for (let i = 0; i < colData.length; i++) {
                             const element = colData[i]
@@ -388,14 +399,27 @@ export default {
                 // 请求接口，获取全部数据
                 await getColumnData(dataParams).then((res) => {
                     if (res.code == 200) {
-                        // console.log(res.data)
-                        const data = res.data
-                        data.forEach((element) => {
+                        var resultList = []
+                        resultList = res.data
+                        let j = 0
+                        resultList.forEach((element) => {
                             let obj = {}
                             let i = 0
                             headers.forEach((item) => {
-                                obj[item.text] = element[i]
-                                i++
+                                this.customizeList.forEach((itemData) => {
+                                    if (itemData.name == item.text) {
+                                        obj[item.text] = itemData.data[j]
+                                        j++
+                                        this.status = true
+                                    }
+                                })
+                                if (this.status) {
+                                    this.status = false
+                                    return
+                                } else {
+                                    obj[item.text] = element[i]
+                                    i++
+                                }
                             })
                             desserts.push(obj)
                         })
@@ -582,7 +606,7 @@ export default {
          */
         getTable(o) {
             this.table = o
-            console.log(this.table);
+            console.log(this.table)
             this.showTablePre(this.table)
         },
         /**

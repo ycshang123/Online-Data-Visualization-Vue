@@ -33,13 +33,13 @@
                 </v-card>
                 <v-card width="78%" height="100%" tile elevation="0" v-borderTB class="d-flex">
                     <v-card width="25%" height="100%" tile elevation="0" v-borderLR class="d-flex flex-column align-center justify-center">
-                        <div style="height: 8%" class="d-flex justify-center align-center">
-                            <v-text-field placeholder="搜索" class="pr-2 pl-2" />
+                        <div style="height: 5%" class="d-flex justify-center align-center pl-2 pr-2 pt-2">
+                            <span style="color: #abb2bf; font-size: 10px">请选择需要计算的字段</span>
                         </div>
 
                         <div style="height: 90%; width: 100%; overflow-y: auto; white-space: nowrap" class="mt-3">
-                            <div v-for="(item, index) in listContent" :key="index" v-cursor class="ml-2">
-                                <span style="color: #3f3f4c; font-size: 12px" @click="addColumnContent(index)"> {{ item.content }}</span>
+                            <div v-for="(item, index) in TypeofNumberList" :key="index" v-cursor class="ml-2">
+                                <span style="color: #3f3f4c; font-size: 12px" @click="addColumnContent(index)"> {{ item.name }}</span>
                             </div>
                         </div>
                     </v-card>
@@ -105,7 +105,7 @@
             <div class="flow-btn-area mt-3 d-flex align-center">
                 <!-- 动态按钮 -->
                 <v-card v-for="(item, index) in newColArr" :key="index" width="150" tile flat>
-                    <v-card text outlined flat style="user-select: none; cursor: pointer" @click="chooseArr[index]">
+                    <v-card text outlined flat style="user-select: none; cursor: pointer" @click="popWindow()">
                         {{ item }}
                     </v-card>
                     <span>————</span>
@@ -185,7 +185,7 @@
     </div>
 </template>
 <script>
-import { getConnTableColumn, getColumnData, getConnTables, uloadFilesApi } from '../../common/api/select'
+import { getConnTableColumn, getColumnData, getConnTables, uloadFilesApi, getDIDataApi } from '../../common/api/select'
 import { addNewColumn } from '../../common/api/add'
 export default {
     data() {
@@ -287,6 +287,10 @@ export default {
             formDataList: null,
             chooseTableList: [],
             oldTaleName: '',
+            endContent: 0,
+            //
+            functionObj: {},
+            TypeofNumberList: [],
         }
     },
     created() {
@@ -303,7 +307,6 @@ export default {
                 })
             }
         })
-
         this.rowList = this.$store.state.dataList
         this.fileList = this.$store.state.fileList
         this.formDataList = this.$store.state.formDataList
@@ -364,6 +367,7 @@ export default {
                     this.newColumnContent.push(this.listContent[index].content)
                 }
             }
+            this.endContent = this.newColumnContent.length
         },
         //新增表名
         addnewTable() {
@@ -459,6 +463,7 @@ export default {
                     this.newColumnContent.push(this.functionSign[index])
                 }
             }
+            this.endContent = this.newColumnContent.length
         },
         // 选择表头
         chooseColumn(index) {
@@ -508,16 +513,36 @@ export default {
             this.newColumnContent = []
             this.isPop = true
             this.newColumn = null
+            this.functionObj = this.databaseConn
+            this.functionObj.tableName = this.tableList[this.number].name
+            getDIDataApi(this.functionObj).then((res) => {
+                this.TypeofNumberList = res.data.indicator
+            })
         },
         //确认添加
         confirmColumn() {
-            if (this.LeftNumber != this.RightNumber) {
+            if (this.newColumnContent.length == 0) {
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'info',
+                    content: '请选择需要计算的字段',
+                })
+            } else if (this.LeftNumber != this.RightNumber) {
                 this.GLOBAL.pushAlertArrObj({
                     type: 'info',
                     content: '左右括号不对称',
                 })
                 this.LeftNumber = 0
                 this.RightNumber = 0
+            } else if (this.newColumn == null) {
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'info',
+                    content: '请输入列名',
+                })
+            } else if (this.functionSign.some((item) => item === this.newColumnContent[this.endContent - 1])) {
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'info',
+                    content: '请把公式补全',
+                })
             } else if (this.newColumn != null) {
                 var column = { content: '', checked: false }
                 column.content = this.newColumn
@@ -553,19 +578,7 @@ export default {
                     this.rowList.push(caldata)
                 })
             } else {
-                if ((this.newColumn = null)) {
-                    this.GLOBAL.pushAlertArrObj({
-                        type: 'info',
-                        content: '请输入列名',
-                    })
-                } else if (this.newColumnContent.length == 0) {
-                    this.GLOBAL.pushAlertArrObj({
-                        type: 'info',
-                        content: '请选择需要计算的字段',
-                    })
-                } else {
-                    this.isPop = false
-                }
+                this.isPop = false
             }
         },
         // 清空新增列的内容
