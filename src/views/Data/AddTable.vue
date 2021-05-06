@@ -17,7 +17,7 @@
                 <!-- 展示所有表 -->
                 <v-list v-show="!isShowOther" dense>
                     <!-- 添加表按钮 -->
-                    <div class="d-flex justify-center">
+                    <div class="d-flex justify-center mb-2">
                         <v-menu bottom>
                             <!-- 按钮 -->
                             <template v-slot:activator="{ on, attrs }">
@@ -169,7 +169,7 @@
                         <v-col cols="3" v-for="(item, index) in connTables" :key="index" class="d-flex justify-start">
                             <v-btn
                                 class="px-1 d-inline-block d-flex justify-start align-center ml-10"
-                                :class="item.isSelected ? 'bc-selected' : ''"
+                                :class="item.isSelected ? 'pcolor-lighten3-bg' : ''"
                                 min-width="80%"
                                 max-height="40"
                                 elevation="1"
@@ -268,7 +268,6 @@ export default {
             let headers = []
             let desserts = []
             let header = {}
-            const conn = obj.conn
             if (obj.name.endsWith('.csv') || obj.name.endsWith('.xlsx') || obj.name.endsWith('.xls')) {
                 this.formDataList.forEach((formData) => {
                     if (formData.getAll('file')[0].name == obj.name) {
@@ -320,16 +319,24 @@ export default {
                 })
                 this.headers = headers
                 this.newColNameList = colNameList
+                console.log(this.dataList[n])
+                // 获取点击表对应的连接
+                this.folder.tables.forEach(item => {
+                    if (item.name == this.dataList[n].oldname){
+                        obj.conn = item.conn
+                    }
+                })
+                console.log(obj);
                 // 构造参数
                 const dataParams = {
                     tableName: this.dataList[n].oldname,
                     colName: this.newColNameList,
-                    sqlType: conn.sqlType,
-                    userName: conn.userName,
-                    password: conn.password,
-                    host: conn.host,
-                    port: conn.port,
-                    database: conn.database,
+                    sqlType: obj.conn.sqlType,
+                    userName: obj.conn.userName,
+                    password: obj.conn.password,
+                    host: obj.conn.host,
+                    port: obj.conn.port,
+                    database: obj.conn.database,
                     page: 1,
                     limitCount: 100,
                 }
@@ -354,12 +361,12 @@ export default {
                 // 构造参数
                 const colParams = {
                     tableName: this.table.name,
-                    sqlType: conn.sqlType,
-                    userName: conn.userName,
-                    password: conn.password,
-                    host: conn.host,
-                    port: conn.port,
-                    database: conn.database,
+                    sqlType: obj.conn.sqlType,
+                    userName: obj.conn.userName,
+                    password: obj.conn.password,
+                    host: obj.conn.host,
+                    port: obj.conn.port,
+                    database: obj.conn.database,
                 }
                 // 请求接口，获取全部字段
                 await getConnTableColumn(colParams).then((res) => {
@@ -387,12 +394,12 @@ export default {
                 const dataParams = {
                     tableName: this.table.name,
                     columnName: [],
-                    sqlType: conn.sqlType,
-                    userName: conn.userName,
-                    password: conn.password,
-                    host: conn.host,
-                    port: conn.port,
-                    database: conn.database,
+                    sqlType: obj.conn.sqlType,
+                    userName: obj.conn.userName,
+                    password: obj.conn.password,
+                    host: obj.conn.host,
+                    port: obj.conn.port,
+                    database: obj.conn.database,
                     page: 1,
                     limitCount: 100,
                 }
@@ -606,7 +613,7 @@ export default {
          */
         getTable(o) {
             this.table = o
-            console.log(this.table)
+            console.log(o)
             this.showTablePre(this.table)
         },
         /**
@@ -628,9 +635,6 @@ export default {
 </script>
 
 <style scoped>
-.pcolor {
-    color: #25354d;
-}
 .outline-right {
     border-right: 1px solid #25354d;
 }

@@ -20,6 +20,7 @@ export default {
 }
 </script>
 <style>
+@import url('./assets/css/style.css');
 /* 所有文字都不允许被选择 */
 * {
     user-select: none;
