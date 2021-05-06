@@ -170,7 +170,8 @@
                                 v-cursor
                             >
                                 <v-checkbox dense @click.stop="chooseColumn(index)" v-model="item.checked"></v-checkbox>
-                                <span>{{ item.content }}</span>
+                                <span v-if="item.content.length > 16">{{ item.content.substring(0, 12) }}……</span>
+                                <span v-else>{{ item.content }}</span>
                             </div>
                         </v-card>
                     </v-card>
@@ -293,9 +294,16 @@ export default {
         this.tableList = this.$store.state.folder.tables
         this.databaseConn = this.$store.state.databaseConnObjArr[0]
         this.datalist = this.$store.state.addNewTable
-        getConnTables(this.databaseConn).then((res) => {
-            this.alltables = res.data
+        this.tableList.forEach((item) => {
+            if (item.name.endsWith('.csv') || item.name.endsWith('.xlsx') || item.name.endsWith('.xls')) {
+                return
+            } else {
+                getConnTables(this.databaseConn).then((res) => {
+                    this.alltables = res.data
+                })
+            }
         })
+
         this.rowList = this.$store.state.dataList
         this.fileList = this.$store.state.fileList
         this.formDataList = this.$store.state.formDataList
