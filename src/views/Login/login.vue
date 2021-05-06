@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { loginByGithub, test1 } from '../../common/api/login'
+import { loginByGithub } from '../../common/api/login'
 export default {
     data() {
         return {
@@ -34,7 +34,7 @@ export default {
         }
     },
     methods: {
-        
+
     },
 }
 </script>

@@ -35,9 +35,6 @@ export default new Vuex.Store({
             //             isSelected: false,
             //             name: ''
             //         },
-            //         {
-            //             formData: {},
-            //         }
             //     ]
             // }
         ],
@@ -102,7 +99,12 @@ export default new Vuex.Store({
             //     tableName: '',
             //     index: 0
             // }
-        ]
+        ],
+
+        // 用户信息
+        userInfo: {}
+
+
 
     },
     mutations: {

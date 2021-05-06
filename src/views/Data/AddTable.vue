@@ -17,7 +17,7 @@
                 <!-- 展示所有表 -->
                 <v-list v-show="!isShowOther" dense>
                     <!-- 添加表按钮 -->
-                    <div class="d-flex justify-center">
+                    <div class="d-flex justify-center mb-2">
                         <v-menu bottom>
                             <!-- 按钮 -->
                             <template v-slot:activator="{ on, attrs }">
@@ -169,7 +169,7 @@
                         <v-col cols="3" v-for="(item, index) in connTables" :key="index" class="d-flex justify-start">
                             <v-btn
                                 class="px-1 d-inline-block d-flex justify-start align-center ml-10"
-                                :class="item.isSelected ? 'bc-selected' : ''"
+                                :class="item.isSelected ? 'pcolor-lighten3-bg' : ''"
                                 min-width="80%"
                                 max-height="40"
                                 elevation="1"
@@ -604,13 +604,12 @@ export default {
 </script>
 
 <style scoped>
-.pcolor {
-    color: #25354d;
-}
+
 .outline-right {
     border-right: 1px solid #25354d;
 }
 .bc-selected {
     background-color: #bdbdbd;
 }
+
 </style>

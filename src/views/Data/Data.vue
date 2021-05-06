@@ -47,26 +47,45 @@
 
 <script>
 import { mdiFolderPlus } from '@mdi/js'
+import { loginByGithub, getUserInfo } from '../../common/api/login'
 export default {
     name: 'Data',
     data() {
         return {
+            userId: '',
             disable: '',
             folderName: '',
             fullHeight: document.documentElement.clientHeight, //fullHeight: document.documentElement.clientHeight  屏幕高度 默认值
             pcolor: '#25354d',
             folder: null,
             nameRules: [(v) => !!v || 'Name must be full', (v) => v.length <= 10 || 'Name must be less than 10 characters'],
-            folders: [            ],
-
+            folders: [],
+            userInfo: {},
         }
     },
     watch: {},
     created() {
         // 取出已经创建的数据包数组
         this.folders = this.$store.state.folders
+        let query = window.location.href
+        let begin = query.lastIndexOf('=') + 1
+        this.userInfo.userId = query.substring(begin)
+        console.log(this.userInfo.userId)
+        this.getUser()
     },
     methods: {
+        // 请求用户数据
+        async getUser() {
+            await getUserInfo(this.userInfo).then((res) => {
+                if (res.code === 200) {
+                    const data = res.data
+                    this.userInfo = data
+                    console.log(this.$store.state.userInfo)
+                }
+            })
+            this.$store.state.userInfo = this.userInfo
+            console.log(this.userInfo)
+        },
         // 确定按钮点击事件
         addFolder() {
             let folders = this.folders
@@ -103,7 +122,5 @@ export default {
 </script>
 
 <style scoped>
-.pcolor {
-    color: #25354d;
-}
+
 </style>
