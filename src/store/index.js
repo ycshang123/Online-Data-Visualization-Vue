@@ -93,7 +93,7 @@ export default new Vuex.Store({
             // }
         ],
         //所有上传过的文件对象
-        formDataList:[],
+        formDataList: [],
 
         // 图表数据数组
         chartData: [
