@@ -417,6 +417,11 @@ export default {
         this.initPackageTableData()
     },
     methods: {
+        /**
+         * @description:    跳转到仪表板界面
+         * @param {*}
+         * @return {*}
+         */
         toObjectPage() {
             this.$router.push({
                 name: 'Object',
@@ -503,6 +508,7 @@ export default {
          */
         initPackageTableData() {
             let routeParamTable = this.$route.params.table
+            console.log(routeParamTable)
             /**
              * 1. 直接点击侧边栏跳转的方式
              */
@@ -519,14 +525,19 @@ export default {
                  * 2. 从某一张表跳转过来的方式
                  */
                 this.packageList = this.$store.state.folders
-                if (this.packageList.length != 0) {
-                    this.packageName = this.packageList[this.packageIndex].name
-                    if (this.packageList[this.packageIndex].tables) {
-                        this.tableList = this.packageList[this.tableIndex].tables
-                    }
+                // 设置包名
+                this.packageName = this.packageList[this.packageIndex].name
+                // 设置表列表
+                this.tableList = this.packageList[this.tableIndex].tables
+                // 判断传过来的是一个数据库表对象还是一个文件对象（csv文件）
+                if (routeParamTable.formData == undefined) {
+                    this.obj = routeParamTable.conn
+                    this.obj.tableName = routeParamTable.name
+                } else {
+                    let formData = routeParamTable.formData
+                    this.obj = formData
+                    this.obj.tableName = formData.get('file').name
                 }
-                this.obj = routeParamTable.conn
-                this.obj.tableName = routeParamTable.name
                 this.tableName = this.obj.tableName
                 this.obj.columnName = []
                 this.packageName = this.$store.state.folder.name
@@ -542,6 +553,7 @@ export default {
             this.clearData()
             this.tableIndex = index
             this.tableName = this.tableList[this.tableIndex].name
+            console.log(this.tableName)
             let currentTable = this.$store.state.folders[this.packageIndex].tables[this.tableIndex]
             this.obj = currentTable.conn
             this.obj.tableName = currentTable.name

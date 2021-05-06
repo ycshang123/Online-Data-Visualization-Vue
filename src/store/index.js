@@ -30,9 +30,13 @@ export default new Vuex.Store({
             //     // 每个数据包里的表数组
             //     tables: [
             //         {
-            //             title: 'airport',
-            //             column:['id', 'city', 'fly'],
-            //             data:[]
+            //             conn: {},
+            //             id: 0,
+            //             isSelected: false,
+            //             name: ''
+            //         },
+            //         {
+            //             formData: {},
             //         }
             //     ]
             // }

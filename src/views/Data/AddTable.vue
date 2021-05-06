@@ -261,14 +261,15 @@ export default {
             let headers = []
             let desserts = []
             let header = {}
-            const conn = this.conn
-
+            const conn = obj.conn
             if (obj.name.endsWith('.csv') || obj.name.endsWith('.xlsx') || obj.name.endsWith('.xls')) {
-                this.formDataList.forEach((formDate) => {
-                    if (formDate.getAll('file')[0].name == obj.name) {
-                        this.table = formDate.getAll('file')[0]
+                this.formDataList.forEach((formData) => {
+                    if (formData.getAll('file')[0].name == obj.name) {
+                        this.table = {
+                            formData: formData,
+                        }
                         // 请求表中数据及字段
-                        uloadFilesApi(formDate).then((res) => {
+                        uloadFilesApi(formData).then((res) => {
                             let data = res.data[0].file_list
                             var col = res.data[0].file_list[0]
                             // 构造字段
@@ -280,7 +281,6 @@ export default {
                                 headers.push(header)
                             })
                             this.headers = headers
-                            console.log(this.headers)
                             // 构造数据
                             for (var i = 1; i < data.length; i++) {
                                 obj = {}
@@ -291,7 +291,6 @@ export default {
                                 })
                                 this.desserts.push(obj)
                             }
-                            console.log(this.desserts)
                         })
                     }
                 })
@@ -308,13 +307,12 @@ export default {
                     colNameList.push(item.content)
                     header = {
                         text: item.content,
-                        value: item.content
+                        value: item.content,
                     }
                     headers.push(header)
                 })
                 this.headers = headers
                 this.newColNameList = colNameList
-
                 // 构造参数
                 const dataParams = {
                     tableName: this.dataList[n].oldname,
@@ -346,7 +344,6 @@ export default {
                 })
             } else {
                 // 如果是数据库文件
-
                 // 构造参数
                 const colParams = {
                     tableName: this.table.name,
@@ -430,7 +427,6 @@ export default {
                 }
             })
             this.allTables = this.allTables.concat(selectedTables)
-
             this.folder.tables = this.allTables
             // 实时更新每个数据包里的数据
             const folders = this.$store.state.folders
@@ -503,7 +499,6 @@ export default {
                 })
             }
         },
-
         /**
          * @description: 判断 obj 是否已经存在于 this.allTables当中（比较依据为名字）
          * @param {*} tableName 被比较的表名
@@ -520,7 +515,6 @@ export default {
                 }
             }
         },
-
         /**
          * @description: 每个表名按钮的点击事件 => 选择表
          * @param {*} o 被点击者对象
@@ -541,6 +535,7 @@ export default {
         async showAllTable(o) {
             // 把被点击连接对象赋值给单独的变量conn，用作在右侧显示连接名和图标
             this.conn = o
+            this.selectCount = 0
             // 请求接口 => 获取当前连接所有的表名
             // 当前连接默认为数组中的第一个
             await getConnTables(this.conn).then((res) => {
@@ -585,16 +580,15 @@ export default {
          */
         getTable(o) {
             this.table = o
+            console.log(this.table);
             this.showTablePre(this.table)
         },
-
         /**
          * @description: 创建组件按钮的点击事件
          * @param {*}
          * @return {*}
          */
         createCompBtn() {
-            console.log(this.table);
             //界面跳转，传参 -> 当前连接对象、字段名
             this.$router.push({
                 name: 'Dashboard',
