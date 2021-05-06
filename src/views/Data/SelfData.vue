@@ -348,7 +348,7 @@ export default {
         addColumnContent(index) {
             var length = this.newColumnContent.length
             if (length == 0) {
-                this.newColumnContent.push(this.listContent[index].content)
+                this.newColumnContent.push(this.TypeofNumberList[index].name)
             } else {
                 var position = length - 1
                 var sign = this.newColumnContent[position]
@@ -364,7 +364,7 @@ export default {
                         content: '请选择合适的运算符号',
                     })
                 } else {
-                    this.newColumnContent.push(this.listContent[index].content)
+                    this.newColumnContent.push(this.TypeofNumberList[index].name)
                 }
             }
             this.endContent = this.newColumnContent.length
