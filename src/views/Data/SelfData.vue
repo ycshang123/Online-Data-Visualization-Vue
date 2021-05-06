@@ -288,7 +288,6 @@ export default {
             chooseTableList: [],
             oldTaleName: '',
             endContent: 0,
-            //
             functionObj: {},
             TypeofNumberList: [],
         }
@@ -297,6 +296,7 @@ export default {
         this.folder = this.$store.state.folder.name
         this.tableList = this.$store.state.folder.tables
         this.databaseConn = this.$store.state.databaseConnObjArr[0]
+        console.log(this.$store.state.databaseConnObjArr[0])
         this.datalist = this.$store.state.addNewTable
         this.tableList.forEach((item) => {
             if (item.name.endsWith('.csv') || item.name.endsWith('.xlsx') || item.name.endsWith('.xls')) {
@@ -396,6 +396,7 @@ export default {
                 })
                 this.chooseList = []
                 this.datalist.push(tableInfo)
+                console.log(this.datalist)
                 this.oldTaleName = ''
             }
             this.newTableName = null
@@ -576,6 +577,7 @@ export default {
                     caldata.data = res.data
                     caldata.tablename = this.tableList[this.number].name
                     this.rowList.push(caldata)
+                    console.log('>>>>>>>>>>>>>>>>>>>>>>.' + this.rowList)
                 })
             } else {
                 this.isPop = false
