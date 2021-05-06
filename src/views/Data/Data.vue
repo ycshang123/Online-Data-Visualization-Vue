@@ -69,7 +69,11 @@ export default {
         this.folders = this.$store.state.folders
         let query = window.location.href
         let begin = query.lastIndexOf('=') + 1
-        this.userInfo.userId = query.substring(begin)
+        if (query.substring(begin) instanceof Number){
+            this.userInfo.userId = query.substring(begin)
+        }else {
+            this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+        }
         this.getUser()
     },
     methods: {
