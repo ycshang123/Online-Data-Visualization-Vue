@@ -1,5 +1,5 @@
 <!--
- * @Description: 
+ * @Description:
  * @Author: xxq
  * @Version: 1.0
  * @Date: 2021-04-09 17:15:20
@@ -10,9 +10,27 @@
             <v-app-bar-nav-icon></v-app-bar-nav-icon>
             <v-toolbar-title style="font-size: 20px">数据可视化平台</v-toolbar-title>
             <v-spacer></v-spacer>
-            <span class="mdi mdi-bell mdi-24px" style="color: #4873f5"></span>
-            <span class="mdi mdi-github mdi-24px ml-4"></span>
-            <span>admin</span>
+            <span class="mdi mdi-bell mdi-24px mr-5 pcolor-lighten1"></span>
+            <div v-if="userInfo" class="d-flex align-center">
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-avatar v-bind="attrs" v-on="on" size="38">
+                            <img :src="userInfo.avatar" alt="avatar" />
+                        </v-avatar>
+                    </template>
+                    <span>{{ userInfo.nickName }}</span>
+                </v-tooltip>
+            </div>
+            <div v-else class="d-flex align-center">
+                <router-link to="/login">
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <span v-bind="attrs" v-on="on" class="mdi mdi-github mdi-24px pcolor-lighten1"></span>
+                        </template>
+                        <span>login</span>
+                    </v-tooltip>
+                </router-link>
+            </div>
             <span class="mdi mdi-chevron-down mdi-18px ml-4"></span>
         </v-app-bar>
         <v-main style="height: 100%">
@@ -48,8 +66,12 @@ export default {
                 { title: '仪表盘', icon: 'mdi-view-dashboard', path: '/dashboard' },
             ],
             clipped: false,
-
+            userInfo: {},
         }
+    },
+    created() {
+        this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+        console.log(this.userInfo)
     },
 }
 </script>

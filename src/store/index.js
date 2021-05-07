@@ -35,9 +35,6 @@ export default new Vuex.Store({
             //             isSelected: false,
             //             name: ''
             //         },
-            //         {
-            //             formData: {},
-            //         }
             //     ]
             // }
         ],
@@ -93,7 +90,7 @@ export default new Vuex.Store({
             // }
         ],
         //所有上传过的文件对象
-        formDataList:[],
+        formDataList: [],
 
         // 图表数据数组
         chartData: [
@@ -102,7 +99,12 @@ export default new Vuex.Store({
             //     tableName: '',
             //     index: 0
             // }
-        ]
+        ],
+
+        // 用户信息
+        userInfo: {}
+
+
 
     },
     mutations: {

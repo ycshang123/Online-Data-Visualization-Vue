@@ -17,9 +17,6 @@
                 <v-list-item-content>
                     <v-list-item-subtitle> {{ item.name }}</v-list-item-subtitle>
                 </v-list-item-content>
-                <!-- <v-list-item-icon>
-                    <v-icon @click="delectFile(item)">mdi mdi-close</v-icon>
-                </v-list-item-icon> -->
             </v-list-item>
         </div>
 
@@ -45,8 +42,8 @@
                         </v-col>
                         <v-col cols="4" v-else>已选择0项</v-col>
                         <v-col cols="8" class="d-flex justify-space-around">
-                            <v-btn @click="uploadFile()">确定</v-btn>
-                            <v-btn @click="returnPage()">返回</v-btn>
+                            <v-btn @click="uploadFile()" color="#3b4a5f">确定</v-btn>
+                            <v-btn @click="returnPage()" color="#3b4a5f">返回</v-btn>
                         </v-col>
                     </v-col>
                 </v-row>

@@ -33,13 +33,13 @@
                 </v-card>
                 <v-card width="78%" height="100%" tile elevation="0" v-borderTB class="d-flex">
                     <v-card width="25%" height="100%" tile elevation="0" v-borderLR class="d-flex flex-column align-center justify-center">
-                        <div style="height: 8%" class="d-flex justify-center align-center">
-                            <v-text-field placeholder="搜索" class="pr-2 pl-2" />
+                        <div style="height: 5%" class="d-flex justify-center align-center pl-2 pr-2 pt-2">
+                            <span style="color: #abb2bf; font-size: 10px">请选择需要计算的字段</span>
                         </div>
 
                         <div style="height: 90%; width: 100%; overflow-y: auto; white-space: nowrap" class="mt-3">
-                            <div v-for="(item, index) in listContent" :key="index" v-cursor class="ml-2">
-                                <span style="color: #3f3f4c; font-size: 12px" @click="addColumnContent(index)"> {{ item.content }}</span>
+                            <div v-for="(item, index) in TypeofNumberList" :key="index" v-cursor class="ml-2">
+                                <span style="color: #3f3f4c; font-size: 12px" @click="addColumnContent(index)"> {{ item.name }}</span>
                             </div>
                         </div>
                     </v-card>
@@ -170,7 +170,8 @@
                                 v-cursor
                             >
                                 <v-checkbox dense @click.stop="chooseColumn(index)" v-model="item.checked"></v-checkbox>
-                                <span>{{ item.content.substring(0, 16) }}</span>
+                                <span v-if="item.content.length > 16">{{ item.content.substring(0, 12) }}……</span>
+                                <span v-else>{{ item.content }}</span>
                             </div>
                         </v-card>
                     </v-card>
@@ -184,12 +185,13 @@
     </div>
 </template>
 <script>
-import { getConnTableColumn, getColumnData, getConnTables, uloadFilesApi } from '../../common/api/select'
+import { getConnTableColumn, getColumnData, getConnTables, uloadFilesApi, getDIDataApi } from '../../common/api/select'
 import { addNewColumn } from '../../common/api/add'
 export default {
     data() {
         return {
             addColArr: ['新增列', '过滤', '分组汇总', '字段设置', '排序'],
+            chooseArr: [this.popWindow, this.popTips, this.popTips, this.popTips, this.popTips],
             content: '',
             // 动态按钮添加进的数组
             newColArr: ['选字段'],
@@ -285,15 +287,25 @@ export default {
             formDataList: null,
             chooseTableList: [],
             oldTaleName: '',
+            endContent: 0,
+            functionObj: {},
+            TypeofNumberList: [],
         }
     },
     created() {
         this.folder = this.$store.state.folder.name
         this.tableList = this.$store.state.folder.tables
         this.databaseConn = this.$store.state.databaseConnObjArr[0]
+        console.log(this.$store.state.databaseConnObjArr[0])
         this.datalist = this.$store.state.addNewTable
-        getConnTables(this.databaseConn).then((res) => {
-            this.alltables = res.data
+        this.tableList.forEach((item) => {
+            if (item.name.endsWith('.csv') || item.name.endsWith('.xlsx') || item.name.endsWith('.xls')) {
+                return
+            } else {
+                getConnTables(this.databaseConn).then((res) => {
+                    this.alltables = res.data
+                })
+            }
         })
         this.rowList = this.$store.state.dataList
         this.fileList = this.$store.state.fileList
@@ -302,8 +314,10 @@ export default {
     methods: {
         // 动态按钮的实现
         addBtn(index) {
-            console.log(index)
-            console.log('数组长度' + this.newColArr.length)
+            if (this.chooseArr[index] == this.popTips) {
+                this.popTips()
+                return
+            }
             this.content = this.addColArr[index]
             if (index > this.newColArr.length - 1) {
                 this.GLOBAL.pushAlertArrObj({
@@ -334,7 +348,7 @@ export default {
         addColumnContent(index) {
             var length = this.newColumnContent.length
             if (length == 0) {
-                this.newColumnContent.push(this.listContent[index].content)
+                this.newColumnContent.push(this.TypeofNumberList[index].name)
             } else {
                 var position = length - 1
                 var sign = this.newColumnContent[position]
@@ -350,9 +364,10 @@ export default {
                         content: '请选择合适的运算符号',
                     })
                 } else {
-                    this.newColumnContent.push(this.listContent[index].content)
+                    this.newColumnContent.push(this.TypeofNumberList[index].name)
                 }
             }
+            this.endContent = this.newColumnContent.length
         },
         //新增表名
         addnewTable() {
@@ -381,6 +396,7 @@ export default {
                 })
                 this.chooseList = []
                 this.datalist.push(tableInfo)
+                console.log(this.datalist)
                 this.oldTaleName = ''
             }
             this.newTableName = null
@@ -448,6 +464,7 @@ export default {
                     this.newColumnContent.push(this.functionSign[index])
                 }
             }
+            this.endContent = this.newColumnContent.length
         },
         // 选择表头
         chooseColumn(index) {
@@ -497,16 +514,36 @@ export default {
             this.newColumnContent = []
             this.isPop = true
             this.newColumn = null
+            this.functionObj = this.databaseConn
+            this.functionObj.tableName = this.tableList[this.number].name
+            getDIDataApi(this.functionObj).then((res) => {
+                this.TypeofNumberList = res.data.indicator
+            })
         },
         //确认添加
         confirmColumn() {
-            if (this.LeftNumber != this.RightNumber) {
+            if (this.newColumnContent.length == 0) {
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'info',
+                    content: '请选择需要计算的字段',
+                })
+            } else if (this.LeftNumber != this.RightNumber) {
                 this.GLOBAL.pushAlertArrObj({
                     type: 'info',
                     content: '左右括号不对称',
                 })
                 this.LeftNumber = 0
                 this.RightNumber = 0
+            } else if (this.newColumn == null) {
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'info',
+                    content: '请输入列名',
+                })
+            } else if (this.functionSign.some((item) => item === this.newColumnContent[this.endContent - 1])) {
+                this.GLOBAL.pushAlertArrObj({
+                    type: 'info',
+                    content: '请把公式补全',
+                })
             } else if (this.newColumn != null) {
                 var column = { content: '', checked: false }
                 column.content = this.newColumn
@@ -534,27 +571,16 @@ export default {
                 this.operationConn.tableName = this.tableList[this.number].name
                 this.operationConn.limitCount = 100
                 this.operationConn.page = 1
-                console.log(this.operationConn)
                 addNewColumn(this.operationConn).then((res) => {
-                    var caldata = { name: '', data: [] }
+                    var caldata = { name: '', data: [], tablename: '' }
                     caldata.name = this.newColumn
                     caldata.data = res.data
+                    caldata.tablename = this.tableList[this.number].name
                     this.rowList.push(caldata)
+                    console.log('>>>>>>>>>>>>>>>>>>>>>>.' + this.rowList)
                 })
             } else {
-                if ((this.newColumn = null)) {
-                    this.GLOBAL.pushAlertArrObj({
-                        type: 'info',
-                        content: '请输入列名',
-                    })
-                } else if (this.newColumnContent.length == 0) {
-                    this.GLOBAL.pushAlertArrObj({
-                        type: 'info',
-                        content: '请选择需要计算的字段',
-                    })
-                } else {
-                    this.isPop = false
-                }
+                this.isPop = false
             }
         },
         // 清空新增列的内容
@@ -599,6 +625,13 @@ export default {
                     this.listContent = []
                     var fieldsList = res.data
                     this.charrList = res.data
+                    this.rowList.forEach((item) => {
+                        if (item.tablename == this.tableList[index].name) {
+                            var field = { content: null, checked: false }
+                            field.content = item.name
+                            this.listContent.push(field)
+                        }
+                    })
                     fieldsList.forEach((item) => {
                         var field = { content: null, checked: false }
                         field.content = item
@@ -733,6 +766,12 @@ export default {
         },
         returnPage() {
             this.$router.go(-1)
+        },
+        popTips() {
+            this.GLOBAL.pushAlertArrObj({
+                type: 'info',
+                content: '该功能还未开发，敬请期待',
+            })
         },
     },
 }

@@ -47,51 +47,48 @@
 
 <script>
 import { mdiFolderPlus } from '@mdi/js'
+import { loginByGithub, getUserInfo } from '../../common/api/login'
 export default {
     name: 'Data',
     data() {
         return {
+            userId: '',
             disable: '',
             folderName: '',
             fullHeight: document.documentElement.clientHeight, //fullHeight: document.documentElement.clientHeight  屏幕高度 默认值
             pcolor: '#25354d',
             folder: null,
             nameRules: [(v) => !!v || 'Name must be full', (v) => v.length <= 10 || 'Name must be less than 10 characters'],
-            folders: [
-                // {
-                //     id: '0',
-                //     name: '2020年航空数据',
-                // },
-                // {
-                //     id: '1',
-                //     name: '2021年航空数据',
-                // },
-                // {
-                //     id: '2',
-                //     name: '2019年航空数据',
-                // },
-                // {
-                //     id: '3',
-                //     name: '2018年航空数据',
-                // },
-                // {
-                //     id: '4',
-                //     name: '2017年航空数据',
-                // },
-                // {
-                //     id: '5',
-                //     name: '2090年航空数据',
-                // },
-            ],
-         
+            folders: [],
+            userInfo: {},
         }
     },
     watch: {},
     created() {
         // 取出已经创建的数据包数组
         this.folders = this.$store.state.folders
+        let query = window.location.href
+        let begin = query.lastIndexOf('=') + 1
+        if (query.substring(begin) instanceof Number){
+            this.userInfo.userId = query.substring(begin)
+        }else {
+            this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+        }
+        this.getUser()
     },
     methods: {
+        // 请求用户数据
+        async getUser() {
+            await getUserInfo(this.userInfo).then((res) => {
+                if (res.code === 200) {
+                    const data = res.data
+                    this.userInfo = data
+                }
+            })
+            localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+            this.$store.state.userInfo = this.userInfo
+            console.log(this.$store.state.userInfo)
+        },
         // 确定按钮点击事件
         addFolder() {
             let folders = this.folders
@@ -127,8 +124,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.pcolor {
-    color: #25354d;
-}
-</style>
+<style scoped></style>
