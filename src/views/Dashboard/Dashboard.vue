@@ -169,7 +169,7 @@
                 <v-card height="100%" tile flat v-borderLR class="pa-0">
                     <v-card tile flat height="30%">
                         <div>图表类型</div>
-                        <v-card class="mt-3 overflow-y-auto overflow-x-hidden" tile outlined flat height="80%">
+                        <v-card class="mt-3 overflow-y-auto overflow-x-hidden d-flex align-center" tile outlined flat height="80%">
                             <v-row>
                                 <v-col cols="4 d-flex justify-center" v-for="(item, index) in chartArr" :key="index">
                                     <v-tooltip nudge-top="10" bottom>

@@ -30,12 +30,10 @@ export default {
     data() {
         return {
             codeUrl:
-                'https://github.com/login/oauth/authorize?client_id=75bfbb55511431752d68&redirect_uri=http://localhost:5000/login/oauth/redirect',
+                'https://github.com/login/oauth/authorize?client_id=75bfbb55511431752d68&redirect_uri=http://online.xueni.top:5000/login/oauth/redirect',
         }
     },
-    methods: {
-
-    },
+    methods: {},
 }
 </script>
 

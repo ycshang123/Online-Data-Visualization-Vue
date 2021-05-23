@@ -207,7 +207,7 @@
     </div>
 </template>
 <script>
-import { changeDatabase } from '../../common/api/database'
+import { changeDatabase, allDataTypeInfo } from '../../common/api/database'
 import mysql_mini from '../../assets/pic/miniSqlLogo/MySQL.png'
 import postgresql_mini from '../../assets/pic/miniSqlLogo/Postgresql.png'
 
@@ -226,6 +226,7 @@ export default {
         } else {
             this.isShow = this.$route.params.isShow
         }
+        this.initDataTypeInfo()
     },
     data: () => ({
         // 展示历史连接对象详情的对象
@@ -254,7 +255,11 @@ export default {
                 cover: 'https://www.datalytic-solutions.com/wp-content/uploads/2019/09/logo-microsoft-sql-server-595x3350.jpg',
                 name: 'SQLServer',
             },
-            { id: 4, cover: 'https://pic1.zhimg.com/v2-754e01e49836a295574661a188161775_r.jpg?source=172ae18b', name: 'MySQL' },
+            {
+                id: 4,
+                cover: 'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=474130635,3073113926&fm=26&gp=0.jpg',
+                name: 'MySQL',
+            },
             { id: 5, cover: 'https://i.pinimg.com/originals/11/a0/6a/11a06a7b4650699a328e25960efbe8af.jpg', name: 'DB2' },
             { id: 6, cover: 'https://download.logo.wine/logo/Redis/Redis-Logo.wine.png', name: 'Redis' },
             { id: 7, cover: 'https://miro.medium.com/max/900/1*b0TtGI6gWFLltL1QkRxVdg.png', name: 'MongoDB' },
@@ -284,6 +289,13 @@ export default {
         saveDialog: false,
     }),
     methods: {
+        async initDataTypeInfo() {
+            await allDataTypeInfo().then((res) => {
+                console.log(res)
+                this.options = res.data
+            })
+        },
+
         /**
          * @description: 取消新建连接按钮的方法
          * @param {*}

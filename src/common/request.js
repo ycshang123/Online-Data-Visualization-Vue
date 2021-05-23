@@ -7,14 +7,16 @@
 import axios from "axios"
 
 
-// 创建一个 axios 的对象
+/**
+ * 创建一个 axios 的对象创建一个 axios 的对象
+ */
 const instance = axios.create({
     // BASURL 会在发送请求的时候拼接在url参数前面
     baseURL: "http://127.0.0.1:5000",
-    // timeout: 10000,
+    // baseURL: "http://112.126.61.191:5000",
     responseType: 'json',
     headers: {
-        'Content-Type': 'application/json;charse',
+        'Content-Type': 'application/json;',
     }
 })
 
@@ -36,7 +38,7 @@ instance.interceptors.request.use(
 /**
  * 响应拦截
  * 所有的网络请求返回数据之后都会先执行此方法
- * 此处可以根据服务器返回的状态码做相应的数据
+ * 此处可以根据服务器返回的状态码做相应的处理
  */
 instance.interceptors.response.use(
     response => {
