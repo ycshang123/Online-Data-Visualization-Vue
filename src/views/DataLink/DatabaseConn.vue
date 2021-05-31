@@ -246,25 +246,7 @@ export default {
         selectedItem: null,
         // 历史连接数组对象
         historyConnArr: null,
-        options: [
-            { id: 0, cover: 'https://image.16pic.com/00/18/81/16pic_1881896_s.jpg?imageView2/0/format/png', name: 'Oracle' },
-            { id: 1, cover: 'https://img.stackshare.io/service/3093/EhcacheTwitterIcon.png', name: 'Ehcache' },
-            { id: 2, cover: 'http://installvirtual.com/wp-content/uploads/2015/11/postgresql-logo.png', name: 'PostgreSQL' },
-            {
-                id: 3,
-                cover: 'https://www.datalytic-solutions.com/wp-content/uploads/2019/09/logo-microsoft-sql-server-595x3350.jpg',
-                name: 'SQLServer',
-            },
-            {
-                id: 4,
-                cover: 'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=474130635,3073113926&fm=26&gp=0.jpg',
-                name: 'MySQL',
-            },
-            { id: 5, cover: 'https://i.pinimg.com/originals/11/a0/6a/11a06a7b4650699a328e25960efbe8af.jpg', name: 'DB2' },
-            { id: 6, cover: 'https://download.logo.wine/logo/Redis/Redis-Logo.wine.png', name: 'Redis' },
-            { id: 7, cover: 'https://miro.medium.com/max/900/1*b0TtGI6gWFLltL1QkRxVdg.png', name: 'MongoDB' },
-            { id: 8, cover: 'https://www.cmsdistribution.com/wp-content/uploads/2017/06/EDB_Logo-175-x-131px-436x228.png', name: 'EDB' },
-        ],
+        options: [],
         // 控制数据库选择界面
         isSQLArea: false,
         // 控制数据库连接界面
@@ -277,7 +259,7 @@ export default {
             // 数据库封面图
             cover: '',
             connName: 'myPostgreSQL',
-            host: 'localhost',
+            host: '36.134.18.43',
             port: '',
             database: 'postgres',
             userName: 'postgres',

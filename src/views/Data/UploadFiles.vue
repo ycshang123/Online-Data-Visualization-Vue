@@ -229,11 +229,13 @@ export default {
                     // 判断是否含有重复的文件
                     let isExist = this.foldersFile[this.number].some((item) => item.name === file.name)
                     if (!isExist) {
+                        let userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
                         let formData = new FormData()
                         this.files.forEach((file) => {
                             formData.append('file', file)
                             formData.append('readLine', 99)
                             formData.append('skipLine', 0)
+                            formData.append('userId', userId)
                         })
                         uloadFilesApi(formData).then((res) => {
                             if (res.code == 200) {
@@ -271,10 +273,12 @@ export default {
                 })
             } else {
                 let formData = new FormData()
+                let userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
                 this.files.forEach((file) => {
                     formData.append('file', file)
                     formData.append('readLine', 99)
                     formData.append('skipLine', 0)
+                    formData.append('userId', userId)
                 })
                 uloadFilesApi(formData).then((res) => {
                     if (res.code == 200) {

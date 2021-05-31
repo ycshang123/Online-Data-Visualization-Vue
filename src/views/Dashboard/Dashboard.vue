@@ -536,6 +536,7 @@ export default {
                 } else {
                     let formData = routeParamTable.formData
                     this.obj = formData
+                    this.obj.append('userId', localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId'))
                     this.obj.tableName = formData.get('file').name
                 }
                 this.tableName = this.obj.tableName
@@ -616,6 +617,7 @@ export default {
                 /**
                  * 2. 调用获取 所有 指标和维度数组数据的方法
                  */
+                this.obj.userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
                 getChartAllData(this.obj).then((res) => {
                     this.allDataIndex = res.data.allDataListIndex
                     this.obj = {}
@@ -756,6 +758,7 @@ export default {
                 }
                 console.log('开始生成数据')
                 let param = {
+                    userId: localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId'),
                     allColNameList: this.colNameList, // 单独的所有维度和指标数组
                     allDataListIndex: this.allDataIndex, // 全局变量的索引值
                     colNameList: columns, // 所选择的字段
