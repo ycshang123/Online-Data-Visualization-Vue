@@ -52,7 +52,6 @@ export default {
     name: 'Data',
     data() {
         return {
-            userId: '',
             disable: '',
             folderName: '',
             fullHeight: document.documentElement.clientHeight, //fullHeight: document.documentElement.clientHeight  屏幕高度 默认值
@@ -71,12 +70,11 @@ export default {
         let query = window.location.href
         if (query.lastIndexOf('=') != -1) {
             let begin = query.lastIndexOf('=') + 1
-            if (query.substring(begin) instanceof Number) {
-                this.userInfo.userId = query.substring(begin)
-            } else {
-                this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
-            }
-            // this.getUser()
+            this.userInfo.openId = query.substring(begin)
+            console.log(this.userInfo.openId)
+            this.getUser()
+        } else {
+            this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
         }
     },
     methods: {
@@ -85,12 +83,17 @@ export default {
             await getUserInfo(this.userInfo).then((res) => {
                 if (res.code === 200) {
                     const data = res.data
+                    console.log(data)
                     this.userInfo = data
                 }
+                localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+                localStorage.setItem('userId', JSON.stringify(this.userInfo.user_id))
+                this.$store.commit('saveUserInfo', this.userInfo)
+                console.log(this.$store.state.userInfo)
+                if (this.userInfo.is_disabled === 0) {
+                    console.log("禁用状态！");
+                }
             })
-            localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
-            this.$store.state.userInfo = this.userInfo
-            console.log(this.$store.state.userInfo)
         },
         // 确定按钮点击事件
         addFolder() {
