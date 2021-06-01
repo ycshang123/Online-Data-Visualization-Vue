@@ -142,6 +142,7 @@ import { uloadFilesApi } from '../../common/api/select'
 export default {
     name: 'UpLoadFiles',
     created() {
+        console.log(this.$store.state.userInfo);
         // store里面存的所有数据包文件
         this.folders = this.$store.state.folders
         this.folder = this.$store.state.folder

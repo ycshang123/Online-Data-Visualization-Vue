@@ -31,7 +31,7 @@
                     </v-tooltip>
                 </router-link>
             </div>
-            <span class="mdi mdi-chevron-down mdi-18px ml-4" @click="logout()"></span>
+            <span class="mdi mdi-chevron-down mdi-18px ml-4" v-cursor @click="logout()"></span>
         </v-app-bar>
         <v-main style="height: 100%">
             <div class="d-flex" style="height: 100%; width: 100%">
