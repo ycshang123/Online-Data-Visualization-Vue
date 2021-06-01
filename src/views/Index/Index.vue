@@ -18,7 +18,7 @@
                             <img :src="userInfo.avatar" alt="avatar" />
                         </v-avatar>
                     </template>
-                    <span>{{ userInfo.nickName }}</span>
+                    <span>{{ userInfo.nickname }}</span>
                 </v-tooltip>
             </div>
             <div v-else class="d-flex align-center">
@@ -31,7 +31,7 @@
                     </v-tooltip>
                 </router-link>
             </div>
-            <span class="mdi mdi-chevron-down mdi-18px ml-4"></span>
+            <span class="mdi mdi-chevron-down mdi-18px ml-4" @click="logout()"></span>
         </v-app-bar>
         <v-main style="height: 100%">
             <div class="d-flex" style="height: 100%; width: 100%">
@@ -71,8 +71,15 @@ export default {
     },
     created() {
         this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
-        console.log(this.userInfo)
     },
+    methods: {
+        logout(){
+             this.$router.push({
+                name: 'Login',
+            })
+            localStorage.removeItem('userInfo')
+        }
+    }
 }
 </script>
 <style scoped>
