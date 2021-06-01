@@ -67,10 +67,17 @@ export default {
     created() {
         // 取出已经创建的数据包数组
         this.folders = this.$store.state.folders
+        // 取出地址栏中的用户id
         let query = window.location.href
-        let begin = query.lastIndexOf('=') + 1
-        this.userInfo.userId = query.substring(begin)
-        this.getUser()
+        if (query.lastIndexOf('=') != -1) {
+            let begin = query.lastIndexOf('=') + 1
+            if (query.substring(begin) instanceof Number) {
+                this.userInfo.userId = query.substring(begin)
+            } else {
+                this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+            }
+            // this.getUser()
+        }
     },
     methods: {
         // 请求用户数据

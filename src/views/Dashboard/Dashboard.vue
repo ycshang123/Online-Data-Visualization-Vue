@@ -169,7 +169,7 @@
                 <v-card height="100%" tile flat v-borderLR class="pa-0">
                     <v-card tile flat height="30%">
                         <div>图表类型</div>
-                        <v-card class="mt-3 overflow-y-auto overflow-x-hidden" tile outlined flat height="80%">
+                        <v-card class="mt-3 overflow-y-auto overflow-x-hidden d-flex align-center" tile outlined flat height="80%">
                             <v-row>
                                 <v-col cols="4 d-flex justify-center" v-for="(item, index) in chartArr" :key="index">
                                     <v-tooltip nudge-top="10" bottom>
@@ -536,6 +536,7 @@ export default {
                 } else {
                     let formData = routeParamTable.formData
                     this.obj = formData
+                    this.obj.append('userId', localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId'))
                     this.obj.tableName = formData.get('file').name
                 }
                 this.tableName = this.obj.tableName
@@ -616,6 +617,7 @@ export default {
                 /**
                  * 2. 调用获取 所有 指标和维度数组数据的方法
                  */
+                this.obj.userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
                 getChartAllData(this.obj).then((res) => {
                     this.allDataIndex = res.data.allDataListIndex
                     this.obj = {}
@@ -756,6 +758,7 @@ export default {
                 }
                 console.log('开始生成数据')
                 let param = {
+                    userId: localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId'),
                     allColNameList: this.colNameList, // 单独的所有维度和指标数组
                     allDataListIndex: this.allDataIndex, // 全局变量的索引值
                     colNameList: columns, // 所选择的字段

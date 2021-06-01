@@ -9,16 +9,29 @@
     <div id="bg" style="height: 100%">
         <!-- 背景图的遮罩层 -->
         <div class="mask"></div>
-        <!-- 正常背景的全屏大卡片 -->
+        <!-- 全屏透明大卡片 -->
         <v-card
             class="transparent d-flex justify-center align-center"
             outlined
+            dark
             style="position: absolute; z-index: 2; width: 100%; height: 100%"
         >
             <!-- 登录卡片 -->
-            <div class="login-card d-flex flex-column justify-center align-center card-bg">
-                <v-card-title class="white--text">第三方登录</v-card-title>
-                <v-btn class="transparent white--text" :href="codeUrl">GITHUB LOGIN</v-btn>
+            <div class="login-card d-flex flex-column justify-center align-center card-bg py-3">
+                <v-card-title>数据可视化平台</v-card-title>
+                <v-col cols="8">
+                    <v-form>
+                        <v-text-field width="90%" label="账号" required v-model="account"></v-text-field>
+                    </v-form>
+                    <v-form>
+                        <v-text-field label="密码" required v-model="password"></v-text-field>
+                    </v-form>
+                </v-col>
+
+                <v-card class="transparent d-flex justify-space-between" width="60%" elevation="0">
+                    <v-btn class="transparent mr-10">登录</v-btn>
+                    <v-btn class="transparent" :href="codeUrl">GITHUB 登录</v-btn>
+                </v-card>
             </div>
         </v-card>
     </div>
@@ -33,9 +46,7 @@ export default {
                 'https://github.com/login/oauth/authorize?client_id=75bfbb55511431752d68&redirect_uri=http://localhost:5000/login/oauth/redirect',
         }
     },
-    methods: {
-
-    },
+    methods: {},
 }
 </script>
 
@@ -70,7 +81,6 @@ export default {
 }
 
 .login-card {
-    width: 20%;
-    height: 30%;
+    width: 30%;
 }
 </style>

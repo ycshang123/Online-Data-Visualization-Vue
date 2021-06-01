@@ -11,10 +11,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        //用户id
-        user: {
-            id: 1
-        },
         // 历史连接数组
         databaseConnObjArr: [
             // {
@@ -23,7 +19,15 @@ export default new Vuex.Store({
             //     "password": "root",
             //     "host": "localhost",
             //     "port": "5432",
-            //     "database": "airport"
+            //     "database": "airport",
+            //     "allTables": [
+            //         {
+            //             conn: {},
+            //             id: 0,
+            //             isSelected: false,
+            //             name: ''
+            //         },
+            //     ],
             // }
         ],
         // 数据包数组

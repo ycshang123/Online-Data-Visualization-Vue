@@ -102,7 +102,7 @@ import multiChart from '../../components/multi-chart'
 export default {
     name: 'Object',
     components: { multiChart },
-    data() {
+    data() {    
         return {
             dataStatus: false,
             chartData: {

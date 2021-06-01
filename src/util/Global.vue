@@ -87,6 +87,7 @@ let orderArr = {
         },
     },
 }
+
 Object.keys(orderArr).forEach((k) => {
     Vue.directive(k, orderArr[k])
 })

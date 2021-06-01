@@ -30,7 +30,7 @@
 
                     <v-col cols="4" class="d-flex align-center">
                         <v-col cols="4" v-if="this.foldersFile[this.number] != null">
-                            已选择{{ this.foldersFile[this.number].length }} 项
+                            已上传{{ this.foldersFile[this.number].length }} 项
                         </v-col>
                         <v-col cols="4" v-else>已选择0项</v-col>
                         <v-col cols="8" class="d-flex justify-space-around">
@@ -226,11 +226,14 @@ export default {
                     // 判断是否含有重复的文件
                     let isExist = this.foldersFile[this.number].some((item) => item.name === file.name)
                     if (!isExist) {
+                        let userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
                         let formData = new FormData()
                         this.files.forEach((file) => {
                             formData.append('file', file)
                             formData.append('readLine', 99)
                             formData.append('skipLine', 0)
+                            formData.append('userId', userId)
+                            formData.append('folderName', this.items[this.number])
                         })
                         uloadFilesApi(formData).then((res) => {
                             if (res.code == 200) {
@@ -267,6 +270,7 @@ export default {
                 })
             } else {
                 let formData = new FormData()
+                let userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
                 this.files.forEach((file) => {
                     formData.append('file', file)
                     formData.append('readLine', 99)

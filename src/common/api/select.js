@@ -12,8 +12,8 @@ import { get, post } from '../request'
  *  选择数据库连接的 API
  * @returns
  */
-export function uloadFilesApi (arr) {
-    return post('/select/uploadFile', arr)
+export function uloadFilesApi (arr, userId) {
+    return post('/select/uploadFile', arr, userId)
 }
 
 export function getConnTables (obj) {
