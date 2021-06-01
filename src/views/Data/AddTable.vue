@@ -190,6 +190,7 @@
 
 <script>
 import { getConnTables, getConnTableColumn, getColumnData, uloadFilesApi } from '../../common/api/select'
+import { uploadSql } from '../../common/api/database'
 export default {
     name: 'AddTable',
     data() {
@@ -320,12 +321,12 @@ export default {
                 this.newColNameList = colNameList
                 console.log(this.dataList[n])
                 // 获取点击表对应的连接
-                this.folder.tables.forEach(item => {
-                    if (item.name == this.dataList[n].oldname){
+                this.folder.tables.forEach((item) => {
+                    if (item.name == this.dataList[n].oldname) {
                         obj.conn = item.conn
                     }
                 })
-                console.log(obj);
+                console.log(obj)
                 // 构造参数
                 const dataParams = {
                     tableName: this.dataList[n].oldname,
@@ -449,7 +450,7 @@ export default {
          * @param {*}
          * @return {*}
          */
-        pushAllTables() {
+        async pushAllTables() {
             // 是否显示“数据库连接部分”
             this.isShowOther = false
             // 收集被选择的表
@@ -471,6 +472,22 @@ export default {
             this.$store.commit('saveFolders', folders)
             this.selectCount = 0
             this.showTablePre(this.table)
+            let conn = this.table.conn
+            conn.tableName = this.table.name
+            conn.userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
+            await uploadSql(conn).then((res) => {
+                if (res.code == 200) {
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'info',
+                        content: '添加成功',
+                    })
+                } else {
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'error',
+                        content: '添加失败',
+                    })
+                }
+            })
         },
         /**
          *  options的点击事件
