@@ -274,7 +274,7 @@ export default {
                 })
             } else {
                 let formData = new FormData()
-                let userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
+                this.userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
                 this.files.forEach((file) => {
                     formData.append('file', file)
                     formData.append('readLine', 99)

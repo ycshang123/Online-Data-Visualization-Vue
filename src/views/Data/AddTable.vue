@@ -272,6 +272,9 @@ export default {
             let header = {}
             if (obj.name.endsWith('.csv') || obj.name.endsWith('.xlsx') || obj.name.endsWith('.xls')) {
                 this.formDataList.forEach((formData) => {
+                    this.table = {
+                        formData: formData,
+                    }
                     uloadFilesApi(formData).then((res) => {
                         var resultList = res.data
                         resultList.forEach((item) => {
@@ -469,25 +472,27 @@ export default {
             })
             this.table = this.allTables[0]
             this.$store.commit('saveFolders', folders)
-            console.log(this.$store.state.folders)
             this.selectCount = 0
             this.showTablePre(this.table)
             let conn = this.table.conn
-            conn.tableName = this.table.name
-            conn.userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
-            await uploadSql(conn).then((res) => {
-                if (res.code == 200) {
-                    this.GLOBAL.pushAlertArrObj({
-                        type: 'info',
-                        content: '添加成功',
-                    })
-                } else {
-                    this.GLOBAL.pushAlertArrObj({
-                        type: 'error',
-                        content: '添加失败',
-                    })
-                }
-            })
+            if (conn == undefined) {
+            } else {
+                conn.tableName = this.table.name
+                conn.userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
+                await uploadSql(conn).then((res) => {
+                    if (res.code == 200) {
+                        this.GLOBAL.pushAlertArrObj({
+                            type: 'info',
+                            content: '添加成功',
+                        })
+                    } else {
+                        this.GLOBAL.pushAlertArrObj({
+                            type: 'error',
+                            content: '添加失败',
+                        })
+                    }
+                })
+            }
         },
         /**
          *  options的点击事件
@@ -629,7 +634,10 @@ export default {
          */
         getTable(o) {
             this.table = o
-            console.log(this.table.conn)
+            // if (this.table.conn == undefined) {
+            //     this.table.tableName = this.table.name
+            // }
+            console.log(this.table)
             this.showTablePre(this.table)
         },
         /**
