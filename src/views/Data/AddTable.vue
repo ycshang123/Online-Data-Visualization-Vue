@@ -268,7 +268,7 @@ export default {
             this.headers = []
             this.desserts = []
             let headers = []
-            let dessert = []
+            let desserts = []
             let header = {}
             if (obj.name.endsWith('.csv') || obj.name.endsWith('.xlsx') || obj.name.endsWith('.xls')) {
                 this.formDataList.forEach((formData) => {
@@ -293,7 +293,6 @@ export default {
                                         j++
                                     })
                                     this.desserts.push(obj)
-                                    console.log(this.desserts)
                                 }
                             }
                         })

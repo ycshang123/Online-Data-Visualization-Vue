@@ -554,7 +554,6 @@ export default {
             this.clearData()
             this.tableIndex = index
             this.tableName = this.tableList[this.tableIndex].name
-            console.log(this.tableName)
             let currentTable = this.$store.state.folders[this.packageIndex].tables[this.tableIndex]
             this.obj = currentTable.conn
             this.obj.tableName = currentTable.name
