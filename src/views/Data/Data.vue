@@ -52,7 +52,6 @@ export default {
     name: 'Data',
     data() {
         return {
-            userId: '',
             disable: '',
             folderName: '',
             fullHeight: document.documentElement.clientHeight, //fullHeight: document.documentElement.clientHeight  屏幕高度 默认值
@@ -71,12 +70,10 @@ export default {
         let query = window.location.href
         if (query.lastIndexOf('=') != -1) {
             let begin = query.lastIndexOf('=') + 1
-            if (query.substring(begin) instanceof Number) {
-                this.userInfo.userId = query.substring(begin)
-            } else {
-                this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
-            }
-            // this.getUser()
+            this.userInfo.openId = query.substring(begin)
+            this.getUser()
+        } else {
+            this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
         }
     },
     methods: {
@@ -85,6 +82,7 @@ export default {
             await getUserInfo(this.userInfo).then((res) => {
                 if (res.code === 200) {
                     const data = res.data
+                    console.log(data);
                     this.userInfo = data
                 }
             })
