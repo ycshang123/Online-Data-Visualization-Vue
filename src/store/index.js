@@ -11,6 +11,10 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
+        //用户id
+        user: {
+            id: 1
+        },
         // 历史连接数组
         databaseConnObjArr: [
             // {
