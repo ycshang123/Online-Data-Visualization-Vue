@@ -14,4 +14,7 @@ export function loginByGithub () {
 export function getUserInfo (obj) {
     return post('/login/selectUser', obj)
 }
+export function login (obj) {
+    return post('/login/login', obj)
+}
 

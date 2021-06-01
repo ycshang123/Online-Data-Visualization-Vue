@@ -21,15 +21,26 @@
                 <v-card-title>数据可视化平台</v-card-title>
                 <v-col cols="8">
                     <v-form>
-                        <v-text-field width="90%" label="账号" required v-model="account"></v-text-field>
+                        <v-text-field label="账号" required v-model="loginObj.account"></v-text-field>
                     </v-form>
                     <v-form>
-                        <v-text-field label="密码" required v-model="password"></v-text-field>
+                        <!-- <v-text-field label="密码" required v-model="loginObj.password"></v-text-field> -->
+                        <v-text-field
+                            v-model="loginObj.password"
+                            :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                            :rules="[rules.required, rules.min]"
+                            :type="show ? 'text' : 'password'"
+                            name="input-10-1"
+                            label="密码"
+                            hint="At least 8 characters"
+                            counter
+                            @click:append="show = !show"
+                        ></v-text-field>
                     </v-form>
                 </v-col>
 
                 <v-card class="transparent d-flex justify-space-between" width="60%" elevation="0">
-                    <v-btn class="transparent mr-10">登录</v-btn>
+                    <v-btn class="transparent mr-10" @click="login()">登录</v-btn>
                     <v-btn class="transparent" :href="codeUrl">GITHUB 登录</v-btn>
                 </v-card>
             </div>
@@ -38,15 +49,39 @@
 </template>
 
 <script>
-import { loginByGithub } from '../../common/api/login'
+import { loginByGithub, login } from '../../common/api/login'
 export default {
     data() {
         return {
+            show: false,
+            loginObj: {
+                account: '',
+                password: '',
+            },
+            rules: {
+                required: (value) => !!value || 'Required.',
+                min: (v) => v.length >= 6 || 'Min 6 characters',
+            },
             codeUrl:
                 'https://github.com/login/oauth/authorize?client_id=75bfbb55511431752d68&redirect_uri=http://localhost:5000/login/oauth/redirect',
         }
     },
-    methods: {},
+    methods: {
+        async login() {
+            console.log(this.loginObj)
+            await login(this.loginObj).then((res) => {
+                if (res.code === 200) {
+                    const data = res.data
+                    this.$store.commit('saveUserInfo', data)
+                    localStorage.setItem('userId', JSON.stringify(data.user_id))
+                    localStorage.setItem('userInfo', JSON.stringify(data))
+                    this.$router.push({
+                        name: 'Data',
+                    })
+                }
+            })
+        },
+    },
 }
 </script>
 

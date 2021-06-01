@@ -70,16 +70,18 @@ export default {
         }
     },
     created() {
-        this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+
+            this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
     },
     methods: {
-        logout(){
-             this.$router.push({
+        logout() {
+            this.$router.push({
                 name: 'Login',
             })
             localStorage.removeItem('userInfo')
-        }
-    }
+            localStorage.removeItem('userId')
+        },
+    },
 }
 </script>
 <style scoped>

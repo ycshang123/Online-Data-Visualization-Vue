@@ -90,9 +90,6 @@ export default {
                 localStorage.setItem('userId', JSON.stringify(this.userInfo.user_id))
                 this.$store.commit('saveUserInfo', this.userInfo)
                 console.log(this.$store.state.userInfo)
-                if (this.userInfo.is_disabled === 0) {
-                    console.log("禁用状态！");
-                }
             })
         },
         // 确定按钮点击事件
