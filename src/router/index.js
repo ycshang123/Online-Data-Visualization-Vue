@@ -24,7 +24,7 @@ const routes = [
         path: "/",
         name: "Index",
         component: Index,
-        redirect: '/data',
+        redirect: '/login',
         children: [
             {
                 path: "/data",

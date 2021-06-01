@@ -38,12 +38,12 @@
 
                     <v-col cols="4" class="d-flex align-center">
                         <v-col cols="4" v-if="this.foldersFile[this.number] != null">
-                            已选择{{ this.foldersFile[this.number].length }} 项
+                            已上传{{ this.foldersFile[this.number].length }} 项
                         </v-col>
                         <v-col cols="4" v-else>已选择0项</v-col>
                         <v-col cols="8" class="d-flex justify-space-around">
-                            <v-btn @click="uploadFile()" color="#3b4a5f">确定</v-btn>
-                            <v-btn @click="returnPage()" color="#3b4a5f">返回</v-btn>
+                            <v-btn @click="uploadFile()" color="#3b4a5f" dark>确定</v-btn>
+                            <v-btn @click="returnPage()" color="#3b4a5f" dark>返回</v-btn>
                         </v-col>
                     </v-col>
                 </v-row>

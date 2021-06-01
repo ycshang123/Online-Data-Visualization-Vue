@@ -62,8 +62,8 @@
                             <v-col v-for="(item, index) in options" md="4" lg="4" cols="4" :key="index">
                                 <v-item class="mt-12">
                                     <v-row justify="center">
-                                        <v-card @click="connectSQL(index)" class="d-flex" height="110" width="220">
-                                            <v-img :src="item.cover" height="100px"> </v-img>
+                                        <v-card @click="connectSQL(index)" class="d-flex pa-1" height="110" width="220">
+                                            <v-img :src="item.cover" height="100px" contain> </v-img>
                                         </v-card>
                                     </v-row>
                                 </v-item>

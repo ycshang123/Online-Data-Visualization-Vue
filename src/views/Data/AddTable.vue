@@ -231,7 +231,6 @@ export default {
     },
     created() {
         this.dataList = this.$store.state.addNewTable
-        console.log(this.dataList)
         // 从vuex中取出历史连接
         this.historyConnArr = this.$store.state.databaseConnObjArr
         // 取出用户添加的所有的表

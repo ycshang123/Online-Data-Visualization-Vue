@@ -19,7 +19,15 @@ export default new Vuex.Store({
             //     "password": "root",
             //     "host": "localhost",
             //     "port": "5432",
-            //     "database": "airport"
+            //     "database": "airport",
+            //     "allTables": [
+            //         {
+            //             conn: {},
+            //             id: 0,
+            //             isSelected: false,
+            //             name: ''
+            //         },
+            //     ],
             // }
         ],
         // 数据包数组
