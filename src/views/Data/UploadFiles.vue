@@ -2,14 +2,6 @@
     <div class="d-flex justify-space-around" style="height: 100%">
         <v-overlay v-if="contains" style="position: absolute; z-index: 1"></v-overlay>
         <div style="border-right: 0.5px solid #e0e0e0; width: 19%">
-            <v-list-item v-if="isdisplay">
-                <v-icon @click="previousPage()" class="mdi mdi-chevron-left mdi-24px"></v-icon>
-                <v-list-item-content>
-                    <v-list-item-title> ***航空数据 </v-list-item-title>
-                </v-list-item-content>
-            </v-list-item>
-            <v-divider></v-divider>
-
             <v-list-item v-for="item in foldersFile[this.number]" :key="item.name">
                 <v-list-item-icon>
                     <v-icon>mdi mdi-file</v-icon>
@@ -42,8 +34,8 @@
                         </v-col>
                         <v-col cols="4" v-else>已选择0项</v-col>
                         <v-col cols="8" class="d-flex justify-space-around">
-                            <v-btn @click="uploadFile()" color="#3b4a5f" dark>确定</v-btn>
-                            <v-btn @click="returnPage()" color="#3b4a5f" dark>返回</v-btn>
+                            <v-btn @click="uploadFile()" color="#3b4a5f" style="color: #ffffff">确定</v-btn>
+                            <v-btn @click="returnPage()" color="#3b4a5f" style="color: #ffffff">返回</v-btn>
                         </v-col>
                     </v-col>
                 </v-row>
@@ -139,6 +131,7 @@
 </template>
 <script>
 import { uloadFilesApi } from '../../common/api/select'
+import { addUserBehavior } from '../../common/api/add'
 export default {
     name: 'UpLoadFiles',
     created() {
@@ -176,8 +169,9 @@ export default {
             this.foldersFile[this.number] = this.folder.tables
         }
         this.fileList = this.$store.state.fileList
-
         this.formDateList = this.$store.state.formDataList
+        this.userId = JSON.parse(localStorage.getItem('userInfo'))['user_id']
+        console.log(this.userId)
     },
     data: () => {
         return {
@@ -206,6 +200,9 @@ export default {
             //上传文件返回的所有数据
             fileList: [],
             formDateList: null,
+            user: {},
+            userId: 0,
+            userBehavior: { userId: 0, data: [] },
         }
     },
     methods: {
@@ -237,9 +234,13 @@ export default {
                             formData.append('readLine', 99)
                             formData.append('skipLine', 0)
                             formData.append('userId', userId)
+                            formData.append('folderName', this.items[this.number])
                         })
                         uloadFilesApi(formData).then((res) => {
                             if (res.code == 200) {
+                                addUserBehavior(formData).then((res) => {
+                                    console.log(res.data)
+                                })
                                 this.contains = true
                                 this.tips = '文件上传成功'
                                 this.formDateList.push(formData)
@@ -248,7 +249,6 @@ export default {
                                 }, 2000)
                                 this.formDateList.push(formData)
                                 this.files = []
-                                // this.fileList.push(res.data)
                             } else {
                                 this.GLOBAL.pushAlertArrObj({
                                     type: 'info',
@@ -279,13 +279,19 @@ export default {
                     formData.append('file', file)
                     formData.append('readLine', 99)
                     formData.append('skipLine', 0)
-                    formData.append('userId', userId)
+                    formData.append('userId', this.userId)
+                    formData.append('folderName', this.items[this.number])
                 })
+                this.userBehavior.userId = this.userId
+                this.userBehavior.data.push(formData)
                 uloadFilesApi(formData).then((res) => {
                     if (res.code == 200) {
+                        this.formDateList.push(formData)
+                        addUserBehavior(formData).then((res) => {
+                            console.log(res.data)
+                        })
                         this.contains = true
                         this.tips = '文件上传成功'
-                        this.formDateList.push(formData)
                         setTimeout(() => {
                             this.contains = false
                         }, 2000)

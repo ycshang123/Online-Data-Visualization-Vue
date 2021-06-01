@@ -190,6 +190,7 @@
 
 <script>
 import { getConnTables, getConnTableColumn, getColumnData, uloadFilesApi } from '../../common/api/select'
+import { uploadSql } from '../../common/api/database'
 export default {
     name: 'AddTable',
     data() {
@@ -267,39 +268,37 @@ export default {
             this.headers = []
             this.desserts = []
             let headers = []
-            let desserts = []
+            let dessert = []
             let header = {}
             if (obj.name.endsWith('.csv') || obj.name.endsWith('.xlsx') || obj.name.endsWith('.xls')) {
                 this.formDataList.forEach((formData) => {
-                    if (formData.getAll('file')[0].name == obj.name) {
-                        this.table = {
-                            formData: formData,
-                        }
-                        // 请求表中数据及字段
-                        uloadFilesApi(formData).then((res) => {
-                            let data = res.data[0].file_list
-                            var col = res.data[0].file_list[0]
-                            // 构造字段
-                            col.forEach((item) => {
-                                header = {
-                                    text: item,
-                                    value: item,
-                                }
-                                headers.push(header)
-                            })
-                            this.headers = headers
-                            // 构造数据
-                            for (var i = 1; i < data.length; i++) {
-                                obj = {}
-                                var j = 0
-                                col.forEach((colVale) => {
-                                    obj[colVale] = data[i][j]
-                                    j++
+                    uloadFilesApi(formData).then((res) => {
+                        var resultList = res.data
+                        resultList.forEach((item) => {
+                            if (obj.name == item.name) {
+                                let data = item.file_list
+                                var col = item.file_list[0]
+                                col.forEach((item) => {
+                                    header = {
+                                        text: item,
+                                        value: item,
+                                    }
+                                    this.headers.push(header)
                                 })
-                                this.desserts.push(obj)
+                                for (var i = 1; i < data.length; i++) {
+                                    obj = {}
+                                    var j = 0
+                                    col.forEach((colValue) => {
+                                        obj[colValue] = data[i][j]
+                                        j++
+                                    })
+                                    this.desserts.push(obj)
+                                    console.log(this.desserts)
+                                }
                             }
                         })
-                    }
+                    })
+                    console.log(this.desserts)
                 })
             } else if (this.dataList.some((item) => item.name === obj.name)) {
                 // 如果是新增表
@@ -451,7 +450,7 @@ export default {
          * @param {*}
          * @return {*}
          */
-        pushAllTables() {
+        async pushAllTables() {
             // 是否显示“数据库连接部分”
             this.isShowOther = false
             // 收集被选择的表
@@ -474,6 +473,22 @@ export default {
             console.log(this.$store.state.folders)
             this.selectCount = 0
             this.showTablePre(this.table)
+            let conn = this.table.conn
+            conn.tableName = this.table.name
+            conn.userId = localStorage.getItem('userId') == null ? 1 : localStorage.getItem('userId')
+            await uploadSql(conn).then((res) => {
+                if (res.code == 200) {
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'info',
+                        content: '添加成功',
+                    })
+                } else {
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'error',
+                        content: '添加失败',
+                    })
+                }
+            })
         },
         /**
          *  options的点击事件

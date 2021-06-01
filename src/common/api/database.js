@@ -25,3 +25,8 @@ export function changeDatabase (obj) {
 export function allDataTypeInfo () {
     return post('/database/allDataTypeInfo')
 }
+
+
+export async function uploadSql (obj) {
+    return await post('/database/uploadSql', obj)
+}

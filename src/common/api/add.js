@@ -9,3 +9,6 @@ import { get, post } from '../request'
 export function addNewColumn (obj) {
     return post('/add/addNewColumn', obj)
 }
+export function addUserBehavior (obj) {
+    return post("/add/addUserBehavior", obj)
+}
