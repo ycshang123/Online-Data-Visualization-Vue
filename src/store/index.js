@@ -182,6 +182,15 @@ export default new Vuex.Store({
             state.connTables = obj
         },
 
+        /**
+         * @description:存储用户信息
+         * @param {*} state
+         * @param {*} obj
+         */
+        saveUserInfo (state, obj) {
+            state.userInfo = obj
+        },
+
     },
     actions: {},
     modules: {},

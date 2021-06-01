@@ -71,6 +71,7 @@ export default {
         if (query.lastIndexOf('=') != -1) {
             let begin = query.lastIndexOf('=') + 1
             this.userInfo.openId = query.substring(begin)
+            console.log(this.userInfo.openId)
             this.getUser()
         } else {
             this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
@@ -86,8 +87,12 @@ export default {
                     this.userInfo = data
                 }
                 localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
-                this.$store.state.userInfo = this.userInfo
+                localStorage.setItem('userId', JSON.stringify(this.userInfo.user_id))
+                this.$store.commit('saveUserInfo', this.userInfo)
                 console.log(this.$store.state.userInfo)
+                if (this.userInfo.is_disabled === 0) {
+                    console.log("禁用状态！");
+                }
             })
         },
         // 确定按钮点击事件
