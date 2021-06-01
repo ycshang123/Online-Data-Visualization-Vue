@@ -265,39 +265,37 @@ export default {
             this.headers = []
             this.desserts = []
             let headers = []
-            let desserts = []
+            let dessert = []
             let header = {}
             if (obj.name.endsWith('.csv') || obj.name.endsWith('.xlsx') || obj.name.endsWith('.xls')) {
                 this.formDataList.forEach((formData) => {
-                    if (formData.getAll('file')[0].name == obj.name) {
-                        this.table = {
-                            formData: formData,
-                        }
-                        // 请求表中数据及字段
-                        uloadFilesApi(formData).then((res) => {
-                            let data = res.data[0].file_list
-                            var col = res.data[0].file_list[0]
-                            // 构造字段
-                            col.forEach((item) => {
-                                header = {
-                                    text: item,
-                                    value: item,
-                                }
-                                headers.push(header)
-                            })
-                            this.headers = headers
-                            // 构造数据
-                            for (var i = 1; i < data.length; i++) {
-                                obj = {}
-                                var j = 0
-                                col.forEach((colVale) => {
-                                    obj[colVale] = data[i][j]
-                                    j++
+                    uloadFilesApi(formData).then((res) => {
+                        var resultList = res.data
+                        resultList.forEach((item) => {
+                            if (obj.name == item.name) {
+                                let data = item.file_list
+                                var col = item.file_list[0]
+                                col.forEach((item) => {
+                                    header = {
+                                        text: item,
+                                        value: item,
+                                    }
+                                    this.headers.push(header)
                                 })
-                                this.desserts.push(obj)
+                                for (var i = 1; i < data.length; i++) {
+                                    obj = {}
+                                    var j = 0
+                                    col.forEach((colValue) => {
+                                        obj[colValue] = data[i][j]
+                                        j++
+                                    })
+                                    this.desserts.push(obj)
+                                    console.log(this.desserts)
+                                }
                             }
                         })
-                    }
+                    })
+                    console.log(this.desserts)
                 })
             } else if (this.dataList.some((item) => item.name === obj.name)) {
                 // 如果是新增表
@@ -320,12 +318,12 @@ export default {
                 this.newColNameList = colNameList
                 console.log(this.dataList[n])
                 // 获取点击表对应的连接
-                this.folder.tables.forEach(item => {
-                    if (item.name == this.dataList[n].oldname){
+                this.folder.tables.forEach((item) => {
+                    if (item.name == this.dataList[n].oldname) {
                         obj.conn = item.conn
                     }
                 })
-                console.log(obj);
+                console.log(obj)
                 // 构造参数
                 const dataParams = {
                     tableName: this.dataList[n].oldname,

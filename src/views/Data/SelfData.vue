@@ -296,7 +296,7 @@ export default {
         this.folder = this.$store.state.folder.name
         this.tableList = this.$store.state.folder.tables
         this.databaseConn = this.$store.state.databaseConnObjArr[0]
-        console.log(this.$store.state.databaseConnObjArr[0])
+        console.log(this.$store.state.databaseConnObjArr)
         this.datalist = this.$store.state.addNewTable
         this.tableList.forEach((item) => {
             if (item.name.endsWith('.csv') || item.name.endsWith('.xlsx') || item.name.endsWith('.xls')) {
@@ -649,21 +649,23 @@ export default {
                 this.tableList[this.number].name.endsWith('.xls')
             ) {
                 this.formDataList.forEach((formDate) => {
-                    if (formDate.getAll('file')[0].name == this.tableList[this.number].name) {
-                        uloadFilesApi(formDate).then((res) => {
-                            console.log(res.data[0].file_list)
-                            var col = res.data[0].file_list[0]
-                            for (var i = 1; i < res.data[0].file_list.length; i++) {
-                                this.obj = {}
-                                var j = 0
-                                col.forEach((colVale) => {
-                                    this.obj[colVale] = res.data[0].file_list[i][j]
-                                    j++
-                                })
-                                this.numberList.push(this.obj)
+                    uloadFilesApi(formDate).then((res) => {
+                        var resultList = res.data
+                        resultList.forEach((item) => {
+                            if (this.tableList[this.number].name == item.name) {
+                                var col = item.file_list[0]
+                                for (var i = 1; i < item.file_list.length; i++) {
+                                    this.obj = {}
+                                    var j = 0
+                                    col.forEach((colVale) => {
+                                        this.obj[colVale] = item.file_list[i][j]
+                                        j++
+                                    })
+                                    this.numberList.push(this.obj)
+                                }
                             }
                         })
-                    }
+                    })
                 })
             } else if (this.datalist.some((item) => item.name === this.tableList[this.number].name)) {
                 this.numberList = []

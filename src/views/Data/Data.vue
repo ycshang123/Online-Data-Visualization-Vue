@@ -82,13 +82,13 @@ export default {
             await getUserInfo(this.userInfo).then((res) => {
                 if (res.code === 200) {
                     const data = res.data
-                    console.log(data);
+                    console.log(data)
                     this.userInfo = data
                 }
+                localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+                this.$store.state.userInfo = this.userInfo
+                console.log(this.$store.state.userInfo)
             })
-            localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
-            this.$store.state.userInfo = this.userInfo
-            console.log(this.$store.state.userInfo)
         },
         // 确定按钮点击事件
         addFolder() {

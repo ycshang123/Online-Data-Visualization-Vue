@@ -168,9 +168,8 @@ export default {
             this.foldersFile[this.number] = this.folder.tables
         }
         this.fileList = this.$store.state.fileList
-
         this.formDateList = this.$store.state.formDataList
-        this.userId = this.$store.state.user.id
+        this.userId = JSON.parse(localStorage.getItem('userInfo'))['user_id']
         console.log(this.userId)
     },
     data: () => {
@@ -200,6 +199,7 @@ export default {
             //上传文件返回的所有数据
             fileList: [],
             formDateList: null,
+            user: {},
             userId: 0,
             userBehavior: { userId: 0, data: [] },
         }
@@ -237,6 +237,9 @@ export default {
                         })
                         uloadFilesApi(formData).then((res) => {
                             if (res.code == 200) {
+                                addUserBehavior(formData).then((res) => {
+                                    console.log(res.data)
+                                })
                                 this.contains = true
                                 this.tips = '文件上传成功'
                                 this.formDateList.push(formData)
@@ -286,10 +289,8 @@ export default {
                         addUserBehavior(formData).then((res) => {
                             console.log(res.data)
                         })
-
                         this.contains = true
                         this.tips = '文件上传成功'
-
                         setTimeout(() => {
                             this.contains = false
                         }, 2000)
