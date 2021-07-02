@@ -32,7 +32,7 @@
                             :type="show ? 'text' : 'password'"
                             name="input-10-1"
                             label="密码"
-                            hint="At least 8 characters"
+                            hint="At least 6 characters"
                             counter
                             @click:append="show = !show"
                         ></v-text-field>
@@ -55,21 +55,21 @@ export default {
         return {
             show: false,
             loginObj: {
-                account: '',
-                password: '',
+                account: 'xiexiaoqian',
+                password: '123123',
             },
             rules: {
                 required: (value) => !!value || 'Required.',
                 min: (v) => v.length >= 6 || 'Min 6 characters',
             },
             codeUrl:
-                'https://github.com/login/oauth/authorize?client_id=75bfbb55511431752d68&redirect_uri=http://localhost:5000/login/oauth/redirect',
+                'https://github.com/login/oauth/authorize?client_id=75bfbb55511431752d68&redirect_uri=http://47.106.128.152:5000/login/oauth/redirect',
         }
     },
     methods: {
         async login() {
-            console.log(this.loginObj)
             await login(this.loginObj).then((res) => {
+                console.log(res.code)
                 if (res.code === 200) {
                     const data = res.data
                     this.$store.commit('saveUserInfo', data)

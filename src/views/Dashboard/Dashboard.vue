@@ -620,6 +620,7 @@ export default {
                 getChartAllData(this.obj).then((res) => {
                     this.allDataIndex = res.data.allDataListIndex
                     this.obj = {}
+                    console.log('数据初始化完成')
                 })
             })
         },

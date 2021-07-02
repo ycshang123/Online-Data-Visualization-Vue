@@ -460,6 +460,11 @@ export default {
                         this.RightNumber = this.RightNumber + 1
                     }
                     this.newColumnContent.push(this.functionSign[index])
+                } else if (!isExist) {
+                    this.GLOBAL.pushAlertArrObj({
+                        type: 'info',
+                        content: '请选择合适的运算符号',
+                    })
                 } else if (sign === ')') {
                     this.newColumnContent.push(this.functionSign[index])
                 }
@@ -539,7 +544,7 @@ export default {
                     type: 'info',
                     content: '请输入列名',
                 })
-            } else if (this.functionSign.some((item) => item === this.newColumnContent[this.endContent - 1])) {
+            } else if (this.functionSign.some((item) => item === this.newColumnContent[this.endContent])) {
                 this.GLOBAL.pushAlertArrObj({
                     type: 'info',
                     content: '请把公式补全',

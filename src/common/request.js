@@ -12,8 +12,8 @@ import axios from "axios"
  */
 const instance = axios.create({
     // BASURL 会在发送请求的时候拼接在url参数前面
-    baseURL: "http://127.0.0.1:5000",
-    // baseURL: "http://112.126.61.191:5000",
+    // baseURL: "http://127.0.0.1:5000",
+    baseURL: "http://47.106.128.152:5000",
     responseType: 'json',
     headers: {
         'Content-Type': 'application/json;',

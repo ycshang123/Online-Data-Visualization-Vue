@@ -259,7 +259,7 @@ export default {
             // 数据库封面图
             cover: '',
             connName: 'myPostgreSQL',
-            host: '36.134.18.43',
+            host: '112.126.61.191',
             port: '',
             database: 'postgres',
             userName: 'postgres',
